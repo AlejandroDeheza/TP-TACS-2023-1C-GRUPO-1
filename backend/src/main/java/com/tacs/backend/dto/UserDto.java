@@ -1,13 +1,14 @@
-package com.tacs.backend.model;
+package com.tacs.backend.dto;
 
-public class User {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class UserDto {
+
+    @JsonProperty("username")
     private String username;
-    private String password;
 
-    public User() {
-        // TODO document why this constructor is empty
-    }
+    @JsonProperty("password")
+    private String password;
 
     public String getUsername() {
         return username;
