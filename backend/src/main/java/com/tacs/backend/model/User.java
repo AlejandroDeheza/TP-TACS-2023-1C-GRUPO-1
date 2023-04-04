@@ -2,11 +2,20 @@ package com.tacs.backend.model;
 
 public class User {
 
+    private String id;
     private String username;
     private String password;
 
     public User() {
         // TODO document why this constructor is empty
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUsername() {
