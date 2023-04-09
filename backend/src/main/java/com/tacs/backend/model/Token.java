@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -12,10 +11,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-public class User {
-
-    @Id
-    private String id;
-    private String username;
-    private String password;
+public class Token {
+    private Integer id;
+    private String token;
+    private TokenType tokenType = TokenType.BEARER;
+    private boolean revoked;
+    private boolean expired;
+    private User user;
 }
