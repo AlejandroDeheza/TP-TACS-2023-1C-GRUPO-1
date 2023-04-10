@@ -8,13 +8,12 @@ import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.dto.AuthenticationRequest;
 import com.tacs.backend.dto.AuthenticationResponse;
 import com.tacs.backend.dto.RegisterRequest;
-import com.tacs.backend.exception.SessionException;
+import com.tacs.backend.exception.AuthenticationException;
 import com.tacs.backend.model.User;
 import com.tacs.backend.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,21 +25,18 @@ import java.io.IOException;
 
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TokenRepository tokenRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    
+    private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) throws SessionException {
+    public AuthenticationResponse register(RegisterRequest request) throws AuthenticationException {
         if(userRepository.exists(request.getUsername())) {
-            throw new SessionException("Username already exists");
+            throw new AuthenticationException("Username already exists");
         }
         User user = User.builder()
                 .username(request.getUsername())
@@ -56,7 +52,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse login(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws AuthenticationException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -64,7 +60,7 @@ public class AuthenticationService {
                 )
         );
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new SessionException("Wrong username"));
+                .orElseThrow(() -> new AuthenticationException("User not found"));
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
@@ -79,7 +75,7 @@ public class AuthenticationService {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String username;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return;
         }
         refreshToken = authHeader.substring(7);

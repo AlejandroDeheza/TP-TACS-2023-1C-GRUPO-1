@@ -1,7 +1,7 @@
 package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.ExceptionResponse;
-import com.tacs.backend.exception.SessionException;
+import com.tacs.backend.exception.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,9 +12,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.Date;
 
 @ControllerAdvice
-public class SessionServiceExceptionHandler extends ResponseEntityExceptionHandler {
+public class AuthenticationExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({SessionException.class})
+    @ExceptionHandler({AuthenticationException.class})
     public final ResponseEntity<Object> handleEntityNotFoundException(Exception ex, WebRequest request){
         ExceptionResponse exception = new ExceptionResponse();
         exception.setTimestamp(new Date());

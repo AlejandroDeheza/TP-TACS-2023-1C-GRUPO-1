@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,19 +20,19 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/auth")
+@RequiredArgsConstructor
 public class AuthenticationController {
-    @Autowired
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
         return new ResponseEntity<>(authenticationService.register(request), HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    @Operation(summary = "Login", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        return new ResponseEntity<>(authenticationService.login(request), HttpStatus.OK);
+    @PostMapping("/authentication")
+    @Operation(summary = "Authenticate", security = @SecurityRequirement(name = "bearerAuth"))
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        return new ResponseEntity<>(authenticationService.authenticate(request), HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token")
