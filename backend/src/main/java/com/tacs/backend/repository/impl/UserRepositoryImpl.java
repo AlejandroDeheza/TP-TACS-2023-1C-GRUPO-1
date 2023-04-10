@@ -2,7 +2,7 @@ package com.tacs.backend.repository.impl;
 
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,9 +12,10 @@ import java.util.Optional;
 
 
 @Repository
+@RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    @Autowired
-    MongoTemplate mongoTemplate;
+
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public boolean exists(String username) {

@@ -2,7 +2,7 @@ package com.tacs.backend.repository.impl;
 
 import com.tacs.backend.repository.TokenRepository;
 import com.tacs.backend.model.Token;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class TokenRepositoryImpl implements TokenRepository {
 
-    @Autowired
-    MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public List<Token> findAllValidTokenByUsername(String username) {
