@@ -1,14 +1,12 @@
-package com.tacs.backend.dao;
+package com.tacs.backend.repository;
 
 import com.tacs.backend.model.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
 
     boolean exists(String username);
-    Optional<User> findUserByUsername(String username);
-
+    Optional<User> findByUsername(String username);
     User save(User user);
 }

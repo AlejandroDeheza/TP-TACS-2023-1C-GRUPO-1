@@ -1,4 +1,4 @@
-package com.tacs.backend.dao;
+package com.tacs.backend.repository;
 
 public interface EventRepository {
 }
