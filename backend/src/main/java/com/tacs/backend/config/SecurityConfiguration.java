@@ -25,19 +25,24 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                //disabling csrf since we won't use form login
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
+                //giving every permission to every request
                 .requestMatchers("/v1/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
+                //for everything else, the user has to be authenticated
                 .anyRequest()
                 .authenticated()
                 .and()
+                //setting stateless session, because we choose to implement Rest API
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider)
+                //adding the custom filter before UsernamePasswordAuthenticationFilter in the filter chain
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout()
                 .logoutUrl("/v1/auth/logout")

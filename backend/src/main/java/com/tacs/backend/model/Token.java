@@ -6,16 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("Token")
+@Document("tokens")
 public class Token {
     @Id
     private String id;
     private String token;
+    @Field("token_type")
     private TokenType tokenType = TokenType.BEARER;
     private boolean revoked;
     private boolean expired;

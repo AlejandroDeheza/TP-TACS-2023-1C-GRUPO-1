@@ -2,6 +2,7 @@ package com.tacs.backend.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tacs.backend.exception.UsernameAlreadyExistsException;
+import com.tacs.backend.model.Role;
 import com.tacs.backend.model.Token;
 import com.tacs.backend.model.TokenType;
 import com.tacs.backend.repository.TokenRepository;
@@ -42,8 +43,11 @@ public class AuthenticationService {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
         User user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
         var savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);

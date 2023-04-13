@@ -38,6 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String username;
         if (authHeader == null ||!authHeader.startsWith(BEARER)) {
+            //if Authorization header does not exist, then skip this filter and continue to execute next filter class
             filterChain.doFilter(request, response);
             return;
         }
@@ -49,6 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);
             if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+                //initializing UsernamePasswordAuthenticationToken, with its 3 parameter constructor because, it sets super.setAuthenticated(true); in that constructor.
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -57,9 +59,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
+                //finally, give the authentication token to Spring Security Context
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+        //end of the method, so go for next filter class
         filterChain.doFilter(request, response);
     }
 }
