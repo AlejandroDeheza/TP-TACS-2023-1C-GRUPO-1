@@ -15,23 +15,28 @@ import com.tacs.backend.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.security.auth.login.AccountException;
+
 import java.io.IOException;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationService {
     private static final String BEARER = "Bearer ";
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
@@ -39,6 +44,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        LOGGER.info("Register request: {}", request);
         if(userRepository.exists(request.getUsername())) {
             throw new UsernameAlreadyExistsException("Username already exists");
         }
@@ -60,6 +66,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        LOGGER.info("Authentication request: {}", request);
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -85,10 +92,11 @@ public class AuthenticationService {
         if (authHeader == null || !authHeader.startsWith(BEARER)) {
             return;
         }
-        refreshToken = authHeader.substring(7);
+        refreshToken = authHeader.substring(StringUtils.length(BEARER));
         username = jwtService.extractUsername(refreshToken);
         if (username != null) {
-            var user = this.userRepository.findByUsername(username).orElseThrow();
+            var user = this.userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
@@ -116,6 +124,7 @@ public class AuthenticationService {
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.findAllValidTokenByUsername(user.getUsername());
         if (CollectionUtils.isEmpty(validUserTokens)) {
+            LOGGER.info("The user:{} has no valid tokens.", user.getUsername());
             return;
         }
         validUserTokens.forEach(token -> {

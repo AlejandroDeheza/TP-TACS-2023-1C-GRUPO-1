@@ -1,4 +1,4 @@
-package com.tacs.backend.utils;
+package com.tacs.backend.security;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

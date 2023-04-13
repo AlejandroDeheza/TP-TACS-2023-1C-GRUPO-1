@@ -1,8 +1,8 @@
 package com.tacs.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tacs.backend.utils.ConfirmedField;
-import com.tacs.backend.utils.ValidPassword;
+import com.tacs.backend.security.ConfirmedField;
+import com.tacs.backend.security.ValidPassword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
