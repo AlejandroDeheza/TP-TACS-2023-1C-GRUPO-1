@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationRequest {
     @JsonProperty("username")
-    @NotBlank
+    @NotBlank(message = "Username can not be blank")
     private String username;
     @JsonProperty("password")
-    @NotBlank
+    @NotBlank(message = "Password can not be blank")
     private String password;
 }
