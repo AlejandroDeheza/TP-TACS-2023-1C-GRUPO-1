@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,13 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request){
         return new ResponseEntity<>(authenticationService.register(request), HttpStatus.OK);
     }
 
     @PostMapping("/authentication")
     @Operation(summary = "Authenticate", security = @SecurityRequirement(name = "bearerAuth"))
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@Valid @RequestBody AuthenticationRequest request) {
         return new ResponseEntity<>(authenticationService.authenticate(request), HttpStatus.OK);
     }
 
