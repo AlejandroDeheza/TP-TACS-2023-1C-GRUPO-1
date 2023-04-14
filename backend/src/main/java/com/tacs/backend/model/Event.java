@@ -5,31 +5,37 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
+@Document("events")
 public class Event {
+    @Id
     private String id;
     private String name;
     private String description;
-    private User owerUser;
+    @DBRef
+    @Field("owner_user")
+    private User ownerUser;
     private Status status;
-    private List<EventOption> eventOptions;
-    private List<User> registeredUsers;
+    @DBRef
+    @Field("event_options")
+    private Set<EventOption> eventOptions = new HashSet<>();
+    @DBRef
+    @Field("registered_users")
+    private Set<User> registeredUsers = new HashSet<>();
 
-    public EventDto transformToDto() {
-        return EventDto.builder()
-                .name(this.name)
-                .description(this.description)
-                .status(this.status.name())
-                .build();
-    }
 
     public enum Status {
         VOTATION_PENDING,

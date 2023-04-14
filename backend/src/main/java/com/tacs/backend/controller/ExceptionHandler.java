@@ -1,6 +1,7 @@
 package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.ExceptionResponse;
+import com.tacs.backend.exception.EntityNotFoundException;
 import com.tacs.backend.exception.UsernameAlreadyExistsException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import org.springframework.web.context.request.WebRequest;
@@ -17,9 +17,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.Date;
 
 @RestControllerAdvice
-public class AuthenticationExceptionHandler extends ResponseEntityExceptionHandler {
+public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({AuthenticationException.class, UsernameAlreadyExistsException.class})
+    @org.springframework.web.bind.annotation.ExceptionHandler({AuthenticationException.class,
+            UsernameAlreadyExistsException.class, EntityNotFoundException.class})
     public final ResponseEntity<Object> handleEntityNotFoundException(Exception ex, WebRequest request){
         ExceptionResponse exception = new ExceptionResponse();
         exception.setTimestamp(new Date());

@@ -18,7 +18,7 @@ public class Token {
     private String id;
     private String token;
     @Field("token_type")
-    private TokenType tokenType = TokenType.BEARER;
+    private TokenType tokenType;
     private boolean revoked;
     private boolean expired;
     private User user;

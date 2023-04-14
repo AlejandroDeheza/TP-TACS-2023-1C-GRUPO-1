@@ -1,9 +1,6 @@
 package com.tacs.backend.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tacs.backend.model.Event;
-import com.tacs.backend.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -13,13 +10,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventOptionDto {
+public class EventOptionRequest {
     @JsonProperty("id")
     private String id;
     @JsonProperty("date")
@@ -30,9 +26,5 @@ public class EventOptionDto {
     @NotBlank(message = "Time can not be blank")
     @Schema(description = "Event option time", example = "10:00")
     private LocalTime time;
-
-    @JsonProperty("vote_quantity")
-    @Schema(description = "Event vote quantity")
-    private long voteQuantity;
 
 }
