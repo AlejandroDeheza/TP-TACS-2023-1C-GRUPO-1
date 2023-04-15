@@ -21,11 +21,10 @@ import java.util.List;
 public class EventOption {
     @Id
     private String id;
-    @DBRef
     private Event event;
     @Field("date_time")
     private Date dateTime;
-    @DBRef
+
     @Field("vote_users")
     private List<User> voteUsers = new ArrayList<>();
     @Field("vote_quantity")

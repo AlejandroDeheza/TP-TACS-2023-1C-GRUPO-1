@@ -22,14 +22,14 @@ public class Event {
     private String id;
     private String name;
     private String description;
-    @DBRef
+
     @Field("owner_user")
     private User ownerUser;
     private Status status;
-    @DBRef
+
     @Field("event_options")
     private Set<EventOption> eventOptions = new HashSet<>();
-    @DBRef
+
     @Field("registered_users")
     private Set<User> registeredUsers = new HashSet<>();
 

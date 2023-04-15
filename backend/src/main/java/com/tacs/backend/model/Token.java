@@ -22,6 +22,5 @@ public class Token {
     private TokenType tokenType;
     private boolean revoked;
     private boolean expired;
-    @DBRef
     private User user;
 }

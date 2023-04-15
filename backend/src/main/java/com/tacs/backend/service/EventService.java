@@ -17,8 +17,6 @@ import com.tacs.backend.repository.EventRepository;
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
