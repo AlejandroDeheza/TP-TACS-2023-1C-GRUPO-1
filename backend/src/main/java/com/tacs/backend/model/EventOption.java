@@ -10,9 +10,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,9 +23,11 @@ public class EventOption {
     private String id;
     @DBRef
     private Event event;
+    @Field("date_time")
     private Date dateTime;
     @DBRef
-    private List<User> users = new ArrayList<>();
+    @Field("vote_users")
+    private List<User> voteUsers = new ArrayList<>();
     @Field("vote_quantity")
     private long voteQuantity;
 

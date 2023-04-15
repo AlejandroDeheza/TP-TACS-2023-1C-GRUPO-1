@@ -7,9 +7,7 @@ import java.lang.annotation.*;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/**
- * @author tianshuwang
- */
+
 @Target(ElementType.TYPE)
 @Retention(RUNTIME)
 @Constraint(validatedBy = ConfirmedFieldValidator.class)

@@ -1,7 +1,7 @@
 package com.tacs.backend.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tacs.backend.exception.UsernameAlreadyExistsException;
+import com.tacs.backend.exception.UserException;
 import com.tacs.backend.model.Role;
 import com.tacs.backend.model.Token;
 import com.tacs.backend.model.TokenType;
@@ -46,7 +46,7 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         LOGGER.info("Register request: {}", request);
         if(userRepository.exists(request.getUsername())) {
-            throw new UsernameAlreadyExistsException("Username already exists");
+            throw new UserException("Username already exists");
         }
         User user = User.builder()
                 .firstName(request.getFirstName())

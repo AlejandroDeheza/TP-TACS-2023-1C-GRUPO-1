@@ -39,4 +39,8 @@ public class EventOptionDto {
     @Schema(description = "Event vote quantity", hidden = true)
     private long voteQuantity;
 
+    @JsonProperty("vote_users")
+    @Schema(description = "Event option vote users", hidden = true)
+    private List<UserDto> voteUsers;
+
 }

@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +52,29 @@ public class EventController {
             @ApiResponse(responseCode = "400", description = "Registration failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     public ResponseEntity<EventDto> registerEvent(@NotBlank @RequestParam String id) {
-        return ResponseEntity.ok(this.eventService.registerEvent(id));
+
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(id));
+    }
+
+    @DeleteMapping("/event/{id}/vote")
+    @Operation(summary = "Close a event's vote", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Event's vote closed successfully"),
+            @ApiResponse(responseCode = "400", description = "Event's vote closed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Event's vote closed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+    })
+    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable("id") String id) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(id));
+    }
+
+    @GetMapping("/event/options/option/vote")
+    @Operation(summary = "Vote a event's option", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vote successfully"),
+            @ApiResponse(responseCode = "400", description = "Vote failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+    })
+    public ResponseEntity<EventDto> voteEventOption(@NotBlank @RequestParam String idEvent, @NotBlank @RequestParam String idEventOption) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(idEvent, idEventOption));
     }
 
 }

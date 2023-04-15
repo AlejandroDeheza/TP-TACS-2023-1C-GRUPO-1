@@ -1,6 +1,5 @@
 package com.tacs.backend.model;
 
-import com.tacs.backend.dto.EventDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -38,18 +35,25 @@ public class Event {
 
 
     public enum Status {
-        VOTATION_PENDING,
-        VOTATION_CLOSED,
+        /**
+         * vote pending
+         */
+        VOTE_PENDING,
+        /**
+         * vote closed
+         */
+        VOTE_CLOSED,
+        /**
+         * pending
+         */
         PENDING,
+        /**
+         * started
+         */
         STARTED,
-        FINISHED;
-
-        public Status lookUp(String name) {
-            return Arrays.asList(Status.values())
-                    .stream()
-                    .filter(status -> status.name().equalsIgnoreCase(name))
-                    .findFirst()
-                    .orElseThrow(() -> new EnumConstantNotPresentException(Status.class, name));
-        }
+        /**
+         * finished
+         */
+        FINISHED
     }
 }

@@ -19,7 +19,9 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public List<Token> findAllValidTokenByUsername(String username) {
-        Query query = new Query(Criteria.where("username").is(username));
+        Query query = new Query(Criteria.where("user.username").is(username)
+                .and("revoked").is(false)
+                .and("expired").is(false));
         return mongoTemplate.find(query, Token.class);
     }
 
@@ -36,8 +38,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public List<Token> saveAll(List<Token> tokens) {
-        return mongoTemplate.save(tokens);
+        return tokens.stream().map(mongoTemplate::save).toList();
     }
-
 
 }
