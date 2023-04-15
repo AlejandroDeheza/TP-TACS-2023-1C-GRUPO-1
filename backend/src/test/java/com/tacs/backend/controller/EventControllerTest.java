@@ -39,7 +39,7 @@ public class EventControllerTest {
     private String idEvent;
     private String idEventOption;
     @BeforeEach
-   void setup() {
+    void setup() {
         EventOptionDto eventOptionDto = EventOptionDto.builder()
                 .dateTime(new Date())
                 .voteQuantity(0)
@@ -62,7 +62,7 @@ public class EventControllerTest {
     }
 
     @Test
-    @DisplayName("Should return event when create a event")
+    @DisplayName("Should return 201 when create a event")
     void itShouldReturnEventWith201StatusCodeWhenCalledCreateEvent() throws Exception {
         given(eventService.createEvent(eventDto)).willReturn(eventDto);
 
