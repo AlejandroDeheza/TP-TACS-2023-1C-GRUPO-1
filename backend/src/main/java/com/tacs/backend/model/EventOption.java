@@ -26,6 +26,7 @@ public class EventOption {
     private Date dateTime;
 
     @Field("vote_users")
+    @DBRef
     private List<User> voteUsers = new ArrayList<>();
     @Field("vote_quantity")
     private long voteQuantity;

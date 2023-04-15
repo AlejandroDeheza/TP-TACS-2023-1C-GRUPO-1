@@ -28,9 +28,11 @@ public class Event {
     private Status status;
 
     @Field("event_options")
+    @DBRef
     private Set<EventOption> eventOptions = new HashSet<>();
 
     @Field("registered_users")
+    @DBRef
     private Set<User> registeredUsers = new HashSet<>();
 
 
