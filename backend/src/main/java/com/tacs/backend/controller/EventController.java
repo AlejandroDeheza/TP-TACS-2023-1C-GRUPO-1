@@ -1,7 +1,6 @@
 package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.EventDto;
-import com.tacs.backend.dto.EventRequest;
 import com.tacs.backend.dto.ExceptionResponse;
 import com.tacs.backend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,25 +30,22 @@ public class EventController {
             @ApiResponse(responseCode = "400", description = "Event created failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @Schema(description = "Create", implementation = EventDto.class)
-    public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventRequest request) {
+    public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventDto request) {
         return new ResponseEntity<>(eventService.createEvent(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/event/{id}")
-    @PostMapping
     @Operation(summary = "Find a event by id", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event created successfully"),
             @ApiResponse(responseCode = "400", description = "Event created failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    @Schema(description = "Find a event by id", implementation = EventDto.class)
-    public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable String id) {
+    public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id) {
        return ResponseEntity.ok(this.eventService.getEventById(id));
     }
 
     @GetMapping("/event")
-    @PostMapping
-    @Operation(summary = "Register to the event", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Register to a event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Register successfully"),
             @ApiResponse(responseCode = "400", description = "Registration failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),

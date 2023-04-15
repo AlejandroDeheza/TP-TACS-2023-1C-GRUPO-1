@@ -1,6 +1,8 @@
 package com.tacs.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tacs.backend.model.Event;
 import com.tacs.backend.model.User;
@@ -10,29 +12,31 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventOptionDto {
     @JsonProperty("id")
-    private String id;
-    @JsonProperty("date")
-    @NotBlank(message = "Date can not be blank")
-    @Schema(description = "Event option date", example = "2023-04-14")
-    private LocalDate date;
-    @JsonProperty("time")
-    @NotBlank(message = "Time can not be blank")
-    @Schema(description = "Event option time", example = "10:00")
-    private LocalTime time;
+    @Schema(description = "Event option id", hidden = true)
+    private String id = null;
+    @JsonProperty("date_time")
+    @NotBlank(message = "Date time can not be blank")
+    @Schema(description = "Event option date time")
+    private Date dateTime;
 
     @JsonProperty("vote_quantity")
-    @Schema(description = "Event vote quantity")
+    @Schema(description = "Event vote quantity", hidden = true)
     private long voteQuantity;
 
 }

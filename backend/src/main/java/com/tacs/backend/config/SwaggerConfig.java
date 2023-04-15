@@ -19,7 +19,6 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openApi() {
         return new OpenAPI()
-
                 .info(new Info().title("TACS")
                         .description("TACS")
                         .version("1.0"));
