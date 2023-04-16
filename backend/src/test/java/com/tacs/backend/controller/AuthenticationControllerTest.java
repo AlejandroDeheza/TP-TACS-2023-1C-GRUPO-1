@@ -125,7 +125,7 @@ public class AuthenticationControllerTest {
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getContentAsString()).contains("User not found");
     }
 

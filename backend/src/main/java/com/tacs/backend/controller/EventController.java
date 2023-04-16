@@ -56,14 +56,14 @@ public class EventController {
     @Operation(summary = "Register an user to a event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registered successfully"),
-            @ApiResponse(responseCode = "400", description = "Registration failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Registration failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     public ResponseEntity<EventDto> registerEvent(@NotBlank @RequestBody String id, HttpServletRequest request) {
         verifyRateLimits(request);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(id));
     }
 
-    @PatchMapping("/event/{id}/vote")
+    @PatchMapping("/event/{id}/close")
     @Operation(summary = "Close a event's voting", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event's vote closed successfully"),
@@ -75,13 +75,13 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(id));
     }
 
-    @PostMapping("/event/options/option/vote")
+    @PutMapping("/event/options/option/vote")
     @Operation(summary = "Vote a event's option", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vote successfully"),
-            @ApiResponse(responseCode = "400", description = "Vote failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Vote failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    public ResponseEntity<EventDto> voteEventOption(@NotBlank @RequestParam String idEvent, @NotBlank @RequestBody String idEventOption, HttpServletRequest request) {
+    public ResponseEntity<EventDto> voteEventOption(@NotBlank @RequestParam String idEvent, @NotBlank @RequestParam String idEventOption, HttpServletRequest request) {
         verifyRateLimits(request);
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(idEvent, idEventOption));
     }
@@ -89,7 +89,7 @@ public class EventController {
     private void verifyRateLimits(HttpServletRequest request) {
         String autorization = request.getHeader("Authorization");
         String token = autorization.split(" ")[1];
-        if (rateLimiterService.allowRequest(token)) {
+        if (rateLimiterService.reachedMaxRequestAllowed(token)) {
             throw new RequestNotAllowException("Maximum number of request reached for user or applicacion. Try again in a while");
         }
     }

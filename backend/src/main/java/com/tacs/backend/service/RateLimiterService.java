@@ -48,15 +48,15 @@ public class RateLimiterService {
         usersRequests.put(token, new UserRequest(System.currentTimeMillis()));
     }
 
-    public boolean allowRequest(String token)  {
+    public boolean reachedMaxRequestAllowed(String token)  {
         apiRPMRequestCount++;
-        return apiRPMRequestCount <= DEFAULT_API_RPM && allowUserRequest(token);
+        return apiRPMRequestCount > DEFAULT_API_RPM || reachedMaxUserRequestAllowed(token);
     }
 
-    public boolean allowUserRequest(String token) {
+    private boolean reachedMaxUserRequestAllowed(String token) {
       UserRequest userRequest = usersRequests.get(token);
       userRequest.incrementCounter();
-      return userRequest.getRequestCount() <=  DEFAULT_USER_RPM;
+      return userRequest.getRequestCount() >  DEFAULT_USER_RPM;
     }
 
     @Getter
