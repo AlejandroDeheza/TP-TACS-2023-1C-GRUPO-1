@@ -10,5 +10,6 @@ server:
 spring:
     data:
         mongodb:
+            #host: mongo
             database: TP
             port: 27017
