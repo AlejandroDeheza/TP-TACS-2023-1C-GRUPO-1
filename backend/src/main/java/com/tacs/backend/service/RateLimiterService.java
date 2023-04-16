@@ -56,7 +56,7 @@ public class RateLimiterService {
     private boolean reachedMaxUserRequestAllowed(String token) {
       UserRequest userRequest = usersRequests.get(token);
       userRequest.incrementCounter();
-      return userRequest.getRequestCount() >  DEFAULT_USER_RPM;
+      return userRequest.getRequestCount() > DEFAULT_USER_RPM;
     }
 
     @Getter
