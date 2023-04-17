@@ -1,15 +1,27 @@
 package com.tacs.backend.utils;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
+import java.util.Date;
+
 @Component
 public class Utils {
 
-    public String getCurrentUsername() {
+    public static String getCurrentUsername() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userDetails.getUsername();
+    }
+
+    public static Date getBeforeDate() {
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.HOUR, -2);
+        return calendar.getTime();
     }
 }

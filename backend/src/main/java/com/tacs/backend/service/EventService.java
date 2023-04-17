@@ -13,6 +13,11 @@ import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+<<<<<<< HEAD
+=======
+
+import java.util.Date;
+>>>>>>> db427f13337dc46671ca971fdd6728170b5534de
 import java.util.Set;
 
 @Service
@@ -25,12 +30,11 @@ public class EventService {
     private final EventMapper eventMapper;
     private final EventOptionMapper eventOptionMapper;
     private final RateLimiterService rateLimiterService;
-    private final Utils utils;
 
     public EventDto createEvent(EventDto request, String token) {
 
         reachedMaximumRequest(token);
-        User currentUser = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
+        User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
 
@@ -53,7 +57,7 @@ public class EventService {
     public EventDto registerEvent(String id, String token) {
         reachedMaximumRequest(token);
         Event event = getEvent(id);
-        User user = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
+        User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(event.getRegisteredUsers().contains(user)) {
             throw new UserException("User already registered to the event");
         }
@@ -65,7 +69,7 @@ public class EventService {
     public EventDto closeEventVote(String id, String token) {
         reachedMaximumRequest(token);
         Event event = getEvent(id);
-        User user = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
+        User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
             throw new UserIsNotOwnerException("Not allowed to close the vote of event");
         }
@@ -85,9 +89,10 @@ public class EventService {
             throw new EventStatusException("The event's vote has already closed, not allowed to vote the event");
         }
 
-        User user = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
+        User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         eventOption.setVoteQuantity(eventOption.getVoteQuantity() + 1);
         eventOption.getVoteUsers().add(user);
+        eventOption.setUpdateDate(new Date());
         eventOptionRepository.save(eventOption);
         return eventMapper.entityToDto(eventRepository.findById(idEvent).orElseThrow());
     }

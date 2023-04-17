@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -42,5 +43,9 @@ public class EventOptionDto {
     @JsonProperty("vote_users")
     @Schema(description = "Event option vote users", hidden = true)
     private List<UserDto> voteUsers;
+
+    @JsonProperty("update_time")
+    @Schema(description = "Event option update time", hidden = true)
+    private Date updateDate;
 
 }
