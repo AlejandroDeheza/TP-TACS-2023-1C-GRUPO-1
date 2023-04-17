@@ -104,6 +104,41 @@ public class AuthenticationServiceTest {
     assertThrows(UserException.class, () -> authenticationService.register(registerRequest));
   }
 
+  @Test
+  @DisplayName("should register correctly when the user does not exist")
+  void registerTest2() {
+    Mockito.when(userRepositoryImpl.exists("123Perez")).thenReturn(false);
+    Mockito.when(userRepositoryImpl.save(Mockito.any())).thenReturn(user);
+    Mockito.when(jwtService.generateToken(Mockito.any())).thenReturn("jwtToken");
+    Mockito.when(jwtService.generateRefreshToken(Mockito.any())).thenReturn("jwtToken2");
+
+    AuthenticationResponse authenticationResponse = authenticationService.register(registerRequest);
+
+    assertEquals("jwtToken", authenticationResponse.getAccessToken());
+    assertEquals("jwtToken2", authenticationResponse.getRefreshToken());
+    this.saveUserTokenTest();
+    Mockito.verify(rateLimiterService).initializeUserRequest("jwtToken");
+  }
+
   
+
+  private void saveUserTokenTest(){
+    Mockito.verify(tokenRepositoryImpl).save(Mockito.any());
+  }
+
+  private List<Token> revokeAllUserTokensTest() {
+    var expected = Arrays.asList(token1, token2);
+    Mockito.when(tokenRepositoryImpl.findAllValidTokenByUsername("123Perez")).thenReturn(expected);
+    return expected;
+  }
+
+  private void revokeAllUserTokensTest2(List<Token> expected) {
+    assertTrue(token1.isExpired());
+    assertTrue(token1.isRevoked());
+    assertTrue(token2.isExpired());
+    assertTrue(token2.isRevoked());
+
+    Mockito.verify(tokenRepositoryImpl).saveAll(expected);
+  }
 
 }
