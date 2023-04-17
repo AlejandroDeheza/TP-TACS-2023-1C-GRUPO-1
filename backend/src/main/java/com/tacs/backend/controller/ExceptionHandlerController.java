@@ -1,10 +1,7 @@
 package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.ExceptionResponse;
-import com.tacs.backend.exception.EntityNotFoundException;
-import com.tacs.backend.exception.EventStatusException;
-import com.tacs.backend.exception.UserException;
-import com.tacs.backend.exception.UserIsNotOwnerException;
+import com.tacs.backend.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -50,6 +47,16 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         exception.setDetails(request.getDescription(false));
 
         return new ResponseEntity<>(exception, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler({RequestNotAllowException.class})
+    public final ResponseEntity<Object> handleTooManyRequest(Exception ex, WebRequest request){
+        ExceptionResponse exception = new ExceptionResponse();
+        exception.setTimestamp(new Date());
+        exception.setMessage(ex.getLocalizedMessage());
+        exception.setDetails(request.getDescription(false));
+
+        return new ResponseEntity<>(exception, HttpStatus.TOO_MANY_REQUESTS);
     }
 
 

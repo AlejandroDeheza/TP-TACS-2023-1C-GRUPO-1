@@ -2,10 +2,7 @@ package com.tacs.backend.service;
 
 
 import com.tacs.backend.dto.EventDto;
-import com.tacs.backend.exception.EntityNotFoundException;
-import com.tacs.backend.exception.EventStatusException;
-import com.tacs.backend.exception.UserException;
-import com.tacs.backend.exception.UserIsNotOwnerException;
+import com.tacs.backend.exception.*;
 import com.tacs.backend.mapper.EventMapper;
 import com.tacs.backend.mapper.EventOptionMapper;
 import com.tacs.backend.model.Event;
@@ -31,8 +28,11 @@ public class EventService {
     private final UserRepository userRepository;
     private final EventMapper eventMapper;
     private final EventOptionMapper eventOptionMapper;
+    private final RateLimiterService rateLimiterService;
 
-    public EventDto createEvent(EventDto request) {
+    public EventDto createEvent(EventDto request, String token) {
+
+        alloweRequest(token);
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
@@ -47,12 +47,14 @@ public class EventService {
         return eventMapper.entityToDto(this.eventRepository.save(event));
     }
 
-    public EventDto getEventById(String id) {
+    public EventDto getEventById(String id, String token) {
+        alloweRequest(token);
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
     }
 
-    public EventDto registerEvent(String id) {
+    public EventDto registerEvent(String id, String token) {
+        alloweRequest(token);
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(event.getRegisteredUsers().contains(user)) {
@@ -63,7 +65,8 @@ public class EventService {
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto closeEventVote(String id) {
+    public EventDto closeEventVote(String id, String token) {
+        alloweRequest(token);
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
@@ -74,8 +77,8 @@ public class EventService {
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto voteEventOption(String idEvent, String idEventOption) {
-
+    public EventDto voteEventOption(String idEvent, String idEventOption, String token) {
+        alloweRequest(token);
         EventOption eventOption = eventOptionRepository.findById(idEventOption).orElseThrow(
                 () -> new EntityNotFoundException("Event option not found")
         );
@@ -98,5 +101,12 @@ public class EventService {
         return eventRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Event not found")
         );
+    }
+
+    private void alloweRequest(String token) {
+        boolean allowedRequest = rateLimiterService.reachedMaxRequestAllowed(token);
+        if (!allowedRequest) {
+            throw new RequestNotAllowException("User reached maximum number of request for applicacion. Try again in a while.");
+        }
     }
 }
