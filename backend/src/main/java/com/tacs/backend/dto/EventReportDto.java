@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 public class EventReportDto {
     @JsonProperty("created_event_counter")
     @Schema(description = "Created event counter")
-    private int createdEventCounter;
+    private long createdEventCounter;
 
     @JsonProperty("options_voted_counter")
     @Schema(description = "Options voted counter")
-    private int optionsVotedCounter;
+    private long optionsVotedCounter;
 
     //@JsonProperty("id")
     //@Schema(description = "Most voted options")

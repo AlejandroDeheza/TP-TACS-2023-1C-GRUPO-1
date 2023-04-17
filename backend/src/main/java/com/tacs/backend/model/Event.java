@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +35,9 @@ public class Event {
     @Field("registered_users")
     @DBRef
     private Set<User> registeredUsers = new HashSet<>();
+
+    @Field("create_time")
+    private Date createDate;
 
 
     public enum Status {

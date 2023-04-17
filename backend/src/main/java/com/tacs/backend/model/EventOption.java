@@ -31,4 +31,7 @@ public class EventOption {
     @Field("vote_quantity")
     private long voteQuantity;
 
+    @Field("update_time")
+    private Date updateDate;
+
 }

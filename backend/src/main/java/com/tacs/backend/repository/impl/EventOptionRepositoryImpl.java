@@ -1,6 +1,9 @@
 package com.tacs.backend.repository.impl;
 
 import com.tacs.backend.model.Event;
+import com.tacs.backend.model.EventOption;
+import com.tacs.backend.repository.EventOptionRepository;
+import com.tacs.backend.repository.EventOptionRepositoryCustom;
 import com.tacs.backend.repository.EventRepositoryCustom;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
@@ -13,19 +16,14 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class EventRepositoryImpl implements EventRepositoryCustom {
+public class EventOptionRepositoryImpl implements EventOptionRepositoryCustom {
 
     private final MongoTemplate mongoTemplate;
 
-    public long getLastCreatedEventsCount() {
-
-        Query query = new Query();
-        query.addCriteria(Criteria.where("create_time").gt(Utils.getBeforeDate()));
-        return mongoTemplate.count(query, Event.class);
-    }
-
     @Override
-    public List<Event> getLastCreatedEvents() {
-        return null;
+    public List<EventOption> getLastVotedEventOptions() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("update_time").gt(Utils.getBeforeDate()));
+        return mongoTemplate.find(query, EventOption.class);
     }
 }

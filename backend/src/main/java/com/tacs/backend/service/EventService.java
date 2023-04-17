@@ -16,6 +16,7 @@ import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Set;
 
 
@@ -92,6 +93,7 @@ public class EventService {
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         eventOption.setVoteQuantity(eventOption.getVoteQuantity() + 1);
         eventOption.getVoteUsers().add(user);
+        eventOption.setUpdateDate(new Date());
         eventOptionRepository.save(eventOption);
         return eventMapper.entityToDto(eventRepository.findById(idEvent).orElseThrow());
     }

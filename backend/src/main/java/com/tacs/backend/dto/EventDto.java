@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -40,5 +41,9 @@ public class EventDto {
     @JsonProperty("registered_users")
     @Schema(description = "Event registered users", hidden = true)
     private Set<UserDto> registeredUsers;
+
+    @JsonProperty("create_date")
+    @Schema(description = "Event create date", hidden = true)
+    private Date createDate;
 
 }
