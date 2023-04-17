@@ -20,7 +20,7 @@ public class SwaggerConfig {
     public OpenAPI openApi() {
         return new OpenAPI()
                 .info(new Info().title("TACS")
-                        .description("TACS")
+                        .description("Tecnologías avanzadas de construcción de software")
                         .version("1.0"));
     }
 }
