@@ -29,11 +29,12 @@ public class EventService {
     private final EventMapper eventMapper;
     private final EventOptionMapper eventOptionMapper;
     private final RateLimiterService rateLimiterService;
+    private final Utils utils;
 
     public EventDto createEvent(EventDto request, String token) {
 
         reachedMaximumRequest(token);
-        User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
+        User currentUser = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
 
@@ -56,7 +57,7 @@ public class EventService {
     public EventDto registerEvent(String id, String token) {
         reachedMaximumRequest(token);
         Event event = getEvent(id);
-        User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
+        User user = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
         if(event.getRegisteredUsers().contains(user)) {
             throw new UserException("User already registered to the event");
         }
@@ -68,7 +69,7 @@ public class EventService {
     public EventDto closeEventVote(String id, String token) {
         reachedMaximumRequest(token);
         Event event = getEvent(id);
-        User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
+        User user = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
             throw new UserIsNotOwnerException("Not allowed to close the vote of event");
         }
@@ -89,7 +90,7 @@ public class EventService {
         }
 
 
-        User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
+        User user = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
         eventOption.setVoteQuantity(eventOption.getVoteQuantity() + 1);
         eventOption.getVoteUsers().add(user);
         eventOptionRepository.save(eventOption);
