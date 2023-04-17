@@ -9,3 +9,8 @@
 - Authenticate the user(get a access token)
 - Put the access token in Authorize
 
+## Seguridad
+- Spring Security agrega clases para filtrar antes de que la petición HTTP llegue al DispatcherServlet, 
+comprueba los estados de Autenticación y Autorización antes de que la petición llegue al 
+DispatcherServlet y luego a los controladores.
+
