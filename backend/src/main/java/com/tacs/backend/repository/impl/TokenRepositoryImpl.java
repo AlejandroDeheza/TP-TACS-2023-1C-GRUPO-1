@@ -1,0 +1,44 @@
+package com.tacs.backend.repository.impl;
+
+import com.tacs.backend.repository.TokenRepository;
+import com.tacs.backend.model.Token;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+@RequiredArgsConstructor
+public class TokenRepositoryImpl implements TokenRepository {
+
+    private final MongoTemplate mongoTemplate;
+
+    @Override
+    public List<Token> findAllValidTokenByUsername(String username) {
+        Query query = new Query(Criteria.where("user.username").is(username)
+                .and("revoked").is(false)
+                .and("expired").is(false));
+        return mongoTemplate.find(query, Token.class);
+    }
+
+    @Override
+    public Optional<Token> findByToken(String token) {
+        Query query = new Query(Criteria.where("token").is(token));
+        return Optional.ofNullable(mongoTemplate.findOne(query, Token.class));
+    }
+
+    @Override
+    public Token save(Token token) {
+        return mongoTemplate.save(token);
+    }
+
+    @Override
+    public List<Token> saveAll(List<Token> tokens) {
+        return tokens.stream().map(mongoTemplate::save).toList();
+    }
+
+}

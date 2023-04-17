@@ -1,0 +1,51 @@
+version: "3.9"
+x-common: &common
+  restart: unless-stopped
+  tty: true
+services:
+  mongo:
+    <<: *common
+    image: mongo:5.0-focal
+    environment:
+      MONGO_INITDB_DATABASE: TP
+    ports:
+      - "27017:27017"
+    networks:
+      tp_network:
+        aliases:
+          - mongo
+        ipv4_address: 172.255.254.103
+    volumes:
+      - $PWD/.data/mongodb:/data/db:delegated
+
+  backend:
+    <<: *common
+    image: backend:latest
+    environment:
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+    links:
+        - mongo:mongo
+    mem_reservation: 700m
+    ports:
+      - "8091:8091"
+    networks:
+      tp_network:
+        aliases:
+          - backend
+        ipv4_address: 172.255.254.104
+    depends_on:
+      - mongo
+    volumes:
+      - $PWD/.data/backend:/data/db:delegated
+
+
+networks:
+  tp_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.255.254.0/24
+  backend:
+    driver: bridge

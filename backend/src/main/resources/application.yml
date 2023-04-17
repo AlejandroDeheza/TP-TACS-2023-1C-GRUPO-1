@@ -1,0 +1,16 @@
+application:
+  security:
+    jwt:
+      expiration: 43200000
+      refresh-token:
+        expiration: 43200000
+      secret-key: 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
+server:
+  port: 8091
+spring:
+  data:
+    mongodb:
+      database: TP
+      port: 27017
+monitor:
+  time-range: 7200000
