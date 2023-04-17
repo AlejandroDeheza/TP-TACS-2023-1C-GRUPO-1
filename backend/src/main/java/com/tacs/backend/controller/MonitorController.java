@@ -34,7 +34,7 @@ public class MonitorController {
         return ResponseEntity.ok(this.monitorService.getLastEventEntries());
     }
 
-    @GetMapping("v1/monitor/report/options")
+    @GetMapping("/options")
     @Operation(summary = "Get events options report", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Report ready"),
