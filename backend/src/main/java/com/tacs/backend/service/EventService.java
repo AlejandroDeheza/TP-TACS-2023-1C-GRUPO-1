@@ -32,7 +32,7 @@ public class EventService {
 
     public EventDto createEvent(EventDto request, String token) {
 
-        alloweRequest(token);
+        reachedMaximumRequest(token);
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
@@ -48,13 +48,13 @@ public class EventService {
     }
 
     public EventDto getEventById(String id, String token) {
-        alloweRequest(token);
+        reachedMaximumRequest(token);
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
     }
 
     public EventDto registerEvent(String id, String token) {
-        alloweRequest(token);
+        reachedMaximumRequest(token);
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(event.getRegisteredUsers().contains(user)) {
@@ -66,7 +66,7 @@ public class EventService {
     }
 
     public EventDto closeEventVote(String id, String token) {
-        alloweRequest(token);
+        reachedMaximumRequest(token);
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
@@ -78,7 +78,7 @@ public class EventService {
     }
 
     public EventDto voteEventOption(String idEvent, String idEventOption, String token) {
-        alloweRequest(token);
+        reachedMaximumRequest(token);
         EventOption eventOption = eventOptionRepository.findById(idEventOption).orElseThrow(
                 () -> new EntityNotFoundException("Event option not found")
         );
@@ -103,9 +103,9 @@ public class EventService {
         );
     }
 
-    private void alloweRequest(String token) {
-        boolean allowedRequest = rateLimiterService.reachedMaxRequestAllowed(token);
-        if (!allowedRequest) {
+    private void reachedMaximumRequest(String token) {
+        boolean reachedMaxRequestAllowed = rateLimiterService.reachedMaxRequestAllowed(token);
+        if (reachedMaxRequestAllowed) {
             throw new RequestNotAllowException("User reached maximum number of request for applicacion. Try again in a while.");
         }
     }
