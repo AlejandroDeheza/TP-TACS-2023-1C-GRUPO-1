@@ -27,16 +27,10 @@ public class RateLimiterService {
             public void run() {
                 initializeApiRequestLimit();
                 System.out.printf("\nrequestApiInitialTime: %s\n", requestApiInitialTime);
-
-                usersRequests.forEach((key, value) -> {
-                    System.out.println("\ntoken: " + key + "\n");
-                    System.out.println("\t time: " + value.getLastRequestStartTime() + "\n");
-                    System.out.print("\t request counter: " + value.getRequestCount() );
-                });
             }
         };
 
-        timer.schedule(task, 0, 1000*5);
+        timer.schedule(task, 0, 1000*5); //every 5 seconds
     }
 
     private static void initializeApiRequestLimit() {
@@ -79,7 +73,6 @@ public class RateLimiterService {
             }
             public void incrementCounter() {
                 this.requestCount++;
-                System.out.println("\nuserRequest.requestCount"+requestCount);
             }
             public void updateLastRequestStartTime(long time) {
                 this.lastRequestStartTime = time;
