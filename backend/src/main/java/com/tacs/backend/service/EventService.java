@@ -1,12 +1,10 @@
 package com.tacs.backend.service;
 
-
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.exception.*;
 import com.tacs.backend.mapper.EventMapper;
 import com.tacs.backend.mapper.EventOptionMapper;
 import com.tacs.backend.model.Event;
-
 import com.tacs.backend.model.EventOption;
 import com.tacs.backend.model.User;
 import com.tacs.backend.repository.EventOptionRepository;
@@ -15,9 +13,7 @@ import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.Set;
-
 
 @Service
 @RequiredArgsConstructor
@@ -88,7 +84,6 @@ public class EventService {
         if (Event.Status.VOTE_CLOSED == event.getStatus()) {
             throw new EventStatusException("The event's vote has already closed, not allowed to vote the event");
         }
-
 
         User user = userRepository.findByUsername(utils.getCurrentUsername()).orElseThrow();
         eventOption.setVoteQuantity(eventOption.getVoteQuantity() + 1);

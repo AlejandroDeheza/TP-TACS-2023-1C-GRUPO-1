@@ -98,7 +98,7 @@ public class EventServiceTest {
         .id("idididididid2")
         .dateTime(Date.valueOf(LocalDate.now().plusDays(3)))
         .voteQuantity(0)
-        .voteUsers(null)
+        .voteUsers(Arrays.asList())
         .build();
     eventOptionDto2 = EventOptionDto.builder()
         .id("idididididid3")
@@ -241,7 +241,7 @@ public class EventServiceTest {
 
   @Test
   @DisplayName("...")
-  void voteEventOption(){
+  void voteEventOptionTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.empty());
 
@@ -252,7 +252,7 @@ public class EventServiceTest {
 
   @Test
   @DisplayName("...")
-  void voteEventOption2(){
+  void voteEventOptionTest2(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
     Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.of(eventOption));
@@ -265,6 +265,28 @@ public class EventServiceTest {
     );
     Mockito.verify(eventOptionRepository).findById("ididid");
     Mockito.verify(eventRepository).findById("ididid");
+  }
+
+  @Test
+  @DisplayName("...")
+  void voteEventOptionTest3(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
+    Mockito.when(eventOptionRepository.findById("ididid2")).thenReturn(Optional.of(eventOption));
+    Event event = eventMapper.dtoToEntity(eventDto);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user2));
+    assertEquals(0, eventOption.getVoteQuantity());
+    assertEquals(Arrays.asList(), eventOption.getVoteUsers());
+
+    assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2", stringToken));
+    assertEquals(1, eventOption.getVoteQuantity());
+    assertEquals(Arrays.asList(user2), eventOption.getVoteUsers());
+    Mockito.verify(eventOptionRepository).findById("ididid2");
+    Mockito.verify(eventRepository, Mockito.times(2)).findById("ididid");
+    Mockito.verify(utils).getCurrentUsername();
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(eventOptionRepository).save(eventOption);
   }
 
 }
