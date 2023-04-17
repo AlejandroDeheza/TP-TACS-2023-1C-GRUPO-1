@@ -14,3 +14,4 @@
 comprueba los estados de Autenticación y Autorización antes de que la petición llegue al 
 DispatcherServlet y luego a los controladores.
 
+    ![Image text](https://github.com/tp-tacs-2023/tp-tacs-1C-2023/blob/entrega-1/img/seguridad.png?raw=true)
