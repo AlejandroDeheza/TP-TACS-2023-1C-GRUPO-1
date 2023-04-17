@@ -120,6 +120,21 @@ public class AuthenticationServiceTest {
     Mockito.verify(rateLimiterService).initializeUserRequest("jwtToken");
   }
 
+  @Test
+  @DisplayName("should throw exception when authenticate a user that does not exist")
+  void authenticateTest() {
+    Mockito.when(userRepositoryImpl.findByUsername(authenticationRequest.getUsername())).thenReturn(Optional.empty());
+
+    assertThrows(UsernameNotFoundException.class, () -> authenticationService.authenticate(authenticationRequest));
+
+    Mockito.verify(authenticationManager).authenticate(
+        new UsernamePasswordAuthenticationToken(
+            authenticationRequest.getUsername(),
+            authenticationRequest.getPassword()
+        )
+    );
+  }
+
   
 
   private void saveUserTokenTest(){
