@@ -2,9 +2,9 @@ package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.ExceptionResponse;
-import com.tacs.backend.exception.RequestNotAllowException;
+import com.tacs.backend.dto.UserDto;
+import com.tacs.backend.model.User;
 import com.tacs.backend.service.EventService;
-import com.tacs.backend.service.RateLimiterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
-    private final RateLimiterService rateLimiterService;
 
     @PostMapping
     @Operation(summary = "Create a new event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Event created successfully"),
-            @ApiResponse(responseCode = "400", description = "Event created failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
+            @ApiResponse(responseCode = "400", description = "Event created failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests")
+
     })
     @Schema(description = "Create", implementation = EventDto.class)
     public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventDto requestBody, HttpServletRequest request) {
@@ -45,7 +46,7 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event found successfully"),
             @ApiResponse(responseCode = "404", description = "Event not found", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many request")
+            @ApiResponse(responseCode = "429", description = "Too many requests")
     })
     public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id, HttpServletRequest request) {
         String token = getToken(request);
@@ -53,17 +54,17 @@ public class EventController {
 
     }
 
-    @PostMapping("/event")
-    @Operation(summary = "Register an user to a event", security = @SecurityRequirement(name = "bearerAuth"))
+    @PutMapping("/event")
+    @Operation(summary = "Register an user to an event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registered successfully"),
             @ApiResponse(responseCode = "404", description = "Registration failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many request")
+            @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> registerEvent(@NotBlank @RequestBody String id, HttpServletRequest request) {
+    public ResponseEntity<EventDto> registerEvent(@NotBlank  @RequestParam String eventId, HttpServletRequest request) {
         String token = getToken(request);
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(id, token));
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId, token));
     }
 
     @PatchMapping("/event/{id}/close")
@@ -72,7 +73,7 @@ public class EventController {
             @ApiResponse(responseCode = "200", description = "Event's vote closed successfully"),
             @ApiResponse(responseCode = "400", description = "Event's vote closed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
             @ApiResponse(responseCode = "403", description = "Event's vote closed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many request")
+            @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
     public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable("id") String id, HttpServletRequest request) {
@@ -85,7 +86,7 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vote successfully"),
             @ApiResponse(responseCode = "404", description = "Vote failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many request")
+            @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
     public ResponseEntity<EventDto> voteEventOption(@NotBlank @RequestParam String idEvent, @NotBlank @RequestParam String idEventOption, HttpServletRequest request) {

@@ -150,7 +150,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString(), anyString())).willReturn(eventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(post("/v1/events/event")
+        MockHttpServletResponse response = mvc.perform(put("/v1/events/event?eventId=42424c")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .content(idEvent)
@@ -168,7 +168,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString(), anyString())).willThrow(new EntityNotFoundException("Event not found"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(post("/v1/events/event")
+        MockHttpServletResponse response = mvc.perform(put("/v1/events/event?eventId=4244c")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .content(idEvent)
@@ -186,7 +186,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString(), anyString())).willThrow(new UserException("User already registered to the event"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(post("/v1/events/event")
+        MockHttpServletResponse response = mvc.perform(put("/v1/events/event?eventId=1444c")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .content(idEvent)
