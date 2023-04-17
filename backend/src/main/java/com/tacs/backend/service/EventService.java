@@ -2,10 +2,7 @@ package com.tacs.backend.service;
 
 
 import com.tacs.backend.dto.EventDto;
-import com.tacs.backend.exception.EntityNotFoundException;
-import com.tacs.backend.exception.EventStatusException;
-import com.tacs.backend.exception.UserException;
-import com.tacs.backend.exception.UserIsNotOwnerException;
+import com.tacs.backend.exception.*;
 import com.tacs.backend.mapper.EventMapper;
 import com.tacs.backend.mapper.EventOptionMapper;
 import com.tacs.backend.model.Event;
@@ -31,8 +28,11 @@ public class EventService {
     private final UserRepository userRepository;
     private final EventMapper eventMapper;
     private final EventOptionMapper eventOptionMapper;
+    private final RateLimiterService rateLimiterService;
 
-    public EventDto createEvent(EventDto request) {
+    public EventDto createEvent(EventDto request, String token) {
+
+        reachedMaximumRequest(token);
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
@@ -47,12 +47,14 @@ public class EventService {
         return eventMapper.entityToDto(this.eventRepository.save(event));
     }
 
-    public EventDto getEventById(String id) {
+    public EventDto getEventById(String id, String token) {
+        reachedMaximumRequest(token);
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
     }
 
-    public EventDto registerEvent(String id) {
+    public EventDto registerEvent(String id, String token) {
+        reachedMaximumRequest(token);
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(event.getRegisteredUsers().contains(user)) {
@@ -63,7 +65,8 @@ public class EventService {
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto closeEventVote(String id) {
+    public EventDto closeEventVote(String id, String token) {
+        reachedMaximumRequest(token);
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
@@ -74,15 +77,18 @@ public class EventService {
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto voteEventOption(String idEvent, String idEventOption) {
-        Event event = getEvent(idEvent);
-        if(Event.Status.VOTE_CLOSED == event.getStatus()) {
-            throw new EventStatusException("The event's vote has already closed, not allowed to vote the event");
-        }
-
+    public EventDto voteEventOption(String idEvent, String idEventOption, String token) {
+        reachedMaximumRequest(token);
         EventOption eventOption = eventOptionRepository.findById(idEventOption).orElseThrow(
                 () -> new EntityNotFoundException("Event option not found")
         );
+
+        Event event = getEvent(idEvent);
+        if (Event.Status.VOTE_CLOSED == event.getStatus()) {
+            throw new EventStatusException("The event's vote has already closed, not allowed to vote the event");
+        }
+
+
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         eventOption.setVoteQuantity(eventOption.getVoteQuantity() + 1);
         eventOption.getVoteUsers().add(user);
@@ -95,5 +101,12 @@ public class EventService {
         return eventRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Event not found")
         );
+    }
+
+    private void reachedMaximumRequest(String token) {
+        boolean reachedMaxRequestAllowed = rateLimiterService.reachedMaxRequestAllowed(token);
+        if (reachedMaxRequestAllowed) {
+            throw new RequestNotAllowException("User reached maximum number of request for applicacion. Try again in a while.");
+        }
     }
 }
