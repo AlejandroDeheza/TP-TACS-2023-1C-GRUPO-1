@@ -135,7 +135,28 @@ public class AuthenticationServiceTest {
     );
   }
 
-  
+  @Test
+  @DisplayName("should authenticate correctly when the user exists")
+  void authenticateTest2() {
+    Mockito.when(userRepositoryImpl.findByUsername(authenticationRequest.getUsername())).thenReturn(Optional.of(user));
+    Mockito.when(jwtService.generateToken(user)).thenReturn("jwtToken");
+    Mockito.when(jwtService.generateRefreshToken(user)).thenReturn("jwtToken2");
+    var expected = this.revokeAllUserTokensTest();
+
+    AuthenticationResponse authenticationResponse = authenticationService.authenticate(authenticationRequest);
+
+    assertEquals("jwtToken", authenticationResponse.getAccessToken());
+    assertEquals("jwtToken2", authenticationResponse.getRefreshToken());
+    Mockito.verify(authenticationManager).authenticate(
+        new UsernamePasswordAuthenticationToken(
+            authenticationRequest.getUsername(),
+            authenticationRequest.getPassword()
+        )
+    );
+    this.revokeAllUserTokensTest2(expected);
+    this.saveUserTokenTest();
+    Mockito.verify(rateLimiterService).initializeUserRequest("jwtToken");
+  }
 
   private void saveUserTokenTest(){
     Mockito.verify(tokenRepositoryImpl).save(Mockito.any());
