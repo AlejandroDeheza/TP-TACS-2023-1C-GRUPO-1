@@ -6,6 +6,7 @@ import com.tacs.backend.dto.UserDto;
 import com.tacs.backend.exception.EntityNotFoundException;
 import com.tacs.backend.exception.RequestNotAllowException;
 import com.tacs.backend.exception.UserException;
+import com.tacs.backend.exception.UserIsNotOwnerException;
 import com.tacs.backend.mapper.EventMapper;
 import com.tacs.backend.mapper.EventMapperImpl;
 import com.tacs.backend.mapper.EventOptionMapper;
@@ -125,7 +126,7 @@ public class EventServiceTest {
         .registeredUsers(Set.of())
         .build();
     user0 = User.builder()
-        .id("idididiidi0")
+        .id("idididiidid0")
         .firstName("Raul")
         .lastName("Flores")
         .username("123Flores")
@@ -187,7 +188,7 @@ public class EventServiceTest {
 
   @Test
   @DisplayName("...")
-  void registerEvent(){
+  void registerEventTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Event event = eventMapper.dtoToEntity(eventDto);
     event.setRegisteredUsers(Set.of(user1));
@@ -201,13 +202,27 @@ public class EventServiceTest {
 
   @Test
   @DisplayName("...")
-  void registerEvent2(){
+  void registerEventTest2(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Event event = eventMapper.dtoToEntity(eventDto);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
 
     assertDoesNotThrow(() -> eventService.registerEvent("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+  }
+
+  @Test
+  @DisplayName("...")
+  void closeEventVoteTest(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    event.setOwnerUser(user2);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid", stringToken));
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(utils).getCurrentUsername();
   }
