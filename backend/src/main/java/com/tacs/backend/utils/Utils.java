@@ -17,11 +17,11 @@ public class Utils {
         return userDetails.getUsername();
     }
 
-    public static Date getBeforeDate() {
+    public static Date getBeforeDate(int timeRange) {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
-        calendar.add(Calendar.HOUR, -2);
+        calendar.add(Calendar.HOUR, -timeRange);
         return calendar.getTime();
     }
 }

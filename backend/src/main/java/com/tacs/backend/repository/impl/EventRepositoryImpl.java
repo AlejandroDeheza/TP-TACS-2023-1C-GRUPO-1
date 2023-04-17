@@ -17,10 +17,10 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 
     private final MongoTemplate mongoTemplate;
 
-    public long getLastCreatedEventsCount() {
+    public long getLastCreatedEventsCount(int timeRange) {
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("create_time").gt(Utils.getBeforeDate()));
+        query.addCriteria(Criteria.where("create_time").gt(Utils.getBeforeDate(timeRange)));
         return mongoTemplate.count(query, Event.class);
     }
 

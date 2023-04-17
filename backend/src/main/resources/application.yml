@@ -14,4 +14,4 @@ spring:
       database: TP
       port: 27017
 monitor:
-  time-range: 7200000
+  time-range: 2

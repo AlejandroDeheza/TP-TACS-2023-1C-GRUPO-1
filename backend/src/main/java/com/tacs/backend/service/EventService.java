@@ -43,6 +43,7 @@ public class EventService {
                 .description(request.getDescription())
                 .status(Event.Status.VOTE_PENDING)
                 .ownerUser(currentUser)
+                .createDate(new Date())
                 .eventOptions(savedEventOptionSet).build();
 
         return eventMapper.entityToDto(this.eventRepository.save(event));
@@ -88,7 +89,6 @@ public class EventService {
         if (Event.Status.VOTE_CLOSED == event.getStatus()) {
             throw new EventStatusException("The event's vote has already closed, not allowed to vote the event");
         }
-
 
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         eventOption.setVoteQuantity(eventOption.getVoteQuantity() + 1);
