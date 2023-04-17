@@ -14,6 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RateLimiterInterceptor(new RateLimiterService()))
                 .addPathPatterns("/v1/auth/refresh-token")
+                .addPathPatterns("/vi/events/**")
                 .addPathPatterns("/v1/monitor/**");
     }
 }
