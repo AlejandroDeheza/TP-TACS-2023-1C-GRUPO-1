@@ -132,7 +132,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should throw exception when the maximum number of requests is exceeded")
   void reachedMaximumRequestTest() {
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(true);
     assertThrows(RequestNotAllowException.class, () -> eventService.createEvent(eventDto, stringToken));
@@ -145,7 +145,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should be created correctly an event")
   void createEventTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user0));
@@ -164,7 +164,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should throw exception when Event does not exist")
   void getEventTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.empty());
@@ -172,7 +172,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should get an existing event correctly")
   void getEventByIdTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(eventMapper.dtoToEntity(eventDto)));
@@ -183,7 +183,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should throw exception when the User is already registered for the Event")
   void registerEventTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Event event = eventMapper.dtoToEntity(eventDto);
@@ -197,7 +197,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should register the user correctly to the event")
   void registerEventTest2(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Event event = eventMapper.dtoToEntity(eventDto);
@@ -210,7 +210,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should throw exception when the User tries to close the vote and is not the Owner.")
   void closeEventVoteTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Event event = eventMapper.dtoToEntity(eventDto);
@@ -224,7 +224,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should close the vote correctly")
   void closeEventVoteTest2(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Event event = eventMapper.dtoToEntity(eventDto);
@@ -240,7 +240,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should throw exception when EventOption does not exist")
   void voteEventOptionTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.empty());
@@ -251,7 +251,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should throw exception when User try to vote but the voting is already closed")
   void voteEventOptionTest2(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
@@ -268,7 +268,7 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("...")
+  @DisplayName("Should generate the vote correctly")
   void voteEventOptionTest3(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
