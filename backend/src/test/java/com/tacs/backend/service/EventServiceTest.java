@@ -5,10 +5,12 @@ import com.tacs.backend.dto.EventOptionDto;
 import com.tacs.backend.dto.UserDto;
 import com.tacs.backend.exception.EntityNotFoundException;
 import com.tacs.backend.exception.RequestNotAllowException;
+import com.tacs.backend.exception.UserException;
 import com.tacs.backend.mapper.EventMapper;
 import com.tacs.backend.mapper.EventMapperImpl;
 import com.tacs.backend.mapper.EventOptionMapper;
 import com.tacs.backend.mapper.EventOptionMapperImpl;
+import com.tacs.backend.model.Event;
 import com.tacs.backend.model.EventOption;
 import com.tacs.backend.model.Role;
 import com.tacs.backend.model.User;
@@ -160,6 +162,7 @@ public class EventServiceTest {
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(eventOptionRepository).saveAll(eventOptionSet);
     Mockito.verify(eventRepository).save(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
   }
 
   @Test
@@ -181,6 +184,20 @@ public class EventServiceTest {
     eventService.getEventById("ididid", stringToken);
 
     Mockito.verify(eventRepository).findById("ididid");
+  }
+
+  @Test
+  @DisplayName("...")
+  void registerEvent(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    event.setRegisteredUsers(Set.of(user1));
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertThrows(UserException.class, () -> eventService.registerEvent("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
   }
 
 }
