@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
@@ -157,7 +158,7 @@ public class EventServiceTest {
     var eventOption2 = eventOptionMapper.dtoToEntity(eventOptionDto2);
     Mockito.when(eventOptionRepository.saveAll(eventOptionSet)).thenReturn(Arrays.asList(eventOption, eventOption2));
 
-    eventService.createEvent(eventDto, stringToken);
+    assertDoesNotThrow(() -> eventService.createEvent(eventDto, stringToken));
 
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(eventOptionRepository).saveAll(eventOptionSet);
@@ -170,9 +171,7 @@ public class EventServiceTest {
   void getEventTest(){
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.empty());
-    assertThrows(EntityNotFoundException.class,
-        () -> eventService.getEventById("ididid", stringToken)
-    );
+    assertThrows(EntityNotFoundException.class, () -> eventService.getEventById("ididid", stringToken));
   }
 
   @Test
@@ -181,7 +180,7 @@ public class EventServiceTest {
     Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(eventMapper.dtoToEntity(eventDto)));
 
-    eventService.getEventById("ididid", stringToken);
+    assertDoesNotThrow(() -> eventService.getEventById("ididid", stringToken));
 
     Mockito.verify(eventRepository).findById("ididid");
   }
@@ -196,6 +195,19 @@ public class EventServiceTest {
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
 
     assertThrows(UserException.class, () -> eventService.registerEvent("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+  }
+
+  @Test
+  @DisplayName("...")
+  void registerEvent2(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertDoesNotThrow(() -> eventService.registerEvent("ididid", stringToken));
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(utils).getCurrentUsername();
   }
