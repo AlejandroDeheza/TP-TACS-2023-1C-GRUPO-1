@@ -35,8 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
@@ -225,6 +224,22 @@ public class EventServiceTest {
     assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid", stringToken));
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(utils).getCurrentUsername();
+  }
+
+  @Test
+  @DisplayName("...")
+  void closeEventVoteTest2(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    event.setOwnerUser(user1);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertDoesNotThrow(() -> eventService.closeEventVote("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+    Mockito.verify(eventRepository).save(event);
+    assertEquals(Event.Status.VOTE_CLOSED, event.getStatus());
   }
 
 }
