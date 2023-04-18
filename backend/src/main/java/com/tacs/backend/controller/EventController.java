@@ -2,8 +2,6 @@ package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.ExceptionResponse;
-import com.tacs.backend.dto.UserDto;
-import com.tacs.backend.model.User;
 import com.tacs.backend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/v1/events")
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;

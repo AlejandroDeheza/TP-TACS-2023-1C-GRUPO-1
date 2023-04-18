@@ -60,7 +60,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnAuthenticationResponseWith200StatusCodeWhenCalledRegister() throws Exception {
         given(authenticationService.register(registerRequest)).willReturn(authenticationResponse);
 
-        MockHttpServletResponse response = mvc.perform(post("/auth/register")
+        MockHttpServletResponse response = mvc.perform(post("/v1/auth/register")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -76,7 +76,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnErrorWith400StatusCodeWhenCalledRegisterAlreadyExists() throws Exception {
         given(authenticationService.register(registerRequest)).willThrow(new UserException("Username already exists"));
 
-        MockHttpServletResponse response = mvc.perform(post("/auth/register")
+        MockHttpServletResponse response = mvc.perform(post("/v1/auth/register")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -92,7 +92,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnAuthenticationResponseWith200StatusCodeWhenCalledAuthenticate() throws Exception {
         given(authenticationService.authenticate(authenticationRequest)).willReturn(authenticationResponse);
 
-        MockHttpServletResponse response = mvc.perform(post("/auth/authentication")
+        MockHttpServletResponse response = mvc.perform(post("/v1/auth/authentication")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -108,7 +108,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnErrorWith400StatusCodeWhenCalledAuthenticateNotExists() throws Exception {
         given(authenticationService.authenticate(authenticationRequest)).willThrow(new EntityNotFoundException("User not found"));
 
-        MockHttpServletResponse response = mvc.perform(post("/auth/authentication")
+        MockHttpServletResponse response = mvc.perform(post("/v1/auth/authentication")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
