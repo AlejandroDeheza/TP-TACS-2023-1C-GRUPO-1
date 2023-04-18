@@ -1,0 +1,292 @@
+package com.tacs.backend.service;
+
+import com.tacs.backend.dto.EventDto;
+import com.tacs.backend.dto.EventOptionDto;
+import com.tacs.backend.dto.UserDto;
+import com.tacs.backend.exception.*;
+import com.tacs.backend.mapper.EventMapper;
+import com.tacs.backend.mapper.EventMapperImpl;
+import com.tacs.backend.mapper.EventOptionMapper;
+import com.tacs.backend.mapper.EventOptionMapperImpl;
+import com.tacs.backend.model.Event;
+import com.tacs.backend.model.EventOption;
+import com.tacs.backend.model.Role;
+import com.tacs.backend.model.User;
+import com.tacs.backend.repository.EventOptionRepository;
+import com.tacs.backend.repository.EventRepository;
+import com.tacs.backend.repository.UserRepository;
+import com.tacs.backend.utils.Utils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+public class EventServiceTest {
+
+  @Mock
+  private EventRepository eventRepository;
+  @Mock
+  private EventOptionRepository eventOptionRepository;
+  @Mock
+  private UserRepository userRepository;
+  private EventMapper eventMapper = new EventMapperImpl();
+  private EventOptionMapper eventOptionMapper = new EventOptionMapperImpl();
+  @Mock
+  private RateLimiterService rateLimiterService;
+  @Mock
+  private Utils utils;
+
+  private EventService eventService;
+
+  private EventDto eventDto;
+  private String stringToken = "jwtToken";
+  private EventOptionDto eventOptionDto;
+  private EventOptionDto eventOptionDto2;
+  private Set<EventOptionDto> eventOptionDtoSet;
+
+  private UserDto userDto;
+  private User user1;
+  private User user2;
+  private List<User> users;
+  private User user0;
+
+  @BeforeEach
+  void setup() {
+    eventService =
+        new EventService(
+            eventRepository,
+            eventOptionRepository,
+            userRepository,
+            eventMapper,
+            eventOptionMapper,
+            rateLimiterService,
+            utils
+        );
+    user1 = User.builder()
+        .id("idididiidid")
+        .firstName("Facundo")
+        .lastName("Perez")
+        .username("123Perez")
+        .password("UnaContraseña198!")
+        .role(Role.USER)
+        .build();
+    user2 = User.builder()
+        .id("idididiidid1")
+        .firstName("Marcos")
+        .lastName("Gonzalez")
+        .username("123Gonzalez")
+        .password("UnaContraseña198!")
+        .role(Role.USER)
+        .build();
+    users = Arrays.asList(user1, user2);
+
+    eventOptionDto = EventOptionDto.builder()
+        .id("idididididid2")
+        .dateTime(Date.valueOf(LocalDate.now().plusDays(3)))
+        .voteQuantity(0)
+        .voteUsers(Arrays.asList())
+        .build();
+    eventOptionDto2 = EventOptionDto.builder()
+        .id("idididididid3")
+        .dateTime(Date.valueOf(LocalDate.now().plusDays(4)))
+        .voteQuantity(0)
+        .voteUsers(null)
+        .build();
+    eventOptionDtoSet = Set.of(eventOptionDto, eventOptionDto2);
+    userDto = UserDto.builder()
+        .id("idididiidid0")
+        .firstName("Raul")
+        .lastName("Flores")
+        .build();
+    eventDto = EventDto.builder()
+        .id("idididididid4")
+        .name("unEvento")
+        .description("descripcion")
+        .status("VOTE_PENDING")
+        .eventOptions(eventOptionDtoSet)
+        .ownerUser(userDto)
+        .registeredUsers(Set.of())
+        .build();
+    user0 = User.builder()
+        .id("idididiidid0")
+        .firstName("Raul")
+        .lastName("Flores")
+        .username("123Flores")
+        .password("UnaContraseña198!")
+        .role(Role.USER)
+        .build();
+  }
+
+  @Test
+  @DisplayName("Should throw exception when the maximum number of requests is exceeded")
+  void reachedMaximumRequestTest() {
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(true);
+    assertThrows(RequestNotAllowException.class, () -> eventService.createEvent(eventDto, stringToken));
+    assertThrows(RequestNotAllowException.class, () -> eventService.getEventById("ididid", stringToken));
+    assertThrows(RequestNotAllowException.class, () -> eventService.registerEvent("ididid", stringToken));
+    assertThrows(RequestNotAllowException.class, () -> eventService.closeEventVote("ididid", stringToken));
+    assertThrows(RequestNotAllowException.class,
+        () -> eventService.voteEventOption("ididid", "ididid2", stringToken)
+    );
+  }
+
+  @Test
+  @DisplayName("Should be created correctly an event")
+  void createEventTest(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user0));
+
+    Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(eventDto.getEventOptions());
+    var eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
+    var eventOption2 = eventOptionMapper.dtoToEntity(eventOptionDto2);
+    Mockito.when(eventOptionRepository.saveAll(eventOptionSet)).thenReturn(Arrays.asList(eventOption, eventOption2));
+
+    assertDoesNotThrow(() -> eventService.createEvent(eventDto, stringToken));
+
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(eventOptionRepository).saveAll(eventOptionSet);
+    Mockito.verify(eventRepository).save(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+  }
+
+  @Test
+  @DisplayName("Should throw exception when Event does not exist")
+  void getEventTest(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.empty());
+    assertThrows(EntityNotFoundException.class, () -> eventService.getEventById("ididid", stringToken));
+  }
+
+  @Test
+  @DisplayName("Should get an existing event correctly")
+  void getEventByIdTest(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(eventMapper.dtoToEntity(eventDto)));
+
+    assertDoesNotThrow(() -> eventService.getEventById("ididid", stringToken));
+
+    Mockito.verify(eventRepository).findById("ididid");
+  }
+
+  @Test
+  @DisplayName("Should throw exception when the User is already registered for the Event")
+  void registerEventTest(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    event.setRegisteredUsers(Set.of(user1));
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertThrows(UserException.class, () -> eventService.registerEvent("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+  }
+
+  @Test
+  @DisplayName("Should register the user correctly to the event")
+  void registerEventTest2(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertDoesNotThrow(() -> eventService.registerEvent("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+  }
+
+  @Test
+  @DisplayName("Should throw exception when the User tries to close the vote and is not the Owner.")
+  void closeEventVoteTest(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    event.setOwnerUser(user2);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+  }
+
+  @Test
+  @DisplayName("Should close the vote correctly")
+  void closeEventVoteTest2(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Event event = eventMapper.dtoToEntity(eventDto);
+    event.setOwnerUser(user1);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+
+    assertDoesNotThrow(() -> eventService.closeEventVote("ididid", stringToken));
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(utils).getCurrentUsername();
+    Mockito.verify(eventRepository).save(event);
+    assertEquals(Event.Status.VOTE_CLOSED, event.getStatus());
+  }
+
+  @Test
+  @DisplayName("Should throw exception when EventOption does not exist")
+  void voteEventOptionTest(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.empty());
+
+    assertThrows(EntityNotFoundException.class,
+        () -> eventService.voteEventOption("ididid", "ididid", stringToken)
+    );
+  }
+
+  @Test
+  @DisplayName("Should throw exception when User try to vote but the voting is already closed")
+  void voteEventOptionTest2(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
+    Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.of(eventOption));
+    Event event = eventMapper.dtoToEntity(eventDto);
+    event.setStatus(Event.Status.VOTE_CLOSED);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+
+    assertThrows(EventStatusException.class,
+        () -> eventService.voteEventOption("ididid", "ididid", stringToken)
+    );
+    Mockito.verify(eventOptionRepository).findById("ididid");
+    Mockito.verify(eventRepository).findById("ididid");
+  }
+
+  @Test
+  @DisplayName("Should generate the vote correctly")
+  void voteEventOptionTest3(){
+    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
+    EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
+    Mockito.when(eventOptionRepository.findById("ididid2")).thenReturn(Optional.of(eventOption));
+    Event event = eventMapper.dtoToEntity(eventDto);
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user2));
+    assertEquals(0, eventOption.getVoteQuantity());
+    assertEquals(Arrays.asList(), eventOption.getVoteUsers());
+
+    assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2", stringToken));
+    assertEquals(1, eventOption.getVoteQuantity());
+    assertEquals(Arrays.asList(user2), eventOption.getVoteUsers());
+    Mockito.verify(eventOptionRepository).findById("ididid2");
+    Mockito.verify(eventRepository, Mockito.times(2)).findById("ididid");
+    Mockito.verify(utils).getCurrentUsername();
+    Mockito.verify(userRepository).findByUsername(Mockito.any());
+    Mockito.verify(eventOptionRepository).save(eventOption);
+  }
+
+}

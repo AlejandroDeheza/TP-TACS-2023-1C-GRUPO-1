@@ -1,12 +1,10 @@
 package com.tacs.backend.service;
 
-
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.exception.*;
 import com.tacs.backend.mapper.EventMapper;
 import com.tacs.backend.mapper.EventOptionMapper;
 import com.tacs.backend.model.Event;
-
 import com.tacs.backend.model.EventOption;
 import com.tacs.backend.model.User;
 import com.tacs.backend.repository.EventOptionRepository;
@@ -15,12 +13,10 @@ import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 @Service
 @RequiredArgsConstructor
