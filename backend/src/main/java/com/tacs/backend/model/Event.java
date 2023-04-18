@@ -36,7 +36,7 @@ public class Event {
     @DBRef
     private Set<User> registeredUsers = new HashSet<>();
 
-    @Field("create_time")
+    @Field("create_date")
     private Date createDate;
 
 

@@ -21,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("v1/events")
 @RequiredArgsConstructor
@@ -49,6 +51,17 @@ public class EventController {
     })
     public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id) {
         return ResponseEntity.ok(this.eventService.getEventById(id));
+
+    }
+
+    @GetMapping()
+    @Operation(summary = "Get all events", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Event found successfully"),
+            @ApiResponse(responseCode = "429", description = "Too many requests")
+    })
+    public ResponseEntity<Set<EventDto>> getAllEvents(HttpServletRequest request) {
+        return ResponseEntity.ok(this.eventService.getAllEvents());
 
     }
 
