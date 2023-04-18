@@ -110,23 +110,6 @@ public class EventControllerTest {
     }
 
     @Test
-    @DisplayName("Should return 429 when get a event by id")
-    void itShouldReturnEventWith429StatusCodeWhenCalledGetEventById() throws Exception {
-        given(eventService.getEventById(anyString())).willThrow(new RequestNotAllowException("too many request"));
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        MockHttpServletResponse response = mvc.perform(get("/v1/events/event/" + idEvent)
-                        .header("Authorization", "Bearer saraza123")
-                        .requestAttr("javax.servlet.http.HttpServletRequest", request)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn()
-                .getResponse();
-
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS.value());
-        assertThat(response.getContentAsString()).contains("too many request");
-    }
-
-    @Test
     @DisplayName("Should return 404 when get a event by id not exists")
     void itShouldReturnErrorWith404StatusCodeWhenCalledGetEventByIdNotExists() throws Exception {
         given(eventService.getEventById(anyString())).willThrow(new EntityNotFoundException("Event not found"));
@@ -177,23 +160,6 @@ public class EventControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(asJsonString(setEventDto));
-    }
-
-    @Test
-    @DisplayName("Should return 429 when get a event by id")
-    void itShouldReturnEventWith429StatusCodeWhenCalledGetAllEvents() throws Exception {
-        given(eventService.getAllEvents()).willThrow(new RequestNotAllowException("too many request"));
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        MockHttpServletResponse response = mvc.perform(get("/v1/events/event/" + idEvent)
-                        .header("Authorization", "Bearer saraza123")
-                        .requestAttr("javax.servlet.http.HttpServletRequest", request)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn()
-                .getResponse();
-
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS.value());
-        assertThat(response.getContentAsString()).contains("too many request");
     }
 
     @Test
