@@ -21,6 +21,13 @@ public class EventOptionRepositoryImpl implements EventOptionRepositoryCustom {
     private final MongoTemplate mongoTemplate;
 
     @Override
+    public long getLastVotedEventOptionsCount() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("update_time").gt(Utils.getBeforeDate()));
+        return mongoTemplate.count(query, EventOption.class);
+    }
+
+    @Override
     public List<EventOption> getLastVotedEventOptions() {
         Query query = new Query();
         query.addCriteria(Criteria.where("update_time").gt(Utils.getBeforeDate()));

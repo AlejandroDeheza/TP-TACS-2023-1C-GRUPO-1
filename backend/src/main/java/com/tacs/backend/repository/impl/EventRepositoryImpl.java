@@ -18,7 +18,6 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
     private final MongoTemplate mongoTemplate;
 
     public long getLastCreatedEventsCount() {
-
         Query query = new Query();
         query.addCriteria(Criteria.where("create_time").gt(Utils.getBeforeDate()));
         return mongoTemplate.count(query, Event.class);
@@ -26,6 +25,8 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 
     @Override
     public List<Event> getLastCreatedEvents() {
-        return null;
+        Query query = new Query();
+        query.addCriteria(Criteria.where("create_time").gt(Utils.getBeforeDate()));
+        return mongoTemplate.find(query, Event.class);
     }
 }

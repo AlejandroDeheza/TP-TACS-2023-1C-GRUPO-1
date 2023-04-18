@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -43,7 +45,9 @@ public class EventService {
                 .description(request.getDescription())
                 .status(Event.Status.VOTE_PENDING)
                 .ownerUser(currentUser)
-                .eventOptions(savedEventOptionSet).build();
+                .eventOptions(savedEventOptionSet)
+                .createDate(new Date())
+                .build();
 
         return eventMapper.entityToDto(this.eventRepository.save(event));
     }
@@ -52,6 +56,12 @@ public class EventService {
         reachedMaximumRequest(token);
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
+    }
+
+    public Set<EventDto> getAllEvents(String token) {
+        reachedMaximumRequest(token);
+
+        return eventMapper.entitySetToDtoSet(Set.copyOf(eventRepository.findAll()));
     }
 
     public EventDto registerEvent(String id, String token) {
@@ -97,7 +107,6 @@ public class EventService {
         eventOptionRepository.save(eventOption);
         return eventMapper.entityToDto(eventRepository.findById(idEvent).orElseThrow());
     }
-
 
     private Event getEvent(String id) {
         return eventRepository.findById(id).orElseThrow(
