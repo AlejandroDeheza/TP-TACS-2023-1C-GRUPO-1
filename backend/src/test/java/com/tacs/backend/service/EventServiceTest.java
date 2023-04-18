@@ -3,11 +3,12 @@ package com.tacs.backend.service;
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.EventOptionDto;
 import com.tacs.backend.dto.UserDto;
-import com.tacs.backend.exception.*;
+import com.tacs.backend.exception.EntityNotFoundException;
+import com.tacs.backend.exception.EventStatusException;
+import com.tacs.backend.exception.UserException;
+import com.tacs.backend.exception.UserIsNotOwnerException;
 import com.tacs.backend.mapper.EventMapper;
-import com.tacs.backend.mapper.EventMapperImpl;
 import com.tacs.backend.mapper.EventOptionMapper;
-import com.tacs.backend.mapper.EventOptionMapperImpl;
 import com.tacs.backend.model.Event;
 import com.tacs.backend.model.EventOption;
 import com.tacs.backend.model.Role;
@@ -22,15 +23,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,20 +42,20 @@ public class EventServiceTest {
   private EventOptionRepository eventOptionRepository;
   @Mock
   private UserRepository userRepository;
-  private EventMapper eventMapper = new EventMapperImpl();
-  private EventOptionMapper eventOptionMapper = new EventOptionMapperImpl();
   @Mock
-  private RateLimiterService rateLimiterService;
+  private EventMapper eventMapper;
   @Mock
-  private Utils utils;
+  private EventOptionMapper eventOptionMapper;
 
+  @InjectMocks
   private EventService eventService;
 
   private EventDto eventDto;
-  private String stringToken = "jwtToken";
   private EventOptionDto eventOptionDto;
   private EventOptionDto eventOptionDto2;
   private Set<EventOptionDto> eventOptionDtoSet;
+  private EventOption eventOption;
+  private Event event;
 
   private UserDto userDto;
   private User user1;
@@ -66,16 +65,6 @@ public class EventServiceTest {
 
   @BeforeEach
   void setup() {
-    eventService =
-        new EventService(
-            eventRepository,
-            eventOptionRepository,
-            userRepository,
-            eventMapper,
-            eventOptionMapper,
-            rateLimiterService,
-            utils
-        );
     user1 = User.builder()
         .id("idididiidid")
         .firstName("Facundo")
@@ -98,15 +87,23 @@ public class EventServiceTest {
         .id("idididididid2")
         .dateTime(Date.valueOf(LocalDate.now().plusDays(3)))
         .voteQuantity(0)
-        .voteUsers(Arrays.asList())
+        .voteUsers(List.of())
         .build();
     eventOptionDto2 = EventOptionDto.builder()
         .id("idididididid3")
         .dateTime(Date.valueOf(LocalDate.now().plusDays(4)))
         .voteQuantity(0)
-        .voteUsers(null)
+        .voteUsers(List.of())
         .build();
     eventOptionDtoSet = Set.of(eventOptionDto, eventOptionDto2);
+    eventOption = EventOption.builder()
+        .id("idididididid2")
+        .event(null)
+        .dateTime(Date.valueOf(LocalDate.now().plusDays(3)))
+        .voteUsers(new ArrayList<>())
+        .voteQuantity(0)
+        .updateDate(Date.valueOf(LocalDate.now()))
+        .build();
     userDto = UserDto.builder()
         .id("idididiidid0")
         .firstName("Raul")
@@ -129,140 +126,145 @@ public class EventServiceTest {
         .password("UnaContraseña198!")
         .role(Role.USER)
         .build();
-  }
-
-  @Test
-  @DisplayName("Should throw exception when the maximum number of requests is exceeded")
-  void reachedMaximumRequestTest() {
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(true);
-    assertThrows(RequestNotAllowException.class, () -> eventService.createEvent(eventDto, stringToken));
-    assertThrows(RequestNotAllowException.class, () -> eventService.getEventById("ididid", stringToken));
-    assertThrows(RequestNotAllowException.class, () -> eventService.registerEvent("ididid", stringToken));
-    assertThrows(RequestNotAllowException.class, () -> eventService.closeEventVote("ididid", stringToken));
-    assertThrows(RequestNotAllowException.class,
-        () -> eventService.voteEventOption("ididid", "ididid2", stringToken)
-    );
+    event = Event.builder()
+        .id("idididididid4")
+        .name("unEvento")
+        .description("descripcion")
+        .ownerUser(user0)
+        .status(Event.Status.VOTE_PENDING)
+        .eventOptions(null)
+        .registeredUsers(new HashSet<>())
+        .createDate(Date.valueOf(LocalDate.now()))
+        .build();
   }
 
   @Test
   @DisplayName("Should be created correctly an event")
   void createEventTest(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user0));
 
-    Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(eventDto.getEventOptions());
-    var eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
-    var eventOption2 = eventOptionMapper.dtoToEntity(eventOptionDto2);
-    Mockito.when(eventOptionRepository.saveAll(eventOptionSet)).thenReturn(Arrays.asList(eventOption, eventOption2));
-
-    assertDoesNotThrow(() -> eventService.createEvent(eventDto, stringToken));
-
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertDoesNotThrow(() -> eventService.createEvent(eventDto));
+    }
     Mockito.verify(userRepository).findByUsername(Mockito.any());
-    Mockito.verify(eventOptionRepository).saveAll(eventOptionSet);
+    Mockito.verify(eventMapper).entityToDto(Mockito.any());
+    Mockito.verify(eventOptionMapper).dtoSetToEntitySet(eventDto.getEventOptions());
+    Mockito.verify(eventOptionRepository).saveAll(Mockito.any());
     Mockito.verify(eventRepository).save(Mockito.any());
-    Mockito.verify(utils).getCurrentUsername();
+
   }
 
   @Test
   @DisplayName("Should throw exception when Event does not exist")
   void getEventTest(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.empty());
-    assertThrows(EntityNotFoundException.class, () -> eventService.getEventById("ididid", stringToken));
+    assertThrows(EntityNotFoundException.class, () -> eventService.getEventById("ididid"));
+    Mockito.verify(eventRepository).findById("ididid");
   }
 
   @Test
   @DisplayName("Should get an existing event correctly")
   void getEventByIdTest(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
-    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(eventMapper.dtoToEntity(eventDto)));
-
-    assertDoesNotThrow(() -> eventService.getEventById("ididid", stringToken));
-
+    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    assertDoesNotThrow(() -> eventService.getEventById("ididid"));
     Mockito.verify(eventRepository).findById("ididid");
+    Mockito.verify(eventMapper).entityToDto(event);
   }
 
   @Test
   @DisplayName("Should throw exception when the User is already registered for the Event")
   void registerEventTest(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
-    Event event = eventMapper.dtoToEntity(eventDto);
     event.setRegisteredUsers(Set.of(user1));
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
 
-    assertThrows(UserException.class, () -> eventService.registerEvent("ididid", stringToken));
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertThrows(UserException.class, () -> eventService.registerEvent("ididid"));
+    }
+    Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
-    Mockito.verify(utils).getCurrentUsername();
   }
 
   @Test
   @DisplayName("Should register the user correctly to the event")
   void registerEventTest2(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
-    Event event = eventMapper.dtoToEntity(eventDto);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+    assertTrue(event.getRegisteredUsers().isEmpty());
 
-    assertDoesNotThrow(() -> eventService.registerEvent("ididid", stringToken));
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertDoesNotThrow(() -> eventService.registerEvent("ididid"));
+    }
+    assertEquals(1, event.getRegisteredUsers().stream().count());
+    Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
-    Mockito.verify(utils).getCurrentUsername();
+    Mockito.verify(eventMapper).entityToDto(Mockito.any());
+    Mockito.verify(eventRepository).save(Mockito.any());
   }
 
   @Test
   @DisplayName("Should throw exception when the User tries to close the vote and is not the Owner.")
   void closeEventVoteTest(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
-    Event event = eventMapper.dtoToEntity(eventDto);
     event.setOwnerUser(user2);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
 
-    assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid", stringToken));
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid"));
+    }
+    Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
-    Mockito.verify(utils).getCurrentUsername();
   }
 
   @Test
   @DisplayName("Should close the vote correctly")
   void closeEventVoteTest2(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
-    Event event = eventMapper.dtoToEntity(eventDto);
     event.setOwnerUser(user1);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
 
-    assertDoesNotThrow(() -> eventService.closeEventVote("ididid", stringToken));
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertDoesNotThrow(() -> eventService.closeEventVote("ididid"));
+    }
+    Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
-    Mockito.verify(utils).getCurrentUsername();
     Mockito.verify(eventRepository).save(event);
+    Mockito.verify(eventMapper).entityToDto(Mockito.any());
     assertEquals(Event.Status.VOTE_CLOSED, event.getStatus());
   }
 
   @Test
   @DisplayName("Should throw exception when EventOption does not exist")
   void voteEventOptionTest(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
     Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.empty());
 
-    assertThrows(EntityNotFoundException.class,
-        () -> eventService.voteEventOption("ididid", "ididid", stringToken)
-    );
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertThrows(EntityNotFoundException.class,
+          () -> eventService.voteEventOption("ididid", "ididid")
+      );
+    }
+    Mockito.verify(eventOptionRepository).findById("ididid");
   }
 
   @Test
   @DisplayName("Should throw exception when User try to vote but the voting is already closed")
   void voteEventOptionTest2(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
-    EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
     Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.of(eventOption));
-    Event event = eventMapper.dtoToEntity(eventDto);
     event.setStatus(Event.Status.VOTE_CLOSED);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
 
-    assertThrows(EventStatusException.class,
-        () -> eventService.voteEventOption("ididid", "ididid", stringToken)
-    );
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertThrows(EventStatusException.class,
+          () -> eventService.voteEventOption("ididid", "ididid")
+      );
+    }
     Mockito.verify(eventOptionRepository).findById("ididid");
     Mockito.verify(eventRepository).findById("ididid");
   }
@@ -270,23 +272,23 @@ public class EventServiceTest {
   @Test
   @DisplayName("Should generate the vote correctly")
   void voteEventOptionTest3(){
-    Mockito.when(rateLimiterService.reachedMaxRequestAllowed(stringToken)).thenReturn(false);
-    EventOption eventOption = eventOptionMapper.dtoToEntity(eventOptionDto);
     Mockito.when(eventOptionRepository.findById("ididid2")).thenReturn(Optional.of(eventOption));
-    Event event = eventMapper.dtoToEntity(eventDto);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user2));
     assertEquals(0, eventOption.getVoteQuantity());
-    assertEquals(Arrays.asList(), eventOption.getVoteUsers());
+    assertEquals(0, eventOption.getVoteUsers().size());
 
-    assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2", stringToken));
+    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
+      utilities.when(Utils::getCurrentUsername).thenReturn("username");
+      assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2"));
+    }
     assertEquals(1, eventOption.getVoteQuantity());
-    assertEquals(Arrays.asList(user2), eventOption.getVoteUsers());
+    assertEquals(1, eventOption.getVoteUsers().size());
     Mockito.verify(eventOptionRepository).findById("ididid2");
     Mockito.verify(eventRepository, Mockito.times(2)).findById("ididid");
-    Mockito.verify(utils).getCurrentUsername();
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(eventOptionRepository).save(eventOption);
+    Mockito.verify(eventMapper).entityToDto(Mockito.any());
   }
 
 }
