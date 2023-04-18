@@ -17,6 +17,7 @@ import com.tacs.backend.repository.EventOptionRepository;
 import com.tacs.backend.repository.EventRepository;
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,20 +53,21 @@ public class EventServiceTest {
 
   private EventDto eventDto;
   private EventOptionDto eventOptionDto;
-  private EventOptionDto eventOptionDto2;
   private Set<EventOptionDto> eventOptionDtoSet;
   private EventOption eventOption;
   private Event event;
-
   private UserDto userDto;
-  private User user1;
-  private User user2;
   private List<User> users;
-  private User user0;
+  private User user;
+  private static MockedStatic<Utils> utils;
 
+  @BeforeAll
+  public static void init() {
+    utils = Mockito.mockStatic(Utils.class);
+  }
   @BeforeEach
   void setup() {
-    user1 = User.builder()
+    user = User.builder()
         .id("idididiidid")
         .firstName("Facundo")
         .lastName("Perez")
@@ -73,15 +75,12 @@ public class EventServiceTest {
         .password("UnaContraseña198!")
         .role(Role.USER)
         .build();
-    user2 = User.builder()
-        .id("idididiidid1")
-        .firstName("Marcos")
-        .lastName("Gonzalez")
-        .username("123Gonzalez")
-        .password("UnaContraseña198!")
-        .role(Role.USER)
-        .build();
-    users = Arrays.asList(user1, user2);
+    users = Collections.singletonList(user);
+    userDto = UserDto.builder()
+            .id("idididiidid0")
+            .firstName("Raul")
+            .lastName("Flores")
+            .build();
 
     eventOptionDto = EventOptionDto.builder()
         .id("idididididid2")
@@ -89,13 +88,7 @@ public class EventServiceTest {
         .voteQuantity(0)
         .voteUsers(List.of())
         .build();
-    eventOptionDto2 = EventOptionDto.builder()
-        .id("idididididid3")
-        .dateTime(Date.valueOf(LocalDate.now().plusDays(4)))
-        .voteQuantity(0)
-        .voteUsers(List.of())
-        .build();
-    eventOptionDtoSet = Set.of(eventOptionDto, eventOptionDto2);
+    eventOptionDtoSet = Set.of(eventOptionDto);
     eventOption = EventOption.builder()
         .id("idididididid2")
         .event(null)
@@ -103,11 +96,6 @@ public class EventServiceTest {
         .voteUsers(new ArrayList<>())
         .voteQuantity(0)
         .updateDate(Date.valueOf(LocalDate.now()))
-        .build();
-    userDto = UserDto.builder()
-        .id("idididiidid0")
-        .firstName("Raul")
-        .lastName("Flores")
         .build();
     eventDto = EventDto.builder()
         .id("idididididid4")
@@ -118,19 +106,11 @@ public class EventServiceTest {
         .ownerUser(userDto)
         .registeredUsers(Set.of())
         .build();
-    user0 = User.builder()
-        .id("idididiidid0")
-        .firstName("Raul")
-        .lastName("Flores")
-        .username("123Flores")
-        .password("UnaContraseña198!")
-        .role(Role.USER)
-        .build();
     event = Event.builder()
         .id("idididididid4")
         .name("unEvento")
         .description("descripcion")
-        .ownerUser(user0)
+        .ownerUser(user)
         .status(Event.Status.VOTE_PENDING)
         .eventOptions(null)
         .registeredUsers(new HashSet<>())
@@ -141,18 +121,15 @@ public class EventServiceTest {
   @Test
   @DisplayName("Should be created correctly an event")
   void createEventTest(){
-    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user0));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
+    utils.when(Utils::getCurrentUsername).thenReturn("username");
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertDoesNotThrow(() -> eventService.createEvent(eventDto));
-    }
+    assertDoesNotThrow(() -> eventService.createEvent(eventDto));
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(eventMapper).entityToDto(Mockito.any());
     Mockito.verify(eventOptionMapper).dtoSetToEntitySet(eventDto.getEventOptions());
     Mockito.verify(eventOptionRepository).saveAll(Mockito.any());
     Mockito.verify(eventRepository).save(Mockito.any());
-
   }
 
   @Test
@@ -175,14 +152,12 @@ public class EventServiceTest {
   @Test
   @DisplayName("Should throw exception when the User is already registered for the Event")
   void registerEventTest(){
-    event.setRegisteredUsers(Set.of(user1));
+    event.setRegisteredUsers(Set.of(user));
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
-    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertThrows(UserException.class, () -> eventService.registerEvent("ididid"));
-    }
+    utils.when(Utils::getCurrentUsername).thenReturn("username");
+    assertThrows(UserException.class, () -> eventService.registerEvent("ididid"));
     Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
   }
@@ -191,13 +166,12 @@ public class EventServiceTest {
   @DisplayName("Should register the user correctly to the event")
   void registerEventTest2(){
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
-    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
     assertTrue(event.getRegisteredUsers().isEmpty());
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertDoesNotThrow(() -> eventService.registerEvent("ididid"));
-    }
+    utils.when(Utils::getCurrentUsername).thenReturn("username");
+    assertDoesNotThrow(() -> eventService.registerEvent("ididid"));
+
     assertEquals(1, (long) event.getRegisteredUsers().size());
     Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
@@ -208,14 +182,12 @@ public class EventServiceTest {
   @Test
   @DisplayName("Should throw exception when the User tries to close the vote and is not the Owner.")
   void closeEventVoteTest(){
-    event.setOwnerUser(user2);
+    event.setOwnerUser(user);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
+    User user1 = User.builder().username("username").build();
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+    assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid"));
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid"));
-    }
     Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
   }
@@ -223,14 +195,13 @@ public class EventServiceTest {
   @Test
   @DisplayName("Should close the vote correctly")
   void closeEventVoteTest2(){
-    event.setOwnerUser(user1);
+    event.setOwnerUser(user);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
-    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertDoesNotThrow(() -> eventService.closeEventVote("ididid"));
-    }
+    utils.when(Utils::getCurrentUsername).thenReturn("username");
+    assertDoesNotThrow(() -> eventService.closeEventVote("ididid"));
+
     Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(eventRepository).save(event);
@@ -243,12 +214,12 @@ public class EventServiceTest {
   void voteEventOptionTest(){
     Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.empty());
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertThrows(EntityNotFoundException.class,
+
+    utils.when(Utils::getCurrentUsername).thenReturn("username");
+    assertThrows(EntityNotFoundException.class,
           () -> eventService.voteEventOption("ididid", "ididid")
       );
-    }
+
     Mockito.verify(eventOptionRepository).findById("ididid");
   }
 
@@ -259,12 +230,10 @@ public class EventServiceTest {
     event.setStatus(Event.Status.VOTE_CLOSED);
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertThrows(EventStatusException.class,
-          () -> eventService.voteEventOption("ididid", "ididid")
-      );
-    }
+    utils.when(Utils::getCurrentUsername).thenReturn("username");
+    assertThrows(EventStatusException.class,
+          () -> eventService.voteEventOption("ididid", "ididid"));
+
     Mockito.verify(eventOptionRepository).findById("ididid");
     Mockito.verify(eventRepository).findById("ididid");
   }
@@ -274,14 +243,13 @@ public class EventServiceTest {
   void voteEventOptionTest3(){
     Mockito.when(eventOptionRepository.findById("ididid2")).thenReturn(Optional.of(eventOption));
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
-    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user2));
+    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
     assertEquals(0, eventOption.getVoteQuantity());
     assertEquals(0, eventOption.getVoteUsers().size());
 
-    try (MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class)) {
-      utilities.when(Utils::getCurrentUsername).thenReturn("username");
-      assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2"));
-    }
+    utils.when(Utils::getCurrentUsername).thenReturn("username");
+    assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2"));
+
     assertEquals(1, eventOption.getVoteQuantity());
     assertEquals(1, eventOption.getVoteUsers().size());
     Mockito.verify(eventOptionRepository).findById("ididid2");
