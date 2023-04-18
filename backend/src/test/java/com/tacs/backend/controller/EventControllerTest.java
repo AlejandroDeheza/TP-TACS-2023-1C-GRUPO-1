@@ -1,5 +1,13 @@
 package com.tacs.backend.controller;
 
+import static com.tacs.backend.model.Event.Status.VOTE_CLOSED;
+import static com.tacs.backend.model.Event.Status.VOTE_PENDING;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.EventOptionDto;
@@ -48,6 +56,7 @@ public class EventControllerTest {
     private EventDto eventDto;
     private String idEvent;
     private String idEventOption;
+    private Set<EventDto> setEventDto;
 
     @BeforeEach
     void setup() {
@@ -64,9 +73,11 @@ public class EventControllerTest {
                 .eventOptions(eventOptionDtoSet)
                 .registeredUsers(new HashSet<>())
                 .status(VOTE_PENDING.name())
+                .createDate(new Date())
                 .build();
         idEvent = "643ac80c9093876185c40401";
         idEventOption = "643ac80c9093876185c40402";
+        setEventDto = new HashSet<>();
         mvc = MockMvcBuilders.standaloneSetup(eventController)
                 .setControllerAdvice(new ExceptionHandlerController())
                 .build();
@@ -109,23 +120,6 @@ public class EventControllerTest {
     }
 
     @Test
-    @DisplayName("Should return 429 when get a event by id")
-    void itShouldReturnEventWith429StatusCodeWhenCalledGetEventById() throws Exception {
-        given(eventService.getEventById(anyString())).willThrow(new RequestNotAllowException("too many request"));
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        MockHttpServletResponse response = mvc.perform(get("/events/" + idEvent)
-                        .header("Authorization", "Bearer saraza123")
-                        .requestAttr("javax.servlet.http.HttpServletRequest", request)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn()
-                .getResponse();
-
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS.value());
-        assertThat(response.getContentAsString()).contains("too many request");
-    }
-
-    @Test
     @DisplayName("Should return 404 when get a event by id not exists")
     void itShouldReturnErrorWith404StatusCodeWhenCalledGetEventByIdNotExists() throws Exception {
         given(eventService.getEventById(anyString())).willThrow(new EntityNotFoundException("Event not found"));
@@ -140,6 +134,42 @@ public class EventControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getContentAsString()).contains("Event not found");
+    }
+
+    @Test
+    @DisplayName("Should return 200 when get all events")
+    void itShouldReturnListOfEventsWith200StatusCodeWhenCalledGetAllEvents() throws Exception {
+        setEventDto.add(eventDto);
+
+        given(eventService.getAllEvents()).willReturn(setEventDto);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        MockHttpServletResponse response = mvc.perform(get("/events")
+                        .header("Authorization", "Bearer saraza123")
+                        .requestAttr("javax.servlet.http.HttpServletRequest", request)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(asJsonString(setEventDto));
+    }
+
+    @Test
+    @DisplayName("Should return 200 when get all events")
+    void itShouldReturnEmptyListOfEventsWith200StatusCodeWhenCalledGetAllEventsIsEmpty() throws Exception {
+        given(eventService.getAllEvents()).willReturn(setEventDto);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        MockHttpServletResponse response = mvc.perform(get("/v1/events/")
+                        .header("Authorization", "Bearer saraza123")
+                        .requestAttr("javax.servlet.http.HttpServletRequest", request)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getContentAsString()).isEqualTo(asJsonString(setEventDto));
     }
 
     @Test

@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -50,6 +52,11 @@ public class EventService {
     public EventDto getEventById(String id) {
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
+    }
+
+
+    public Set<EventDto> getAllEvents() {
+        return eventMapper.entitySetToDtoSet(Set.copyOf(eventRepository.findAll()));
     }
 
     public EventDto registerEvent(String id) {
@@ -91,7 +98,6 @@ public class EventService {
         eventOptionRepository.save(eventOption);
         return eventMapper.entityToDto(eventRepository.findById(idEvent).orElseThrow());
     }
-
 
     private Event getEvent(String id) {
         return eventRepository.findById(id).orElseThrow(
