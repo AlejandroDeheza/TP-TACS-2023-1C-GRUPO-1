@@ -9,6 +9,14 @@
 - Obtener el access token
 - Loguear el access token en [Authorize]
 
+# Utilizando Makefile for usage with docker
+- make first (First init of the project)
+- make build (Build the project)
+- make start (Start the project)
+- make clean (Clean the project)
+- make stop (Stop the project)
+- make help (Show the help)
+- 
 ## Seguridad
 - Spring Security agrega clases para filtrar antes de que la petición HTTP llegue al DispatcherServlet, 
 comprueba los estados de Autenticación y Autorización antes de que la petición llegue al 
