@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("v1/events")
+@RequestMapping("/events")
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
@@ -40,7 +40,7 @@ public class EventController {
         return new ResponseEntity<>(eventService.createEvent(requestBody), HttpStatus.CREATED);
     }
 
-    @GetMapping("/event/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Get an event by id", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event found successfully"),
@@ -52,7 +52,7 @@ public class EventController {
 
     }
 
-    @PutMapping("/event")
+    @PatchMapping("/{eventId}/add-user")
     @Operation(summary = "Register an user to an event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registered successfully"),
@@ -60,11 +60,11 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> registerEvent(@NotBlank  @RequestParam String eventId) {
+    public ResponseEntity<EventDto> registerEvent(@NotBlank @PathVariable String eventId) {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId));
     }
 
-    @PatchMapping("/event/{id}/close")
+    @PatchMapping("/{eventId}/close")
     @Operation(summary = "Close a event's voting", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event's vote closed successfully"),
@@ -73,11 +73,11 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable("id") String id) {
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(id));
+    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable String eventId) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(eventId));
     }
 
-    @PutMapping("/event/options/option/vote")
+    @PatchMapping("/{eventId}/options/{optionId}/vote")
     @Operation(summary = "Vote a event's option", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vote successfully"),
@@ -85,8 +85,8 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> voteEventOption(@NotBlank @RequestParam String idEvent, @NotBlank @RequestParam String idEventOption, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(idEvent, idEventOption));
+    public ResponseEntity<EventDto> voteEventOption(@NotBlank @PathVariable String eventId, @NotBlank @PathVariable String optionId, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(eventId, optionId));
     }
 
 }

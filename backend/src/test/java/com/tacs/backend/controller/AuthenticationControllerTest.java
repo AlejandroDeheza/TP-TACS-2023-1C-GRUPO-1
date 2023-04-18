@@ -1,13 +1,12 @@
 package com.tacs.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tacs.backend.dto.*;
+import com.tacs.backend.dto.AuthenticationRequest;
+import com.tacs.backend.dto.AuthenticationResponse;
+import com.tacs.backend.dto.RegisterRequest;
 import com.tacs.backend.exception.EntityNotFoundException;
-import com.tacs.backend.exception.EventStatusException;
 import com.tacs.backend.exception.UserException;
-import com.tacs.backend.exception.UserIsNotOwnerException;
 import com.tacs.backend.service.AuthenticationService;
-import com.tacs.backend.service.EventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,18 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.tacs.backend.model.Event.Status.VOTE_CLOSED;
-import static com.tacs.backend.model.Event.Status.VOTE_PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthenticationControllerTest {
@@ -70,7 +60,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnAuthenticationResponseWith200StatusCodeWhenCalledRegister() throws Exception {
         given(authenticationService.register(registerRequest)).willReturn(authenticationResponse);
 
-        MockHttpServletResponse response = mvc.perform(post("/v1/auth/register")
+        MockHttpServletResponse response = mvc.perform(post("/auth/register")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -86,7 +76,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnErrorWith400StatusCodeWhenCalledRegisterAlreadyExists() throws Exception {
         given(authenticationService.register(registerRequest)).willThrow(new UserException("Username already exists"));
 
-        MockHttpServletResponse response = mvc.perform(post("/v1/auth/register")
+        MockHttpServletResponse response = mvc.perform(post("/auth/register")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -102,7 +92,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnAuthenticationResponseWith200StatusCodeWhenCalledAuthenticate() throws Exception {
         given(authenticationService.authenticate(authenticationRequest)).willReturn(authenticationResponse);
 
-        MockHttpServletResponse response = mvc.perform(post("/v1/auth/authentication")
+        MockHttpServletResponse response = mvc.perform(post("/auth/authentication")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -118,7 +108,7 @@ public class AuthenticationControllerTest {
     void itShouldReturnErrorWith400StatusCodeWhenCalledAuthenticateNotExists() throws Exception {
         given(authenticationService.authenticate(authenticationRequest)).willThrow(new EntityNotFoundException("User not found"));
 
-        MockHttpServletResponse response = mvc.perform(post("/v1/auth/authentication")
+        MockHttpServletResponse response = mvc.perform(post("/auth/authentication")
                         .content(asJsonString(registerRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
