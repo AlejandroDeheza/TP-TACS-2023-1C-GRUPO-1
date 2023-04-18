@@ -1,7 +1,8 @@
 package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.EventOptionDto;
-import com.tacs.backend.dto.EventReportDto;
+import com.tacs.backend.dto.EventOptionReportDto;
+import com.tacs.backend.dto.MarketingReportDto;
 import com.tacs.backend.dto.ExceptionResponse;
 import com.tacs.backend.service.MonitorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,28 +21,28 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/monitor/report")
+@RequestMapping("v1/monitor")
 public class MonitorController {
     private final MonitorService monitorService;
 
-    @GetMapping("/counter")
+    @GetMapping("/ratios")
     @Operation(summary = "Get events report", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Report ready"),
             @ApiResponse(responseCode = "400", description = "Report querying failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    public ResponseEntity<EventReportDto> getCounterReport() {
-        return ResponseEntity.ok(this.monitorService.getLastEventEntries());
+    public ResponseEntity<MarketingReportDto> getCounterReport() {
+        return ResponseEntity.ok(this.monitorService.getMarketingReport());
     }
 
-    @GetMapping("v1/monitor/report/options")
+    @GetMapping("/options")
     @Operation(summary = "Get events options report", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Report ready"),
             @ApiResponse(responseCode = "400", description = "Report querying failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    public ResponseEntity<List<EventOptionDto>> getOptionsReport() {
-        return ResponseEntity.ok(this.monitorService.getLastEventOptions());
+    public ResponseEntity<List<EventOptionReportDto>> getOptionsReport() {
+        return ResponseEntity.ok(this.monitorService.getLastVotedEventOptions());
     }
 
 }

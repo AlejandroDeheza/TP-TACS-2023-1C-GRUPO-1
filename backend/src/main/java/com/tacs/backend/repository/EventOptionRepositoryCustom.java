@@ -6,5 +6,7 @@ import com.tacs.backend.model.EventOption;
 import java.util.List;
 
 public interface EventOptionRepositoryCustom {
-    List<EventOption> getLastVotedEventOptions();
+
+    long getLastVotedEventOptionsCount(int timeRange);
+    List<EventOption> getLastVotedEventOptions(int timeRange);
 }

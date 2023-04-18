@@ -1,13 +1,12 @@
 package com.tacs.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tacs.backend.dto.*;
+import com.tacs.backend.dto.AuthenticationRequest;
+import com.tacs.backend.dto.AuthenticationResponse;
+import com.tacs.backend.dto.RegisterRequest;
 import com.tacs.backend.exception.EntityNotFoundException;
-import com.tacs.backend.exception.EventStatusException;
 import com.tacs.backend.exception.UserException;
-import com.tacs.backend.exception.UserIsNotOwnerException;
 import com.tacs.backend.service.AuthenticationService;
-import com.tacs.backend.service.EventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,18 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.tacs.backend.model.Event.Status.VOTE_CLOSED;
-import static com.tacs.backend.model.Event.Status.VOTE_PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthenticationControllerTest {

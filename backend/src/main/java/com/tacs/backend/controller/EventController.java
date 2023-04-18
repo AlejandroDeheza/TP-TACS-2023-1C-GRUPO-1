@@ -2,8 +2,6 @@ package com.tacs.backend.controller;
 
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.ExceptionResponse;
-import com.tacs.backend.dto.UserDto;
-import com.tacs.backend.model.User;
 import com.tacs.backend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,8 +19,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
-@RequestMapping("v1/events")
+@RequestMapping("/v1/events")
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
@@ -36,25 +36,34 @@ public class EventController {
 
     })
     @Schema(description = "Create", implementation = EventDto.class)
-    public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventDto requestBody, HttpServletRequest request) {
-        String token = getToken(request);
-        return new ResponseEntity<>(eventService.createEvent(requestBody, token), HttpStatus.CREATED);
+    public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventDto requestBody) {
+        return new ResponseEntity<>(eventService.createEvent(requestBody), HttpStatus.CREATED);
+    }
+    
+    @GetMapping()
+    @Operation(summary = "Get all events", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Event found successfully"),
+            @ApiResponse(responseCode = "429", description = "Too many requests")
+    })
+    public ResponseEntity<Set<EventDto>> getAllEvents(HttpServletRequest request) {
+        return ResponseEntity.ok(this.eventService.getAllEvents());
+
     }
 
-    @GetMapping("/event/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Get an event by id", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event found successfully"),
             @ApiResponse(responseCode = "404", description = "Event not found", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
             @ApiResponse(responseCode = "429", description = "Too many requests")
     })
-    public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id, HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.ok(this.eventService.getEventById(id, token));
+    public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id) {
+        return ResponseEntity.ok(this.eventService.getEventById(id));
 
     }
-
-    @PutMapping("/event")
+    
+    @PatchMapping("/{eventId}/add-user")
     @Operation(summary = "Register an user to an event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registered successfully"),
@@ -62,12 +71,11 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> registerEvent(@NotBlank  @RequestParam String eventId, HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId, token));
+    public ResponseEntity<EventDto> registerEvent(@NotBlank @PathVariable String eventId) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId));
     }
 
-    @PatchMapping("/event/{id}/close")
+    @PatchMapping("/{eventId}/close")
     @Operation(summary = "Close a event's voting", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event's vote closed successfully"),
@@ -76,12 +84,11 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable("id") String id, HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(id, token));
+    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable String eventId) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(eventId));
     }
 
-    @PutMapping("/event/options/option/vote")
+    @PatchMapping("/{eventId}/options/{optionId}/vote")
     @Operation(summary = "Vote a event's option", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vote successfully"),
@@ -89,13 +96,8 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> voteEventOption(@NotBlank @RequestParam String idEvent, @NotBlank @RequestParam String idEventOption, HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(idEvent, idEventOption, token));
+    public ResponseEntity<EventDto> voteEventOption(@NotBlank @PathVariable String eventId, @NotBlank @PathVariable String optionId, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(eventId, optionId));
     }
 
-    private String getToken(HttpServletRequest request) {
-        String autorization = request.getHeader("Authorization");
-        return autorization.split(" ")[1];
-    }
 }
