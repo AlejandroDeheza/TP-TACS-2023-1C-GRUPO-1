@@ -6,6 +6,7 @@ import com.tacs.backend.model.EventOption;
 import com.tacs.backend.repository.EventOptionRepository;
 import com.tacs.backend.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MonitorService {
+    @Value("${monitor.time-range}")
+    private int timeRange;
     private final EventRepository eventRepository;
     private final EventOptionRepository eventOptionRepository;
 
@@ -22,8 +25,8 @@ public class MonitorService {
 
     public MarketingReportDto getMarketingReport() {
         MarketingReportDto report = new MarketingReportDto();
-        report.setEventsCount(eventRepository.getLastCreatedEventsCount());
-        report.setOptionsCount(eventOptionRepository.getLastVotedEventOptionsCount());
+        report.setEventsCount(eventRepository.getLastCreatedEventsCount(timeRange));
+        report.setOptionsCount(eventOptionRepository.getLastVotedEventOptionsCount(timeRange));
 
         return report;
     }
@@ -37,7 +40,7 @@ public class MonitorService {
     }
 
     public List<EventOptionReportDto> getLastVotedEventOptions() {
-        List<EventOption> eventOptions = eventOptionRepository.getLastVotedEventOptions();
+        List<EventOption> eventOptions = eventOptionRepository.getLastVotedEventOptions(timeRange);
 
         // TODO: es necesario modificar la fecha de la opcion para quitar los segundos y milisegundos y asi poder agrupar y sumar
 

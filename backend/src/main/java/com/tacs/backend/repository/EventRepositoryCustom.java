@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface EventRepositoryCustom {
 
-    long getLastCreatedEventsCount();
+    long getLastCreatedEventsCount(int timeRange);
 
-    List<Event> getLastCreatedEvents();
+    List<Event> getLastCreatedEvents(int timeRange);
 }

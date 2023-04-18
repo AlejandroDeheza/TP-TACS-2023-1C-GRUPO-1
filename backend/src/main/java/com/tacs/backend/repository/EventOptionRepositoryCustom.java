@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface EventOptionRepositoryCustom {
 
-    long getLastVotedEventOptionsCount();
-    List<EventOption> getLastVotedEventOptions();
+    long getLastVotedEventOptionsCount(int timeRange);
+    List<EventOption> getLastVotedEventOptions(int timeRange);
 }

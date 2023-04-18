@@ -1,13 +1,13 @@
 # tp-tacs-1C-2023
-- application.yml host: mongo
-- mvn clean install(in backend)
-- mvn clean package(in backend)
+## Instrucción de pruebas
+- mvn clean install(en directorio backend)
+- mvn clean package(en directorio backend)
 - docker image build -t backend:latest . 
 - docker-compose up -d
 - Swagger: http://localhost:8091/swagger-ui/index.html#/
-- Register a new user
-- Authenticate the user(get a access token)
-- Put the access token in Authorize
+- Registrar un nuevo usuario(si no existe, si ya existe, con el usuario y password hacer Authentication)
+- Obtener el access token
+- Loguear el access token en [Authorize]
 
 ## Seguridad
 - Spring Security agrega clases para filtrar antes de que la petición HTTP llegue al DispatcherServlet, 

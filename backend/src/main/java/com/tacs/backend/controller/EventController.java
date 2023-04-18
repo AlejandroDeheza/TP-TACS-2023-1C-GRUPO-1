@@ -38,9 +38,8 @@ public class EventController {
 
     })
     @Schema(description = "Create", implementation = EventDto.class)
-    public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventDto requestBody, HttpServletRequest request) {
-        String token = getToken(request);
-        return new ResponseEntity<>(eventService.createEvent(requestBody, token), HttpStatus.CREATED);
+    public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventDto requestBody) {
+        return new ResponseEntity<>(eventService.createEvent(requestBody), HttpStatus.CREATED);
     }
 
     @GetMapping("/event/{id}")
@@ -50,9 +49,8 @@ public class EventController {
             @ApiResponse(responseCode = "404", description = "Event not found", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
             @ApiResponse(responseCode = "429", description = "Too many requests")
     })
-    public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id, HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.ok(this.eventService.getEventById(id, token));
+    public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id) {
+        return ResponseEntity.ok(this.eventService.getEventById(id));
 
     }
 
@@ -63,8 +61,7 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
     })
     public ResponseEntity<Set<EventDto>> getAllEvents(HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.ok(this.eventService.getAllEvents(token));
+        return ResponseEntity.ok(this.eventService.getAllEvents());
 
     }
 
@@ -76,9 +73,8 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> registerEvent(@NotBlank  @RequestParam String eventId, HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId, token));
+    public ResponseEntity<EventDto> registerEvent(@NotBlank  @RequestParam String eventId) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId));
     }
 
     @PatchMapping("/event/{id}/close")
@@ -90,9 +86,8 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests")
 
     })
-    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable("id") String id, HttpServletRequest request) {
-        String token = getToken(request);
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(id, token));
+    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable("id") String id) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(id));
     }
 
     @PutMapping("/event/options/option/vote")
@@ -104,13 +99,7 @@ public class EventController {
 
     })
     public ResponseEntity<EventDto> voteEventOption(@NotBlank @RequestParam String idEvent, @NotBlank @RequestParam String idEventOption, HttpServletRequest request) {
-        // TODO: la opcion puede ser votada solo una vez por el mismo usuario
-        String token = getToken(request);
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(idEvent, idEventOption, token));
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(idEvent, idEventOption));
     }
 
-    private String getToken(HttpServletRequest request) {
-        String autorization = request.getHeader("Authorization");
-        return autorization.split(" ")[1];
-    }
 }
