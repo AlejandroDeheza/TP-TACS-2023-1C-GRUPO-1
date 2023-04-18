@@ -7,7 +7,7 @@
 - Obtener el access token
 - Loguear el access token en [Authorize]
 
-# Utilizando Makefile para utilizar docker
+# Utilizando Makefile para docker
 - make first (First init of the project)
 - make build (Build the project)
 - make start (Start the project)
