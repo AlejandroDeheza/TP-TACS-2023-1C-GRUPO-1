@@ -13,14 +13,14 @@ public interface EventOptionMapper {
 
     EventOptionMapper INSTANCE = Mappers.getMapper(EventOptionMapper.class);
 
-    EventOptionDto entityToDto(EventOption EventOption);
+    EventOptionDto entityToDto(EventOption eventOption);
 
-    EventOption dtoToEntity(EventOptionDto EventOptionDto);
+    EventOption dtoToEntity(EventOptionDto eventOptionDto);
 
-    Set<EventOptionDto> entitySetToDtoSet(Set<EventOption> EventOptions);
+    Set<EventOptionDto> entitySetToDtoSet(Set<EventOption> eventOptions);
 
-    Set<EventOption> dtoSetToEntitySet(Set<EventOptionDto> EventOptionsDto);
+    Set<EventOption> dtoSetToEntitySet(Set<EventOptionDto> eventOptionsDto);
 
-    List<EventOptionDto> entityListToDtoList(List<EventOption> EventOptions);
+    List<EventOptionDto> entityListToDtoList(List<EventOption> eventOptions);
 
 }

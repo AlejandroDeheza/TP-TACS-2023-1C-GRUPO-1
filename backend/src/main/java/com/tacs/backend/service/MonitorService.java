@@ -34,8 +34,8 @@ public class MonitorService {
     private Date removeSeconds(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        calendar.add(Calendar.SECOND, -calendar.get(calendar.SECOND));
-        calendar.add(Calendar.MILLISECOND, -calendar.get(calendar.MILLISECOND));
+        calendar.add(Calendar.SECOND, -calendar.get(Calendar.SECOND));
+        calendar.add(Calendar.MILLISECOND, -calendar.get(Calendar.MILLISECOND));
         return calendar.getTime();
     }
 
