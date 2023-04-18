@@ -2,8 +2,6 @@
 ## Instrucción de pruebas
 - mvn clean install(en directorio backend)
 - mvn clean package(en directorio backend)
-- docker image build -t backend:latest . 
-- docker-compose up -d
 - Swagger: http://localhost:8091/swagger-ui/index.html#/
 - Registrar un nuevo usuario(si no existe, si ya existe, con el usuario y password hacer Authentication)
 - Obtener el access token
