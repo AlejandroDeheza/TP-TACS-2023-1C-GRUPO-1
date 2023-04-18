@@ -26,7 +26,6 @@ services:
       - MONGODB_PORT=27017
     links:
         - mongo:mongo
-    mem_reservation: 700m
     ports:
       - "8091:8091"
     networks:
@@ -38,7 +37,6 @@ services:
       - mongo
     volumes:
       - $PWD/.data/backend:/data/db:delegated
-
 
 networks:
   tp_network:
