@@ -1,23 +1,19 @@
 package com.tacs.backend.controller;
 
-import static com.tacs.backend.model.Event.Status.VOTE_CLOSED;
-import static com.tacs.backend.model.Event.Status.VOTE_PENDING;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.EventOptionDto;
 import com.tacs.backend.dto.UserDto;
-import com.tacs.backend.exception.*;
+import com.tacs.backend.exception.EntityNotFoundException;
+import com.tacs.backend.exception.EventStatusException;
+import com.tacs.backend.exception.UserException;
+import com.tacs.backend.exception.UserIsNotOwnerException;
 import com.tacs.backend.service.EventService;
 import com.tacs.backend.service.RateLimiterService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -28,8 +24,19 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import static com.tacs.backend.model.Event.Status.VOTE_CLOSED;
+import static com.tacs.backend.model.Event.Status.VOTE_PENDING;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EventControllerTest {
@@ -98,7 +105,7 @@ public class EventControllerTest {
         given(eventService.getEventById(anyString())).willReturn(eventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(get("/v1/events/event/" + idEvent)
+        MockHttpServletResponse response = mvc.perform(get("/v1/events/" + idEvent)
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -115,7 +122,7 @@ public class EventControllerTest {
         given(eventService.getEventById(anyString())).willThrow(new EntityNotFoundException("Event not found"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(get("/v1/events/event/" + idEvent)
+        MockHttpServletResponse response = mvc.perform(get("/v1/events/" + idEvent)
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -134,7 +141,7 @@ public class EventControllerTest {
         given(eventService.getAllEvents()).willReturn(setEventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(get("/v1/events/")
+        MockHttpServletResponse response = mvc.perform(get("/v1/events")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -151,7 +158,7 @@ public class EventControllerTest {
         given(eventService.getAllEvents()).willReturn(setEventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(get("/v1/events/")
+        MockHttpServletResponse response = mvc.perform(get("/v1/events")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -170,10 +177,9 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString())).willReturn(eventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(put("/v1/events/event?eventId=42424c")
+        MockHttpServletResponse response = mvc.perform(patch("/v1/events/%s/add-user", idEvent)
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
-                        .content(idEvent)
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse();
@@ -188,7 +194,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString())).willThrow(new EntityNotFoundException("Event not found"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(put("/v1/events/event?eventId=4244c")
+        MockHttpServletResponse response = mvc.perform(patch("/v1/events/%s/add-user", "4244c2")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .content(idEvent)
@@ -206,7 +212,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString())).willThrow(new UserException("User already registered to the event"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(put("/v1/events/event?eventId=1444c")
+        MockHttpServletResponse response = mvc.perform(patch("/v1/events/1444c/add-user")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .content(idEvent)
@@ -225,7 +231,7 @@ public class EventControllerTest {
         given(eventService.closeEventVote(anyString())).willReturn(eventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/event/%s/close", idEvent))
+        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s/close", idEvent))
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -242,7 +248,7 @@ public class EventControllerTest {
         given(eventService.closeEventVote(anyString())).willThrow(new EntityNotFoundException("Event not found"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/event/%s/close", idEvent))
+        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s/close", idEvent))
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -259,7 +265,7 @@ public class EventControllerTest {
         given(eventService.closeEventVote(anyString())).willThrow(new UserIsNotOwnerException("Not allowed to close the vote of event"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/event/%s/close", idEvent))
+        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s/close", idEvent))
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -280,7 +286,7 @@ public class EventControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         MockHttpServletResponse response = mvc.perform(
-                put(String.format("/v1/events/event/options/option/vote?idEvent=%s&idEventOption=%s", idEvent, idEventOption))
+                patch(String.format("/v1/events/%s/options/%s/vote", idEvent, idEventOption))
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -300,7 +306,7 @@ public class EventControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         MockHttpServletResponse response = mvc.perform(
-                        put(String.format("/v1/events/event/options/option/vote?idEvent=%s&idEventOption=%s", idEvent, idEventOption))
+                patch(String.format("/v1/events/%s/options/%s/vote", idEvent, idEventOption))
                                 .header("Authorization", "Bearer saraza123")
                                 .requestAttr("javax.servlet.http.HttpServletRequest", request)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -318,7 +324,7 @@ public class EventControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         MockHttpServletResponse response = mvc.perform(
-                        put(String.format("/v1/events/event/options/option/vote?idEvent=%s&idEventOption=%s", idEvent, idEventOption))
+                patch(String.format("/v1/events/%s/options/%s/vote", idEvent, idEventOption))
                                 .header("Authorization", "Bearer saraza123")
                                 .requestAttr("javax.servlet.http.HttpServletRequest", request)
                                 .accept(MediaType.APPLICATION_JSON))
@@ -336,7 +342,7 @@ public class EventControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         MockHttpServletResponse response = mvc.perform(
-                        put(String.format("/v1/events/event/options/option/vote?idEvent=%s&idEventOption=%s", idEvent, idEventOption))
+                patch(String.format("/v1/events/%s/options/%s/vote", idEvent, idEventOption))
                                 .header("Authorization", "Bearer saraza123")
                                 .requestAttr("javax.servlet.http.HttpServletRequest", request)
                                 .accept(MediaType.APPLICATION_JSON))
