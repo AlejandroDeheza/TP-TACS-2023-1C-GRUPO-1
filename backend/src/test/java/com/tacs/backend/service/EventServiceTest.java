@@ -198,7 +198,7 @@ public class EventServiceTest {
       utilities.when(Utils::getCurrentUsername).thenReturn("username");
       assertDoesNotThrow(() -> eventService.registerEvent("ididid"));
     }
-    assertEquals(1, event.getRegisteredUsers().stream().count());
+    assertEquals(1, (long) event.getRegisteredUsers().size());
     Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
     Mockito.verify(eventMapper).entityToDto(Mockito.any());
