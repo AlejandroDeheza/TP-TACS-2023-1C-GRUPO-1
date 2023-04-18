@@ -29,11 +29,9 @@ public class EventService {
     private final UserRepository userRepository;
     private final EventMapper eventMapper;
     private final EventOptionMapper eventOptionMapper;
-    private final RateLimiterService rateLimiterService;
 
-    public EventDto createEvent(EventDto request, String token) {
+    public EventDto createEvent(EventDto request) {
 
-        reachedMaximumRequest(token);
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
@@ -49,14 +47,12 @@ public class EventService {
         return eventMapper.entityToDto(this.eventRepository.save(event));
     }
 
-    public EventDto getEventById(String id, String token) {
-        reachedMaximumRequest(token);
+    public EventDto getEventById(String id) {
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
     }
 
-    public EventDto registerEvent(String id, String token) {
-        reachedMaximumRequest(token);
+    public EventDto registerEvent(String id) {
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(event.getRegisteredUsers().contains(user)) {
@@ -67,8 +63,7 @@ public class EventService {
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto closeEventVote(String id, String token) {
-        reachedMaximumRequest(token);
+    public EventDto closeEventVote(String id) {
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
@@ -79,8 +74,7 @@ public class EventService {
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto voteEventOption(String idEvent, String idEventOption, String token) {
-        reachedMaximumRequest(token);
+    public EventDto voteEventOption(String idEvent, String idEventOption) {
         EventOption eventOption = eventOptionRepository.findById(idEventOption).orElseThrow(
                 () -> new EntityNotFoundException("Event option not found")
         );
@@ -105,10 +99,4 @@ public class EventService {
         );
     }
 
-    private void reachedMaximumRequest(String token) {
-        boolean reachedMaxRequestAllowed = rateLimiterService.reachedMaxRequestAllowed(token);
-        if (reachedMaxRequestAllowed) {
-            throw new RequestNotAllowException("User reached maximum number of request for applicacion. Try again in a while.");
-        }
-    }
 }
