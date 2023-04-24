@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/v1/events")
 @RequiredArgsConstructor

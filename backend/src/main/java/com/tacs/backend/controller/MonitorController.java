@@ -1,6 +1,5 @@
 package com.tacs.backend.controller;
 
-import com.tacs.backend.dto.EventOptionDto;
 import com.tacs.backend.dto.EventOptionReportDto;
 import com.tacs.backend.dto.MarketingReportDto;
 import com.tacs.backend.dto.ExceptionResponse;
@@ -11,17 +10,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/monitor")
+@RequestMapping("/v1/monitor")
 public class MonitorController {
     private final MonitorService monitorService;
 

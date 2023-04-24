@@ -12,6 +12,8 @@ import com.tacs.backend.repository.EventRepository;
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashSet;
@@ -22,6 +24,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class EventService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventService.class);
     private final EventRepository eventRepository;
     private final EventOptionRepository eventOptionRepository;
     private final UserRepository userRepository;
@@ -46,6 +49,7 @@ public class EventService {
     }
 
     public EventDto getEventById(String id) {
+        LOGGER.info("Role: {}", userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow().getRole());
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
     }
