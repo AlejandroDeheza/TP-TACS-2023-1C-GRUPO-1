@@ -1,5 +1,8 @@
 package com.tacs.backend.service;
 
+import com.tacs.backend.exception.AuthenticationException;
+import com.tacs.backend.exception.UserException;
+import jakarta.security.auth.message.AuthException;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -51,6 +54,9 @@ public class RateLimiterService {
 
     private boolean reachedMaxUserRequestAllowed(String token) {
         UserRequest userRequest = USERS_REQUESTS.get(token);
+        if(userRequest == null) {
+            throw new AuthenticationException("Please authenticate yourself first");
+        }
         userRequest.incrementCounter();
         return userRequest.getRequestCount() > DEFAULT_USER_RPM;
     }
