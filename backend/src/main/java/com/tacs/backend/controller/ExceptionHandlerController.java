@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,7 +18,7 @@ import java.util.Date;
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({AuthenticationException.class, UserException.class, EventStatusException.class})
+    @ExceptionHandler({UserException.class, EventStatusException.class})
     public final ResponseEntity<Object> handleBadRequestException(Exception ex, WebRequest request){
         ExceptionResponse exception = new ExceptionResponse();
         exception.setTimestamp(new Date());
@@ -39,7 +38,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({UserIsNotOwnerException.class})
+    @ExceptionHandler({UserIsNotOwnerException.class, AuthenticationException.class, })
     public final ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest request){
         ExceptionResponse exception = new ExceptionResponse();
         exception.setTimestamp(new Date());
