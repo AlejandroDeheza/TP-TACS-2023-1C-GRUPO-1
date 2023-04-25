@@ -85,4 +85,13 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({Exception.class})
+    public final ResponseEntity<Object> handleOtherException(Exception ex, WebRequest request){
+        ExceptionResponse exception = new ExceptionResponse();
+        exception.setTimestamp(new Date());
+        exception.setMessage(ex.getLocalizedMessage());
+
+        return new ResponseEntity<>(exception, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
