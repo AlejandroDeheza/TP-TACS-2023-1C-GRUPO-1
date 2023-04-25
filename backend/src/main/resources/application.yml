@@ -1,7 +1,9 @@
 application:
   security:
     jwt:
-      expiration: 3600000
+      expiration: 1800000
+      refresh-token:
+        expiration: 43200000
       secret-key: ${SECRET_KEY}
 server:
   port: 8091
@@ -11,5 +13,3 @@ spring:
       uri: mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000
 monitor:
   time-range: ${MONITOR_TIME_RANGE}
-
-
