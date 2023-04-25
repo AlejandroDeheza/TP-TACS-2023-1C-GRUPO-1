@@ -33,7 +33,6 @@ public class SecurityConfiguration {
                 .requestMatchers("/v1/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/v1/monitor/**").hasAuthority(Role.ADMIN.name())
                 //for everything else, the user has to be authenticated
                 .anyRequest()
                 .authenticated()

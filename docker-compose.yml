@@ -20,13 +20,15 @@ services:
 
   backend:
     <<: *common
+    build: ./backend
     image: backend:latest
     environment:
-      - MONGODB_HOST=mongo
-      - MONGODB_PORT=27017
-      - SECRET_KEY = 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
+      MONGODB_HOST: mongo
+      MONGODB_PORT: 27017
+      MONGODB_DATABASE: TP
+      SECRET_KEY: 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
     links:
-        - mongo:mongo
+        - mongo
     ports:
       - "8091:8091"
     networks:
@@ -38,16 +40,16 @@ services:
       - mongo
     volumes:
       - $PWD/.data/backend:/data/db:delegated
-  frontend:
-    <<: *common
-    image: frontend:latest
-    ports:
-      - "3000:3000"
-    networks:
-      tp_network:
-        aliases:
-          - frontend
-        ipv4_address: 172.255.254.105
+  #frontend:
+    #<<: *common
+    #image: frontend:latest
+    #ports:
+      #- "3000:3000"
+    #networks:
+      #tp_network:
+        #aliases:
+          #- frontend
+        #ipv4_address: 172.255.254.105
 networks:
   tp_network:
     driver: bridge

@@ -50,7 +50,6 @@ public class EventService {
     }
 
     public EventDto getEventById(String id) {
-        LOGGER.info("Role: {}", userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow().getRole());
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
     }
