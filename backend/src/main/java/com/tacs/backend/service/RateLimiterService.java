@@ -30,7 +30,7 @@ public class RateLimiterService {
     private static long requestApiInitialTime;
 
     public RateLimiterService() {
-        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
+        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(5,
                 new BasicThreadFactory.Builder().namingPattern("Rate-limiter-pool-%d").daemon(true).build());
         executorService.scheduleAtFixedRate(RateLimiterService::initializeApiRequestLimit,0,5, TimeUnit.SECONDS);
     }
@@ -65,7 +65,7 @@ public class RateLimiterService {
         public UserRequest(long theLastRequestStartTime) {
             lastRequestStartTime = theLastRequestStartTime;
             requestCount = 0;
-            ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
+            ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(5,
                     new BasicThreadFactory.Builder().namingPattern("Rate-limiter-pool-%d").daemon(true).build());
             executorService.scheduleAtFixedRate(() -> {
                 long time = System.currentTimeMillis();

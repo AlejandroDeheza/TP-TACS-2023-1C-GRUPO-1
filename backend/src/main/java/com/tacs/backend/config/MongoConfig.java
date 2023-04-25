@@ -23,8 +23,7 @@ public class MongoConfig {
                         .maxWaitTime(150, TimeUnit.MILLISECONDS))
                 .applyToSocketSettings(builder -> builder.connectTimeout(10, TimeUnit.SECONDS)
                         .readTimeout(15, TimeUnit.SECONDS))
-                .applicationName("ProfileServiceApplication")
-                .retryWrites(true)
+                .applicationName("BackendApplication")
                 .build();
     }
 }
