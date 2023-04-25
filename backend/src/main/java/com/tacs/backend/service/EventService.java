@@ -12,6 +12,7 @@ import com.tacs.backend.repository.EventRepository;
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -70,14 +71,15 @@ public class EventService {
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto closeEventVote(String id) {
+    public EventDto changeEventStatus(String id, String status) {
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
             throw new UserIsNotOwnerException("Not allowed to close the vote of event");
         }
 
-        event.setStatus(Event.Status.VOTE_CLOSED);
+        var state = Event.Status.valueOf(StringUtils.upperCase(status.trim()));
+        event.setStatus(state);
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 

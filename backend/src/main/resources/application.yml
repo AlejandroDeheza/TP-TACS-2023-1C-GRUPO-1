@@ -5,6 +5,7 @@ application:
       refresh-token:
         expiration: 43200000
       secret-key: 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
+      #secret-key: ${SECRET_KEY}
 server:
   port: 8091
 spring:

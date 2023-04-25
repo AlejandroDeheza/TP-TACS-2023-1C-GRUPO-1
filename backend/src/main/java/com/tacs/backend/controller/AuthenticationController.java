@@ -34,6 +34,7 @@ public class AuthenticationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registration successful"),
             @ApiResponse(responseCode = "400", description = "Registration failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @Schema(description = "Register", implementation = RegisterRequest.class)
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody @NonNull RegisterRequest request) {
@@ -44,6 +45,7 @@ public class AuthenticationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Authentication successful"),
             @ApiResponse(responseCode = "400", description = "Authentication failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @Schema(description = "Authenticate", implementation = AuthenticationRequest.class)
     @Operation(summary = "Authenticate a user")
@@ -56,6 +58,7 @@ public class AuthenticationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Refresh successful"),
             @ApiResponse(responseCode = "400", description = "Refresh failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         authenticationService.refreshToken(request, response);

@@ -48,7 +48,6 @@ public class AuthenticationControllerTest {
                 .build();
         authenticationResponse = AuthenticationResponse.builder()
                 .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgxNTczODcwLCJleHAiOjE2ODE2MTcwNzB9.M0LcXFOT3Vff17IGl9oRaMoAdWRxYI_twyZTONALA0U")
-                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgxNTczODg0LCJleHAiOjE2ODE2MTcwODR9.vCwq4BbdWqwNS2WeSM_H7wct5jhU4ny1x6KzBYcbnwQ")
                 .build();
         mvc = MockMvcBuilders.standaloneSetup(authenticationController)
                 .setControllerAdvice(new ExceptionHandlerController())

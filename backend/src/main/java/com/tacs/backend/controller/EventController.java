@@ -33,7 +33,8 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Event created successfully"),
             @ApiResponse(responseCode = "400", description = "Event created failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many requests")
+            @ApiResponse(responseCode = "429", description = "Too many requests"),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
 
     })
     @Schema(description = "Create", implementation = EventDto.class)
@@ -45,9 +46,10 @@ public class EventController {
     @Operation(summary = "Get all events", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event found successfully"),
-            @ApiResponse(responseCode = "429", description = "Too many requests")
+            @ApiResponse(responseCode = "429", description = "Too many requests"),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    public ResponseEntity<Set<EventDto>> getAllEvents(HttpServletRequest request) {
+    public ResponseEntity<Set<EventDto>> getAllEvents() {
         return ResponseEntity.ok(this.eventService.getAllEvents());
 
     }
@@ -57,36 +59,39 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Event found successfully"),
             @ApiResponse(responseCode = "404", description = "Event not found", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many requests")
+            @ApiResponse(responseCode = "429", description = "Too many requests"),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     public ResponseEntity<EventDto> getEventById(@NotBlank @PathVariable("id") String id) {
         return ResponseEntity.ok(this.eventService.getEventById(id));
 
     }
     
-    @PatchMapping("/{eventId}/add-user")
+    @PatchMapping("/{eventId}/user")
     @Operation(summary = "Register an user to an event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registered successfully"),
             @ApiResponse(responseCode = "404", description = "Registration failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many requests")
+            @ApiResponse(responseCode = "429", description = "Too many requests"),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
 
     })
     public ResponseEntity<EventDto> registerEvent(@NotBlank @PathVariable String eventId) {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId));
     }
 
-    @PatchMapping("/{eventId}/close")
-    @Operation(summary = "Close a event's voting", security = @SecurityRequirement(name = "bearerAuth"))
+    @PatchMapping("/{eventId}")
+    @Operation(summary = "Change a event's status", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Event's vote closed successfully"),
-            @ApiResponse(responseCode = "400", description = "Event's vote closed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Event's vote closed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many requests")
+            @ApiResponse(responseCode = "200", description = "Event's status changed successfully"),
+            @ApiResponse(responseCode = "400", description = "Event's status changed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Event's status changed failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "429", description = "Too many requests"),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
 
     })
-    public ResponseEntity<EventDto> closeEventVote(@NotBlank @PathVariable String eventId) {
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.closeEventVote(eventId));
+    public ResponseEntity<EventDto> changeEventStatus(@NotBlank @PathVariable String eventId, @NotBlank@RequestParam String status) {
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.changeEventStatus(eventId, status));
     }
 
     @PatchMapping("/{eventId}/options/{optionId}/vote")
@@ -94,10 +99,11 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vote successfully"),
             @ApiResponse(responseCode = "404", description = "Vote failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = "429", description = "Too many requests")
+            @ApiResponse(responseCode = "429", description = "Too many requests"),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
 
     })
-    public ResponseEntity<EventDto> voteEventOption(@NotBlank @PathVariable String eventId, @NotBlank @PathVariable String optionId, HttpServletRequest request) {
+    public ResponseEntity<EventDto> voteEventOption(@NotBlank @PathVariable String eventId, @NotBlank @PathVariable String optionId) {
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.voteEventOption(eventId, optionId));
     }
 

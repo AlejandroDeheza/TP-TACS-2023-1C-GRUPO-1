@@ -24,6 +24,7 @@ services:
     environment:
       - MONGODB_HOST=mongo
       - MONGODB_PORT=27017
+      - SECRET_KEY = 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
     links:
         - mongo:mongo
     ports:

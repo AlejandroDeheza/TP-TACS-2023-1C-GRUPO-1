@@ -31,6 +31,7 @@ public class MonitorController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Report ready"),
             @ApiResponse(responseCode = "400", description = "Report querying failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     public ResponseEntity<MarketingReportDto> getCounterReport() {
         return ResponseEntity.ok(this.monitorService.getMarketingReport());
@@ -41,6 +42,7 @@ public class MonitorController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Report ready"),
             @ApiResponse(responseCode = "400", description = "Report querying failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
+            @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     public ResponseEntity<List<EventOptionReportDto>> getOptionsReport() {
         return ResponseEntity.ok(this.monitorService.getLastVotedEventOptions());

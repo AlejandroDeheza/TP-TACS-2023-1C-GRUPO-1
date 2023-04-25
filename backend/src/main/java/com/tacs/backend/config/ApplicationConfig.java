@@ -1,9 +1,14 @@
 package com.tacs.backend.config;
 
 import com.tacs.backend.repository.UserRepository;
+import com.tacs.backend.security.JwtService;
+import com.tacs.backend.service.AuthenticationService;
+import com.tacs.backend.service.RateLimiterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,11 +23,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
-
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
     }
 
     @Bean
@@ -38,8 +42,10 @@ public class ApplicationConfig {
         return config.getAuthenticationManager();
     }
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
