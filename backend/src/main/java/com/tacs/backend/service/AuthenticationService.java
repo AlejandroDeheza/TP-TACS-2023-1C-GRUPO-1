@@ -85,7 +85,7 @@ public class AuthenticationService {
         final String refreshToken;
         final String username;
         if (authHeader == null || !authHeader.startsWith(BEARER)) {
-            return;
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
         refreshToken = authHeader.substring(StringUtils.length(BEARER));
         username = jwtService.extractUsername(refreshToken);

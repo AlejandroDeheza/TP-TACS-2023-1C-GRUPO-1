@@ -3,7 +3,7 @@
 - docker-compose up -d
 
 ## Rebuild and Run
-- docker compose up -d --build 
+- docker-compose up --build -d
 
 ## Instrucción de pruebas
 - Swagger: http://localhost:8091/swagger-ui/index.html#/
