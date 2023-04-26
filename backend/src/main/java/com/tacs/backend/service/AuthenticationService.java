@@ -53,10 +53,13 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
+                .username(savedUser.getUsername())
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
                 .accessToken(jwtToken)
                 .build();
     }
@@ -74,6 +77,9 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .accessToken(jwtToken)
                 .build();
     }
