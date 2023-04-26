@@ -1,0 +1,1 @@
+//Here goes the types for the request that we are going to make to the backend
