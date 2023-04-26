@@ -1,12 +1,19 @@
 package com.tacs.backend.service;
 
+import com.tacs.backend.exception.AuthenticationException;
+import com.tacs.backend.exception.UserException;
+import jakarta.security.auth.message.AuthException;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RateLimiterService {
@@ -14,23 +21,21 @@ public class RateLimiterService {
 
     private static final Integer DEFAULT_USER_RPM = 2;
 
-    private static ConcurrentHashMap<String, UserRequest> usersRequests = new ConcurrentHashMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiterService.class);
+
+    private static final ConcurrentHashMap<String, UserRequest> USERS_REQUESTS = new ConcurrentHashMap<>();
 
     private static Integer apiRPMRequestCount=0;
 
     private static long requestApiInitialTime;
 
     public RateLimiterService() {
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                initializeApiRequestLimit();
-                System.out.printf("\nrequestApiInitialTime: %s\n", requestApiInitialTime);
-            }
-        };
-
-        timer.schedule(task, 0, 1000*5); //every 5 seconds
+        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
+                new BasicThreadFactory.Builder().namingPattern("Rate-limiter-pool-%d").daemon(true).build());
+        executorService.scheduleAtFixedRate(() -> {
+            initializeApiRequestLimit();
+            LOGGER.info("RequestApiInitialTime: {}", requestApiInitialTime);
+        },0,5, TimeUnit.SECONDS);
     }
 
     private static void initializeApiRequestLimit() {
@@ -39,7 +44,7 @@ public class RateLimiterService {
     }
 
     public void initializeUserRequest(String token) {
-        usersRequests.put(token, new UserRequest(System.currentTimeMillis()));
+        USERS_REQUESTS.put(token, new UserRequest(System.currentTimeMillis()));
     }
 
     public boolean reachedMaxRequestAllowed(String token)  {
@@ -48,35 +53,35 @@ public class RateLimiterService {
     }
 
     private boolean reachedMaxUserRequestAllowed(String token) {
-      UserRequest userRequest = usersRequests.get(token);
-      userRequest.incrementCounter();
-      return userRequest.getRequestCount() > DEFAULT_USER_RPM;
+        UserRequest userRequest = USERS_REQUESTS.get(token);
+        if(userRequest == null) {
+            throw new AuthenticationException("Please authenticate yourself first");
+        }
+        userRequest.incrementCounter();
+        return userRequest.getRequestCount() > DEFAULT_USER_RPM;
     }
 
     @Getter
     @Setter
     static class UserRequest {
-            private long lastRequestStartTime;
-            private Integer requestCount;
-            public UserRequest(long theLastRequestStartTime) {
-                lastRequestStartTime = theLastRequestStartTime;
-                requestCount = 0;
-                Timer timer = new Timer();
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        long time = System.currentTimeMillis();
-                        updateLastRequestStartTime(time);
-                    }
-                };
-                timer.schedule(task, 0, 1000*5);
-            }
-            public void incrementCounter() {
-                this.requestCount++;
-            }
-            public void updateLastRequestStartTime(long time) {
-                this.lastRequestStartTime = time;
-                this.requestCount = 0;
-            }
+        private long lastRequestStartTime;
+        private Integer requestCount;
+        public UserRequest(long theLastRequestStartTime) {
+            lastRequestStartTime = theLastRequestStartTime;
+            requestCount = 0;
+            ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
+                    new BasicThreadFactory.Builder().namingPattern("Rate-limiter-pool-%d").daemon(true).build());
+            executorService.scheduleAtFixedRate(() -> {
+                long time = System.currentTimeMillis();
+                updateLastRequestStartTime(time);
+            },0,5, TimeUnit.SECONDS);
+        }
+        public void incrementCounter() {
+            this.requestCount++;
+        }
+        public void updateLastRequestStartTime(long time) {
+            this.lastRequestStartTime = time;
+            this.requestCount = 0;
+        }
     }
 }

@@ -9,7 +9,8 @@
 
 # Utilizando Makefile para docker
 - make first (First init of the project)
-- make build (Build the project)
+- make build (Build the backend)
+- make build-front (Build the frontend)
 - make start (Start the project)
 - make clean (Clean the project)
 - make stop (Stop the project)

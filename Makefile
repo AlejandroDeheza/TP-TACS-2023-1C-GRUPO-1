@@ -6,6 +6,11 @@ PWD=$(CURDIR)
 build: ## build image
 	docker build -t backend:latest ./backend
 
+# === build ====================================================================
+.PHONY: build-front
+build-front: ## build image
+	docker build -t frontend:latest ./frontend
+
 # === start ====================================================================
 .PHONY: start
 start: ## starts containers
