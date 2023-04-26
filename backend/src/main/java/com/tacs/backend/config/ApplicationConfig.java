@@ -1,14 +1,9 @@
 package com.tacs.backend.config;
 
 import com.tacs.backend.repository.UserRepository;
-import com.tacs.backend.security.JwtService;
-import com.tacs.backend.service.AuthenticationService;
-import com.tacs.backend.service.RateLimiterService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

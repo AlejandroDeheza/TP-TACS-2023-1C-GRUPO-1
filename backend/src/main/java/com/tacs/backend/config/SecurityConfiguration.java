@@ -1,6 +1,5 @@
 package com.tacs.backend.config;
 
-import com.tacs.backend.model.Role;
 import com.tacs.backend.security.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

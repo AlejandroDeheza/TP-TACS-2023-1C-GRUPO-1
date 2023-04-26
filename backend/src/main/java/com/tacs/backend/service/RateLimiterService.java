@@ -1,8 +1,6 @@
 package com.tacs.backend.service;
 
-import com.tacs.backend.exception.AuthenticationException;
-import com.tacs.backend.exception.UserException;
-import jakarta.security.auth.message.AuthException;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
