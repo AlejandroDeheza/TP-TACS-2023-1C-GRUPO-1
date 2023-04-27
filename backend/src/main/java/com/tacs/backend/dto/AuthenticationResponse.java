@@ -15,13 +15,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponse {
     @JsonProperty("id")
-    @Schema(description = "User id", hidden = true)
+    @Schema(hidden = true)
     private String id = null;
     @JsonProperty("first_name")
+    @Schema(hidden = true)
     private String firstName;
     @JsonProperty("last_name")
+    @Schema(hidden = true)
     private String lastName;
     @JsonProperty("username")
+    @Schema(hidden = true)
     private String username;
     @JsonProperty("access_token")
     private String accessToken;

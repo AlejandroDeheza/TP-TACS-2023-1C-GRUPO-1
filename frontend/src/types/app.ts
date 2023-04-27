@@ -1,1 +1,17 @@
-//Here goes the types for the request that we are going to make to the backend
+import { type } from "os"
+import { list } from "postcss"
+
+type AuthenticationRequest = {
+    username: string,
+    password: string,
+}
+
+type EventRequest = {
+    name: string,
+    description: string,
+    event_options: EventOptions[],
+}
+
+type EventOptions = {
+    date_time: Date,
+}
