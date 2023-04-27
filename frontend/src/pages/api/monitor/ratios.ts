@@ -5,7 +5,7 @@ import axios from 'axios';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const jwt = getCookie('jwt', { req, res })
 
-  axios.get("http://localhost:8091/v1/monitor/ratios", {
+  axios.get("http://backend:8091/v1/monitor/ratios", {
     headers: {
       'Authorization': `Bearer ${jwt}`,
     }
