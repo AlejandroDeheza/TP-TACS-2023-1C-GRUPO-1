@@ -34,7 +34,6 @@ public class EventController {
             @ApiResponse(responseCode = "400", description = "Event created failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
             @ApiResponse(responseCode = "429", description = "Too many requests"),
             @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-
     })
     @Schema(description = "Create", implementation = EventDto.class)
     public ResponseEntity<EventDto> createEvent(@Valid @NonNull @RequestBody EventDto requestBody) {

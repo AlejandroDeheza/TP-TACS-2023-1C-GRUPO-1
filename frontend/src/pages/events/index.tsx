@@ -1,12 +1,12 @@
-import AllEventsComponent from "../../components/events/all-events-component";
 
 
-const AllEvents = () => {
+
+const Events = () => {
   return (
     <div>
-      <AllEventsComponent />
+      <h1>All Events</h1>
     </div>
   )
 }
 
-export default AllEvents;
+export default Events;

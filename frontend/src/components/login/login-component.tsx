@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
 import { setCookie } from 'nookies'
 
-export default function LoginComponent(req: any, res: any) {
+export default function LoginComponent(req: any, res: any){
   const router = useRouter();
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -14,12 +14,9 @@ export default function LoginComponent(req: any, res: any) {
 
   async function authenticate(data: object) {
     try {
-      const response = await fetch("http://localhost:8091/v1/auth/authentication", {
+      const response = await fetch("/api/auth/authentication", {
         method: "POST",
         body: JSON.stringify(data),
-        headers: {
-          "content-type": "application/json",
-        },
       });
 
       const userData = await response.json()
@@ -32,7 +29,6 @@ export default function LoginComponent(req: any, res: any) {
         path: '/',
       });
 
-      router.push("/events")
     } catch (error) {
       console.log(error);
     }
