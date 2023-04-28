@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Report, EventOptionReport } from "../types/app"
+import Header from "../components/header/header-component"
+import Footer from "../components/footer/footer-component"
 
 const Monitor = () => {
     const [reportData, setReportData] = useState<Report>()
@@ -34,6 +36,7 @@ const Monitor = () => {
 
     return (
         <main>
+            <Header />
             <h1>Events count: {reportData?.events_count}</h1>
             <h1>Options count: {reportData?.options_count}</h1>
             <ul>
@@ -43,6 +46,7 @@ const Monitor = () => {
                     </li>
                 ))}
             </ul>
+            <Footer />
         </main>
     )
 }

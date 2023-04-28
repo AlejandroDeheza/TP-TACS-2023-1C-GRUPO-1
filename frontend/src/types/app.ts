@@ -6,6 +6,14 @@ export interface AuthenticationRequest {
     password: string
 }
 
+export interface RegisterRequest {
+    first_name: string,
+    last_name: string,
+    username: string,
+    password: string,
+    password_confirmation: string
+}
+
 export interface EventOptions {
     id: string,
     date_time: Date,

@@ -1,1 +1,0 @@
-//here goes the code for the footer
