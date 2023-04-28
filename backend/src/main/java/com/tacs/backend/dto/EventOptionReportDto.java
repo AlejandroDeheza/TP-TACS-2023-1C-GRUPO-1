@@ -16,6 +16,9 @@ import java.util.Date;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventOptionReportDto {
+    @JsonProperty("id")
+    @Schema(description = "Event option id", hidden = true)
+    private String id = null;
     @JsonProperty("date_time")
     @Schema(description = "Event option date time")
     private Date dateTime;

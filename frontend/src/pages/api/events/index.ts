@@ -4,7 +4,7 @@ import { getCookie } from 'cookies-next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const jwt = getCookie('jwt', { req, res })
-  const url = "http://backend:8091/v1/events"
+  const url = `http://${process.env.domain}:8091/v1/events`
   if (req.method == "GET") {
     axios.get(url, {
       headers: {

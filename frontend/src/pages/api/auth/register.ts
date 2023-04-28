@@ -3,7 +3,7 @@ import { setCookie } from 'cookies-next';
 import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  axios.post("http://backend:8091/v1/auth/register" ,req.body, {
+  axios.post(`http://${process.env.domain}:8091/v1/auth/register` ,req.body, {
     headers: {
       "content-type": "application/json",
     },

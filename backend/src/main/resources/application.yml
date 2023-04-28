@@ -1,9 +1,9 @@
 application:
   security:
     jwt:
-      expiration: 1800000
+      expiration: 86400000
       refresh-token:
-        expiration: 43200000
+        expiration: 86400000
       secret-key: ${SECRET_KEY}
 server:
   port: 8091
