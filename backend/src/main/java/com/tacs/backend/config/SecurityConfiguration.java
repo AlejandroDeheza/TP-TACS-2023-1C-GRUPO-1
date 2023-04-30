@@ -34,7 +34,9 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        http.
+                cors()
+                .and()
                 //disabling csrf since we won't use form login
                 .csrf()
                 .disable()

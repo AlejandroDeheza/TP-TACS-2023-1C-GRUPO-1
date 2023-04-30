@@ -64,7 +64,6 @@ export default function SignUp() {
 
                 <button type="submit">Sign Up</button>
             </form>
-            <Footer />
         </main>
     );
 }

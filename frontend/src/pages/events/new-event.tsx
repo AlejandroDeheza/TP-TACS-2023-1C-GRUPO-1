@@ -28,7 +28,7 @@ export default function NewEvent() {
 
     const handleChangeInput = (i: number,e: any) => {
         const values = [...fields]
-        values[i][e.target.name] = e.target.value
+        //values[i][e.target.name] = e.target.value
         setFields(values)
     }
 
