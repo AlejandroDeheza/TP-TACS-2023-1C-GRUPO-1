@@ -2,10 +2,17 @@ import { useState, useEffect } from "react";
 import { Event } from "../../types/app"
 import Link from "next/link"
 import Header from "../../components/header/header-component"
-import Footer from "../../components/footer/footer-component"
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { getCookie } from "cookies-next";
 
 export default function Events() {
     const [data, setData] = useState<Event[]>([])
+    const [showClose, setShowClose] = useState(false)
+    const username = getCookie('username')
 
     const fetchData = () => {
         fetch("/api/events")
@@ -13,41 +20,60 @@ export default function Events() {
                 return response.json()
             })
             .then((reply) => {
-                console.log(reply)
                 setData(reply)
             })
     }
+
+    const handleClose = (eventId: string) => {
+        fetch(`/api/events/${eventId}?status=VOTE_CLOSED`, {
+            method: "PATCH",
+        }).then((response) => {
+            console.log(response)
+            return response.json()
+        }).then((reply) => {
+            fetchData()
+        })
+    }
+
+    const getColumnsForRow = () => {
+        let items = data.map((event => {
+            return (
+                <Col key={event.id}>
+                    <Card bg="light" key={event.id} style={{ width: '15rem'}} className="mb-3">
+                        <Card.Header>{event.name}</Card.Header>
+                        <Card.Body>
+                            <Card.Text>
+                                Status: {event.status}
+                            </Card.Text>
+                            <Card.Text>
+                                Owner User: {event?.owner_user.username}
+                            </Card.Text>
+                        </Card.Body>
+                        <Card.Footer>
+                            <Button variant="primary" href={"/events/" + event.id}>Details</Button>
+                            {showClose !== ((username == event.owner_user.username) && ("VOTE_CLOSED" !== event.status)) && (
+                                <Button variant="primary" className="float-right" onClick={() => handleClose(event.id)}>Close</Button>
+                            )}
+                        </Card.Footer>
+                    </Card>
+                </Col>
+            );
+        }));
+        return items;
+    };
 
     useEffect(() => {
         fetchData()
     }, [])
 
     return (
-        <main>
+        <main >
             <Header />
-            <ul>
-                {data.map((item) => (
-                    <li key={item.id}>
-                        <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow 
-                        dark:bg-gray-800 dark:border-gray-700">
-                            <Link href={"/events/" + item.id}>
-                                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                    {item.name}
-                                </h5>
-                            </Link>
-
-                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Description: {item.description}</p>
-                            <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Status: {item.status}</p>
-
-                            <Link href={"/events/" + item.id} className="inline-flex items-center px-3 py-2 text-sm 
-                            font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                Read more
-                            </Link>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-            <Footer />
+            <Container>
+                <Row xs={1} md={4}>
+                    {getColumnsForRow()}
+                </Row>
+            </Container>
         </main>
     );
 }

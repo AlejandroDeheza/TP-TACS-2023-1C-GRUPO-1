@@ -14,18 +14,29 @@ export interface RegisterRequest {
     password_confirmation: string
 }
 
-export interface EventOptions {
+export interface EventOption {
     id: string,
-    date_time: Date,
+    date_time: string,
     vote_users: User[],
     vote_quantity: number
     update_time: string,
+}
+
+export interface EventOptionRequest {
+    date_time: string,
+}
+
+export interface EventRequest {
+    name: string,
+    description: string,
+    event_options: EventOptionRequest[],
 }
 
 export interface User {
     id: string,
     first_name: string,
     last_name: string,
+    username:string
 }
 
 export interface Event {
@@ -33,8 +44,8 @@ export interface Event {
     name: string,
     description: string,
     status: string,
-    event_options: EventOptions[],
-    owner_user: User,
+    event_options: EventOption[],
+    owner_user: User ,
     registered_users: User[],
     create_date: string
 }

@@ -3,6 +3,7 @@ import Footer from "../components/footer/footer-component"
 import { useRouter } from "next/router"
 import { RegisterRequest } from "@/types/app"
 import { FormEvent, useState } from "react"
+
 export default function SignUp() {
     const router = useRouter()
     const [registerData, setRegisterData] = useState<RegisterRequest>({
