@@ -1,5 +1,6 @@
 package com.tacs.backend.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tacs.backend.dto.ExceptionResponse;
 import com.tacs.backend.exception.AuthenticationException;
@@ -24,7 +25,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -39,23 +43,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().contains(AUTH_PATH)) {
+        if (request.getServletPath().contains(AUTH_PATH) || request.getServletPath().contains("/swagger-ui")) {
             filterChain.doFilter(request, response);
             return;
         }
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        String username = null;
+
         if (authHeader == null ||!authHeader.startsWith(BEARER)) {
-            handleInvalidJwt(response, "The headers has no Authorization or dose not begin with Bearer");
+            filterChain.doFilter(request, response);
             return;
         }
+        String username = null;
         jwt = authHeader.substring(StringUtils.length(BEARER));
         try {
             username = jwtService.extractUsername(jwt);
         } catch (AuthenticationException e) {
             handleInvalidJwt(response, e.getMessage());
-           return;
+            return;
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);

@@ -1,5 +1,6 @@
 package com.tacs.backend.config;
 
+import com.tacs.backend.security.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,8 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
 
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+
     private static final String[] AUTH_WHITELIST = {
             "/v1/auth/**",
             "/v3/api-docs/**",
@@ -35,6 +38,9 @@ public class SecurityConfiguration {
                 //disabling csrf since we won't use form login
                 .csrf()
                 .disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(unauthorizedHandler)
+                .and()
                 .authorizeHttpRequests()
                 //giving every permission to every request
                 .requestMatchers(AUTH_WHITELIST).permitAll()
@@ -55,4 +61,5 @@ public class SecurityConfiguration {
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext());
         return http.build();
     }
+
 }
