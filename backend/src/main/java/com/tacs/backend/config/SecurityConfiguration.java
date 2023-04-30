@@ -21,19 +21,23 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
 
+    private static final String[] AUTH_WHITELIST = {
+            "/v1/auth/**",
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 //disabling csrf since we won't use form login
-                .cors()
-                .and()
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
                 //giving every permission to every request
-                .requestMatchers("/v1/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers(AUTH_WHITELIST).permitAll()
                 //for everything else, the user has to be authenticated
                 .anyRequest()
                 .authenticated()
