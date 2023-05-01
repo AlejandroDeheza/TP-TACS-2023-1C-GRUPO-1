@@ -2,6 +2,9 @@ import React, { useState, FormEvent, useRef } from 'react';
 import { AuthenticationRequest } from '../types/app'
 import { useRouter } from "next/router";
 import Link from 'next/link';
+import { FaUserAlt, FaLockOpen, FaSignInAlt } from "react-icons/fa";
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 export default function Login(req: any, res: any) {
   const router = useRouter()
@@ -47,38 +50,39 @@ export default function Login(req: any, res: any) {
           <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
             <div className="mb-4">
               <div className='mb-6'>
-                <h1 className="font-bold text-gray-700 text-xl tracking-tight">TACS</h1>
+                <h1 className="font-bold text-gray-700 text-xl tracking-tight text-center">TACS</h1>
               </div>
               <div className='mb-6'>
-                <span className="font-semibold text-gray-700 text-xl tracking-tight">Login</span>
+                <i className="bi bi-0-square-fill"></i>
+                <span className="font-semibold text-gray-700 text-lg tracking-tight">Login</span>
               </div>
             </div>
             <div className="mb-6">
-
-              <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="username">
-                Username
+              <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="username"><FaUserAlt className="inline" />  Username
               </label>
-              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                type="text" name="username" value={authenticationData.username} onChange={handleChange} required />
+
+              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
+                type="text" name="username" placeholder="Username" value={authenticationData.username} onChange={handleChange} required />
 
               <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password">
-                Password
+                <FaLockOpen className="inline" />  Password
               </label>
-              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                type="password" name="password" value={authenticationData.password} onChange={handleChange} required />
+              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline mb-3"
+                type="password" name="password" placeholder="**********" value={authenticationData.password} onChange={handleChange} required />
               {errorMessage && (<p className="error text-red-500 text-xs italic"> {errorMessage} </p>)}
             </div>
             <div className="flex items-center justify-between">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                Sign In
+              <button className="bg-blue-700 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                <FaSignInAlt className="inline mb-1" />  Sign In
               </button>
-              <Link className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/sign-up">
-                Sign Up?
+              <Link className="inline-block align-baseline font-bold text-md text-blue-500 hover:text-blue-800" href="/sign-up">Sign Up?
               </Link>
             </div>
           </form>
         </div>
       </main>
+
     </div>
+    
   );
 };

@@ -2,6 +2,7 @@ import { useRouter } from "next/router"
 import { RegisterRequest } from "@/types/app"
 import { FormEvent, useState } from "react"
 import Link from "next/link";
+import { FaUserAlt, FaLockOpen, FaSignInAlt, FaUserPlus } from "react-icons/fa";
 
 export default function SignUp() {
   const router = useRouter()
@@ -76,10 +77,10 @@ export default function SignUp() {
           <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
             <div className="mb-4">
               <div className='mb-6'>
-                <h1 className="font-bold text-gray-700 text-xl tracking-tight">TACS</h1>
+                <h1 className="font-bold text-gray-700 text-xl tracking-tight text-center">TACS</h1>
               </div>
               <div className='mb-6'>
-                <span className="font-semibold text-gray-700 text-xl tracking-tight">Sign Up</span>
+                <span className="font-semibold text-gray-700 text-lg tracking-tight">Sign Up</span>
               </div>
             </div>
             <div className="mb-6">
@@ -87,36 +88,36 @@ export default function SignUp() {
                 First Name
               </label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
-                type="text" name="first_name" value={registerData.first_name} onChange={handleChange} required />
+                type="text" name="first_name" placeholder="First Name" value={registerData.first_name} onChange={handleChange} required />
               <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="last_name">
                 Last Name
               </label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
-                type="text" name="last_name" value={registerData.last_name} onChange={handleChange} required />
+                type="text" name="last_name" placeholder="Last Name" value={registerData.last_name} onChange={handleChange} required />
               <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="Username">
                 Username
               </label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
-                type="text" name="username" value={registerData.username} onChange={handleChange} required />
+                type="text" name="username" placeholder="Username" value={registerData.username} onChange={handleChange} required />
                 {usernameErrorMessage && (<p className="error text-red-500 text-xs italic mb-2"> {usernameErrorMessage} </p>)}
               <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password">
                 Password
               </label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
-                type="password" name="password" value={registerData.password} onChange={handleChange} required />
+                type="password" name="password" placeholder="**********" value={registerData.password} onChange={handleChange} required />
               {errorMessage && (<p className="error text-red-500 text-xs italic mb-2"> {errorMessage} </p>)}
               <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password_confirmation">
                 Password Confirmation
               </label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
-                type="password" name="password_confirmation" value={registerData.password_confirmation} onChange={handleChange} required />
+                type="password" name="password_confirmation" placeholder="**********" value={registerData.password_confirmation} onChange={handleChange} required />
               {errorMessage && (<p className="error text-red-500 text-xs italic mb-2"> {errorMessage} </p>)}
             </div>
             <div className="flex items-center justify-between">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                Sign Up
+              <button className="bg-blue-700 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+              <FaUserPlus className="inline mb-1" />  Sign Up
               </button>
-              <Link className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/">
+              <Link className="inline-block align-baseline font-bold text-md text-blue-500 hover:text-blue-800" href="/">
                 Sign In?
               </Link>
             </div>
