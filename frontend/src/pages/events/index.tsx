@@ -8,8 +8,10 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 
 export default function Events() {
+    const router = useRouter()
     const [data, setData] = useState<Event[]>([])
     const [showClose, setShowClose] = useState(false)
     const username = getCookie('username')
@@ -20,7 +22,12 @@ export default function Events() {
                 return response.json()
             })
             .then((reply) => {
-                setData(reply)
+                if (reply.message) {                    
+                    alert(reply.message)
+                }
+                else {
+                    setData(reply)
+                }
             })
     }
 
@@ -39,7 +46,7 @@ export default function Events() {
         let items = data.map((event => {
             return (
                 <Col key={event.id}>
-                    <Card bg="light" key={event.id} style={{ width: '15rem'}} className="mb-3">
+                    <Card bg="light" key={event.id} style={{ width: '15rem' }} className="mb-3">
                         <Card.Header>{event.name}</Card.Header>
                         <Card.Body>
                             <Card.Text>
@@ -50,9 +57,11 @@ export default function Events() {
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
-                            <Button variant="primary" href={"/events/" + event.id}>Details</Button>
+                            <Link href={"/events/" + event.id}>
+                                <Button variant="primary">Details</Button>
+                            </Link>
                             {showClose !== ((username == event.owner_user.username) && ("VOTE_CLOSED" !== event.status)) && (
-                                <Button variant="primary" className="float-right" onClick={() => handleClose(event.id)}>Close</Button>
+                                <Button variant="danger" className="float-right" onClick={() => handleClose(event.id)}>Close Vote</Button>
                             )}
                         </Card.Footer>
                     </Card>
@@ -63,6 +72,10 @@ export default function Events() {
     };
 
     useEffect(() => {
+        if(!username) {
+            router.push("/")
+            return
+        }
         fetchData()
     }, [])
 

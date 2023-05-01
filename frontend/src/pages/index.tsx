@@ -1,13 +1,7 @@
 import React, { useState, FormEvent, useRef } from 'react';
 import { AuthenticationRequest } from '../types/app'
 import { useRouter } from "next/router";
-import error from 'next/error';
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
-import Header from "../components/header/header-component"
-
+import Link from 'next/link';
 
 export default function Login(req: any, res: any) {
   const router = useRouter()
@@ -58,14 +52,16 @@ export default function Login(req: any, res: any) {
               <div className='mb-6'>
                 <span className="font-semibold text-gray-700 text-xl tracking-tight">Login</span>
               </div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                Username
-              </label>
-              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text" name="username" value={authenticationData.username} onChange={handleChange} required />
             </div>
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+
+              <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="username">
+                Username
+              </label>
+              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
+                type="text" name="username" value={authenticationData.username} onChange={handleChange} required />
+
+              <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password">
                 Password
               </label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
@@ -76,9 +72,9 @@ export default function Login(req: any, res: any) {
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                 Sign In
               </button>
-              <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/sign-up">
+              <Link className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="/sign-up">
                 Sign Up?
-              </a>
+              </Link>
             </div>
           </form>
         </div>

@@ -16,7 +16,7 @@ export interface RegisterRequest {
 
 export interface EventOption {
     id: string,
-    date_time: string,
+    date_time: Date,
     vote_users: User[],
     vote_quantity: number
     update_time: string,
@@ -57,6 +57,6 @@ export interface Report {
 
 export interface EventOptionReport {
     date_time: string,
-    last_update_date: string,
     votes_quantity: number,
+    event_name: string
 }

@@ -1,7 +1,9 @@
 package com.tacs.backend.service;
 
+import com.tacs.backend.dto.EventOptionDto;
 import com.tacs.backend.dto.EventOptionReportDto;
 import com.tacs.backend.dto.MarketingReportDto;
+import com.tacs.backend.mapper.EventOptionMapper;
 import com.tacs.backend.model.EventOption;
 import com.tacs.backend.repository.EventOptionRepository;
 import com.tacs.backend.repository.EventRepository;
@@ -19,6 +21,7 @@ public class MonitorService {
     private int timeRange;
     private final EventRepository eventRepository;
     private final EventOptionRepository eventOptionRepository;
+    private final EventOptionMapper eventOptionMapper;
 
     //private final EventOptionReportMapper EventOptionReportMapper;
     // por ahora no codifico el mapper para EventOptionReportDto hasta que nos den el OK en el formato del reporte
@@ -65,13 +68,17 @@ public class MonitorService {
 
         List<EventOptionReportDto> report = new ArrayList<>();
 
-        votes.forEach( (date, quantity) -> {
-            report.add(new EventOptionReportDto() {{
-                setDateTime(date);
-                setVotesQuantity(quantity);
-            }});
-        });
+//        votes.forEach( (date, quantity) -> report.add(new EventOptionReportDto() {{
+//            setDateTime(date);
+//            setVotesQuantity(quantity);
+//        }}));
 
+        List<EventOptionDto> eventOptionDtos = eventOptionMapper.entityListToDtoList(eventOptions);
+        eventOptionDtos.forEach(e -> report.add(EventOptionReportDto.builder()
+                .dateTime(e.getDateTime())
+                .votesQuantity(e.getVoteQuantity())
+                .eventName(e.getEventName())
+                .build()));
         return report;
     }
 }

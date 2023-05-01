@@ -30,4 +30,7 @@ public class EventOptionReportDto {
     @JsonProperty("votes_quantity")
     @Schema(description = "Quantity of votes")
     private long votesQuantity;
+
+    @JsonProperty("event_name")
+    private String eventName;
 }

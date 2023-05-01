@@ -6,13 +6,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { getCookie } from "cookies-next";
 import Form from 'react-bootstrap/Form';
-import { EventRequest, EventOptionRequest } from "../../types/app"
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router"
 
 export default function NewEvent() {
     const router = useRouter()
-    const [myEvent, setMyEvent] = useState<EventRequest>({
+
+    const [myEvent, setMyEvent] = useState({
         name: "",
         description: "",
         event_options:[]
@@ -22,22 +22,23 @@ export default function NewEvent() {
         date_time: "",
     }])
 
-    const handleChangeEvent = (event: any) => {
+    const handleChangeEvent = (event) => {
         setMyEvent({ ...myEvent, [event.target.name]: event.target.value });
       };
 
-    const handleChangeInput = (i: number,e: any) => {
+    const handleChangeInput = (i,e) => {
         const values = [...fields]
-        //values[i][e.target.name] = e.target.value
+        values[i][e.target.name] = e.target.value
         setFields(values)
     }
 
 
-    const handleAdd = (id: number) => {
+    const handleAdd = (id) => {
+        console.log(fields)
         setFields([...fields, { id: id + 2, date_time: '' }])
     }
 
-    const handleSubtract = (i: number) => {
+    const handleSubtract = (i) => {
         const values = [...fields]
         values.splice(i, 1)
         setFields([...values])
@@ -65,14 +66,23 @@ export default function NewEvent() {
         }
       };
 
-      const handleSubmit = async (e: FormEvent) => {
+      const handleSubmit = async (e) => {
         e.preventDefault()
 
         for (let i=0; i<fields.length; i++) {
-            myEvent.event_options.push({date_time:fields[i].date_time} as EventOptionRequest)
+            if(fields[i].date_time != ""){
+                myEvent.event_options.push({date_time:fields[i].date_time})
+            }           
          }
         await createNewEvent()
       }
+
+      useEffect(() => {
+        if(!getCookie('username')) {
+            router.push("/")
+            return
+        }
+    }, [])
 
     return (
         <main>
@@ -102,7 +112,7 @@ export default function NewEvent() {
                                         <Button variant="primary" className="mr-3" onClick={() => handleAdd(i)}>
                                             + Option
                                         </Button>
-                                        <Button variant="primary" className="mr-3" onClick={() => handleSubtract(i)} disabled={field.id === 1}>
+                                        <Button variant="danger" className="mr-3" onClick={() => handleSubtract(i)} disabled={field.id === 1}>
                                             - Option
                                         </Button>
                                     </Col>
@@ -119,8 +129,4 @@ export default function NewEvent() {
             </Container >
         </main >
     );
-}
-
-function setInputFields(arg0: any[]) {
-    throw new Error("Function not implemented.");
 }

@@ -2,19 +2,19 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Event } from "../../types/app"
 import Header from "../../components/header/header-component"
-import Footer from "../../components/footer/footer-component"
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import Modal from 'react-bootstrap/Modal';
+import { getCookie } from "cookies-next";
+import moment from 'moment'
 
 export default function Event() {
     const router = useRouter()
-    const [event, setEvent] = useState<Event>()
     const eventId = router.query.eventId
+    const [event, setEvent] = useState<Event>()
+    const [showVote, setShowVote] = useState(false)
 
     const fetchData = async () => {
         fetch(`/api/events/${eventId}`)
@@ -22,10 +22,11 @@ export default function Event() {
                 return response.json()
             })
             .then((reply) => {
-                if(reply.message){
+                if (reply.message) {
                     alert(reply.message)
+                    return
                 }
-                else{
+                else {
                     setEvent(reply)
                 }
             })
@@ -37,10 +38,11 @@ export default function Event() {
                 return response.json()
             })
             .then((reply) => {
-                if(reply.message){
+                if (reply.message) {
                     alert(reply.message)
+                    return
                 }
-                else{
+                else {
                     fetchData()
                 }
             })
@@ -52,10 +54,11 @@ export default function Event() {
                 return response.json()
             })
             .then((reply) => {
-                if(reply.message){
+                if (reply.message) {
                     alert(reply.message)
+                    return
                 }
-                else{
+                else {
                     fetchData()
                 }
             })
@@ -69,9 +72,6 @@ export default function Event() {
                         <Card.Body>
                             <Card.Text>
                                 Username: {user.username}
-                            </Card.Text>
-                            <Card.Text>
-                                Full Name: {user.first_name} {user.last_name}
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -89,14 +89,20 @@ export default function Event() {
                         <Card.Header>Option</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Date Time: {option.date_time}
+                                Date: {moment(option.date_time).format("YYYY/MM/DD")}                            
+                            </Card.Text>
+                            <Card.Text>
+                                Time: {moment(option.date_time).format("kk:mm")}
                             </Card.Text>
                             <Card.Text>
                                 Vote Quantity: {option.vote_quantity}
                             </Card.Text>
                         </Card.Body>
                         <Card.Footer>
-                            <Button variant="primary" onClick={() => handleVote(option.id)}>Vote</Button>
+                            {showVote !== ("VOTE_CLOSED" !== event.status) && (
+                                <Button variant="primary" onClick={() => handleVote(option.id)}>Vote</Button>
+                            )}
+
                             <Button variant="primary" className="float-right" onClick={handleRegister}>Register</Button>
                         </Card.Footer>
                     </Card>
@@ -107,8 +113,12 @@ export default function Event() {
     };
 
     useEffect(() => {
+        if (!getCookie('username')) {
+            router.push("/")
+            return
+        }
         if (!eventId) {
-            return;
+            return
         }
         fetchData()
     }, [eventId])

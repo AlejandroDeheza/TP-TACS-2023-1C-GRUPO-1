@@ -33,6 +33,7 @@ public class EventService {
     public EventDto createEvent(EventDto request) {
 
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
+        request.getEventOptions().forEach(options -> options.setEventName(request.getName()));
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
 

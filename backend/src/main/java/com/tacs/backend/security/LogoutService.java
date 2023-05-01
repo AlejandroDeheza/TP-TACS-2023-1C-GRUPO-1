@@ -16,12 +16,7 @@ public class LogoutService implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        if (authHeader == null ||!authHeader.startsWith(BEARER)) {
-            return;
-        }
-        jwt = authHeader.substring(7);
+
         SecurityContextHolder.clearContext();
     }
 }

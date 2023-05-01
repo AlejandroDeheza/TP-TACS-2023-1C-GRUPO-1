@@ -9,6 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   }).then((response) => {
     setCookie('jwt', response.data.access_token, { req, res, maxAge: 60 * 60 * 24 });
+    setCookie('username', response.data.username, { req, res, maxAge: 60 * 60 * 24 });  
     res.status(response.status).json(response.data)
   }).catch((error) => {
     res.status(error.response.status).json(error.response.data)
