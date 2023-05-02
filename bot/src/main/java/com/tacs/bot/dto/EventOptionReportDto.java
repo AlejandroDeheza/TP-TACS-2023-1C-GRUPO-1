@@ -1,8 +1,7 @@
-package com.tacs.backend.dto;
+package com.tacs.bot.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,20 +13,17 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventOptionReportDto {
     @JsonProperty("id")
-    @Schema(description = "Event option id", hidden = true)
     private String id = null;
     @JsonProperty("date_time")
-    @Schema(description = "Event option date time")
-    private Date dateTime;
+    private String dateTime;
 
     @JsonProperty("last_update_time")
-    @Schema(description = "Event option last update time")
-    private Date lastUpdateDate;
+    private String lastUpdateDate;
 
     @JsonProperty("votes_quantity")
-    @Schema(description = "Quantity of votes")
     private long votesQuantity;
 
     @JsonProperty("event_name")

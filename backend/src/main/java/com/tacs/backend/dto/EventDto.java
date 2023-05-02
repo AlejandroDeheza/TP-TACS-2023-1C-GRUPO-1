@@ -13,7 +13,6 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventDto {
     @JsonProperty("id")
     @Schema(description = "Event id", hidden = true)

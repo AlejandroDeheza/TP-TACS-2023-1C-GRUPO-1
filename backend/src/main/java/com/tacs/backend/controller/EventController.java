@@ -27,7 +27,7 @@ import java.util.Set;
 public class EventController {
     private final EventService eventService;
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     @Operation(summary = "Create a new event", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Event created successfully"),
@@ -75,7 +75,7 @@ public class EventController {
 
     })
     public ResponseEntity<EventDto> registerEvent(@NotBlank @PathVariable String eventId) {
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId));
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(this.eventService.registerEvent(eventId));
     }
 
     @PatchMapping("/{eventId}")

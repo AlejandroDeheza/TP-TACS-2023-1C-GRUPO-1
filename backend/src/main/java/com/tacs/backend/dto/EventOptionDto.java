@@ -27,7 +27,6 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventOptionDto {
     @JsonProperty("id")
     @Schema(description = "Event option id", hidden = true)
