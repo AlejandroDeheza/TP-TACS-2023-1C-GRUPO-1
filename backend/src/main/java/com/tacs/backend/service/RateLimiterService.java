@@ -1,8 +1,6 @@
 package com.tacs.backend.service;
 
-import com.tacs.backend.exception.AuthenticationException;
-import com.tacs.backend.exception.UserException;
-import jakarta.security.auth.message.AuthException;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -17,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class RateLimiterService {
-    private static final Integer DEFAULT_API_RPM = 2;
+    private static final Integer DEFAULT_API_RPM = 5;
 
-    private static final Integer DEFAULT_USER_RPM = 2;
+    private static final Integer DEFAULT_USER_RPM = 5;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiterService.class);
 
@@ -30,12 +28,9 @@ public class RateLimiterService {
     private static long requestApiInitialTime;
 
     public RateLimiterService() {
-        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
+        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(5,
                 new BasicThreadFactory.Builder().namingPattern("Rate-limiter-pool-%d").daemon(true).build());
-        executorService.scheduleAtFixedRate(() -> {
-            initializeApiRequestLimit();
-            LOGGER.info("RequestApiInitialTime: {}", requestApiInitialTime);
-        },0,5, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(RateLimiterService::initializeApiRequestLimit,0,5, TimeUnit.SECONDS);
     }
 
     private static void initializeApiRequestLimit() {
@@ -44,7 +39,9 @@ public class RateLimiterService {
     }
 
     public void initializeUserRequest(String token) {
-        USERS_REQUESTS.put(token, new UserRequest(System.currentTimeMillis()));
+        if (!USERS_REQUESTS.containsKey(token)){
+            USERS_REQUESTS.put(token, new UserRequest(System.currentTimeMillis()));
+        }
     }
 
     public boolean reachedMaxRequestAllowed(String token)  {
@@ -54,9 +51,6 @@ public class RateLimiterService {
 
     private boolean reachedMaxUserRequestAllowed(String token) {
         UserRequest userRequest = USERS_REQUESTS.get(token);
-        if(userRequest == null) {
-            throw new AuthenticationException("Please authenticate yourself first");
-        }
         userRequest.incrementCounter();
         return userRequest.getRequestCount() > DEFAULT_USER_RPM;
     }
@@ -69,7 +63,7 @@ public class RateLimiterService {
         public UserRequest(long theLastRequestStartTime) {
             lastRequestStartTime = theLastRequestStartTime;
             requestCount = 0;
-            ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
+            ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(5,
                     new BasicThreadFactory.Builder().namingPattern("Rate-limiter-pool-%d").daemon(true).build());
             executorService.scheduleAtFixedRate(() -> {
                 long time = System.currentTimeMillis();

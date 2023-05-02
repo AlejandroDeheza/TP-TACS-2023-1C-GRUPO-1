@@ -1,6 +1,7 @@
 package com.tacs.backend.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,5 +34,8 @@ public class EventOption {
 
     @Field("update_time")
     private Date updateDate;
+
+    @Field("event_name")
+    private String eventName;
 
 }

@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -47,5 +48,8 @@ public class EventOptionDto {
     @JsonProperty("update_time")
     @Schema(description = "Event option update time", hidden = true)
     private Date updateDate;
+
+    @JsonProperty("event_name")
+    private String eventName;
 
 }

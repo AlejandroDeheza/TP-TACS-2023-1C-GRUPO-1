@@ -31,8 +31,6 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private Role role;
-    @DBRef
-    private List<Token> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

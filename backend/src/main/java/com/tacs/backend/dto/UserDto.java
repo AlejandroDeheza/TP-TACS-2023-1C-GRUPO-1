@@ -21,4 +21,7 @@ public class UserDto {
     private String firstName;
     @JsonProperty("last_name")
     private String lastName;
+
+    @JsonProperty("username")
+    private String username;
 }

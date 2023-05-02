@@ -4,6 +4,7 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY . .
+RUN yarn config set "strict-ssl" false -g
 RUN yarn install
 
 # Set grants SA and bundle app source
@@ -16,4 +17,5 @@ RUN yarn build
 USER node
 
 # Run app
+EXPOSE 3000
 CMD [ "yarn", "start" ]
