@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class Utils {

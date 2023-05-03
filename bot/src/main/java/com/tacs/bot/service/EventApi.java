@@ -31,9 +31,9 @@ public class EventApi implements ApiService{
 
     public Object getAllEvent(Message message)  {
 
-        Response<Set<EventDto>> response = null;
+        Response<Object> response = null;
         try {
-            Call<Set<EventDto>> request = apiManager.getAllEvents(message.getToken());
+            Call<Object> request = apiManager.getAllEvents(message.getToken());
             response = request.execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -42,10 +42,10 @@ public class EventApi implements ApiService{
     }
 
     public Object createEvent(Message message) {
-        Response<EventDto> response = null;
+        Response<Object> response = null;
         RequestBody requestBody = RequestBody.create(message.getBody(), JSON);
         try {
-            Call<EventDto> request = apiManager.createEvent(message.getToken(), requestBody);
+            Call<Object> request = apiManager.createEvent(message.getToken(), requestBody);
             response = request.execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,8 +54,8 @@ public class EventApi implements ApiService{
     }
 
     public Object getEventById(Message message) {
-        Call<EventDto> request = apiManager.getEventById(message.getToken(), message.getEventId());
-        Response<EventDto> response = null;
+        Call<Object> request = apiManager.getEventById(message.getToken(), message.getEventId());
+        Response<Object> response = null;
         try {
             response = request.execute();
         } catch (IOException e) {
@@ -65,8 +65,8 @@ public class EventApi implements ApiService{
     }
 
     public Object registerEvent(Message message) {
-        Call<EventDto> request = apiManager.registerEvent(message.getToken(), message.getEventId());
-        Response<EventDto> response;
+        Call<Object> request = apiManager.registerEvent(message.getToken(), message.getEventId());
+        Response<Object> response;
         try {
             response = request.execute();
         } catch (IOException e) {
@@ -76,8 +76,8 @@ public class EventApi implements ApiService{
     }
 
     public Object voteEventOption(Message message) {
-        Call<EventDto> request = apiManager.voteEventOption(message.getToken(), message.getEventId(), message.getOptionId());
-        Response<EventDto> response = null;
+        Call<Object> request = apiManager.voteEventOption(message.getToken(), message.getEventId(), message.getOptionId());
+        Response<Object> response = null;
         try {
             response = request.execute();
         } catch (IOException e) {
@@ -87,8 +87,8 @@ public class EventApi implements ApiService{
     }
 
     public Object changeEventStatus(Message message)  {
-        Call<EventDto> request = apiManager.changeEventStatus(message.getToken(), message.getEventId(), message.getStatus());
-        Response<EventDto> response = null;
+        Call<Object> request = apiManager.changeEventStatus(message.getToken(), message.getEventId(), message.getStatus());
+        Response<Object> response = null;
         try {
             response = request.execute();
         } catch (IOException e) {

@@ -52,9 +52,9 @@ public class MonitorApi implements ApiService {
     }
 
     public Object getCounterReport(Message message) {
-        Call<MarketingReportDto> request = apiManager.getCounterReport(message.getToken());
-        Response<MarketingReportDto> response = null;
+                Response<Object> response = null;
         try {
+            Call<Object> request = apiManager.getCounterReport(message.getToken());
             response = request.execute();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,8 +63,8 @@ public class MonitorApi implements ApiService {
     }
 
     public Object getOptionsReport(Message message) {
-        Call<List<EventOptionReportDto>> request = apiManager.getOptionsReport(message.getToken());
-        Response<List<EventOptionReportDto>> response = null;
+        Call<Object> request = apiManager.getOptionsReport(message.getToken());
+        Response<Object> response = null;
         try {
             response = request.execute();
         } catch (IOException e) {

@@ -5,17 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 
-import com.tacs.bot.dto.EventDto;
 import com.tacs.bot.dto.Message;
 import com.tacs.bot.utils.Utils;
-import com.tacs.bot.validator.TypeValidator;
 import com.tacs.bot.validator.TypeValidatorChain;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -23,10 +21,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
 import java.util.function.Function;
 
 
@@ -34,23 +30,29 @@ import java.util.function.Function;
 @Slf4j
 public class TelegramBot extends TelegramLongPollingBot {
     private final static Logger LOGGER = LoggerFactory.getLogger(TelegramBot.class);
-
+    private String botName;
+    private String botToken;
     @Autowired
     private ApiFactory apiFactory;
 
+    X509TrustManager trustManager;
+    SSLSocketFactory sslSocketFactory;
 
-    public TelegramBot(@Autowired TelegramBotsApi telegramBotsApi) throws TelegramApiException {
+
+    public TelegramBot(@Value("${bot.username}") String botName, @Value("${bot.token}") String botToken, @Autowired TelegramBotsApi telegramBotsApi) throws TelegramApiException {
+        this.botName = botName;
+        this.botToken = botToken;
         telegramBotsApi.registerBot(this);
     }
 
     @Override
     public String getBotUsername() {
-        return "tacs_telegram_bot";
+        return botName;
     }
 
     @Override
     public String getBotToken() {
-        return "5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI";
+        return botToken;
     }
 
     @Override
@@ -67,6 +69,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             Object result = method.apply(message);
             json = result.getClass().equals(String.class) ? (String)result : ow.writeValueAsString(result);
+            json = json.getBytes().length > 4096 ? "Message is too long" : json;
 
         } catch (Exception e) {
             sendMessage(generateSendMessage(chatId, e.getMessage()));
@@ -83,7 +86,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
     }
 }

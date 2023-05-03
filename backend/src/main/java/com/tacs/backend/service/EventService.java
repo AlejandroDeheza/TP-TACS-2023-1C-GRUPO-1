@@ -76,6 +76,10 @@ public class EventService {
             throw new UserIsNotOwnerException("Not allowed to close the vote of event");
         }
 
+        if (status.equals(event.getStatus().name())) {
+            throw new EventStatusException("The event's has already status: " + status);
+        }
+
         var state = Event.Status.valueOf(StringUtils.upperCase(status.trim()));
         event.setStatus(state);
         return eventMapper.entityToDto(eventRepository.save(event));

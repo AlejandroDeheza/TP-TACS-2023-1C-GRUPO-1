@@ -30,10 +30,10 @@ public class ApiFactory {
         apiMethodsMap.put(Type.EVENTS_REGISTER.name(), m -> eventApi.registerEvent((Message) m));
         apiMethodsMap.put(Type.EVENTS_CHANGE_STATUS.name(), m -> eventApi.changeEventStatus((Message) m));
         apiMethodsMap.put(Type.EVENTS_VOTE.name(), m -> eventApi.voteEventOption((Message) m));
-        apiMethodsMap.put(Type.AUTH_REGISTER.name(), m -> authApi.authenticate((Message) m));
-        apiMethodsMap.put(Type.AUTH_REGISTER.name(), m -> eventApi.register((Message) m));
+        apiMethodsMap.put(Type.AUTH_AUTHENTICATION.name(), m -> authApi.authenticate((Message) m));
+        apiMethodsMap.put(Type.AUTH_REGISTER.name(), m -> authApi.register((Message) m));
         apiMethodsMap.put(Type.MONITOR_MARKETING_REPORT.name(), m -> monitorApi.getCounterReport((Message) m));
-        apiMethodsMap.put(Type.MONITOR_OPTIONS_REPORT.name(), m -> eventApi.getOptionsReport((Message) m));
+        apiMethodsMap.put(Type.MONITOR_OPTIONS_REPORT.name(), m -> monitorApi.getOptionsReport((Message) m));
     }
 
     public Function getApiService(String type){
