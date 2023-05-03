@@ -55,21 +55,21 @@ services:
           - frontend
         ipv4_address: 172.255.254.105
 
-  bot:
-    <<: *common
-    build: ./bot
-    image: bot:latest
-    environment:
-      USERNAME: tacs_telegram_bot
-      TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
-    ports:
-      - "8080:80"
-      - "8082:443"
-    networks:
-      tp_network:
-        aliases:
-          - bot
-        ipv4_address: 172.255.254.106
+#  bot:
+#    <<: *common
+#    build: ./bot
+#    image: bot:latest
+#    environment:
+#      USERNAME: tacs_telegram_bot
+#      TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
+#    ports:
+#      - "8080:80"
+#      - "8082:443"
+#    networks:
+#      tp_network:
+#        aliases:
+#          - bot
+#        ipv4_address: 172.255.254.106
 
 networks:
   tp_network:
