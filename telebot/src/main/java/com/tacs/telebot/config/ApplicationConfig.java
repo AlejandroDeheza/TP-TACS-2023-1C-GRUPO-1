@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.tacs.telebot.service.ApiManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import retrofit2.Retrofit;
@@ -13,10 +14,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
+
+    @Value("${backend.baseUrl}")
+    private String baseUrl;
     @Bean
     public Retrofit retrofit() {
         return new Retrofit.Builder()
-                .baseUrl("http://localhost:8091/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }

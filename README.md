@@ -17,29 +17,36 @@
 ## Telegram Bot
 - Bot name: tacs_telegram_bot
 
-### Formato del comando: 
-- TYPE={SERVICE_TYPE}|TOKEN={TOKEN}|EVENT_ID={EVENT_ID}|OPTION_ID={OPTION_ID}|STATUS={STATUS}|BODY={BODY}
-### SERVICE_TYPE: son los tipos de services a consumir
-- AUTH_AUTHENTICATION
-- AUTH_REGISTER
-- EVENTS_ALL
-- EVENTS_BY_ID,
-- EVENTS_REGISTER
-- EVENTS_CHANGE_STATUS
-- EVENTS_VOTE
-- MONITOR_MARKETING_REPORT
-- MONITOR_OPTIONS_REPORT
-### TOKEN: es el jwt que devuelve al consumir AUTH_AUTHENTICATION o AUTH_REGISTER
-### EVENT_ID: id del evento
-### OPTION_ID: id de la opcion de un evento
-### STATUS: para cambiar el estado de un evento
-### BODY: en formato JSON
-### Ejemplos para consumir los servicios:
-- AUTH_AUTHENTICATION: TYPE=AUTH_AUTHENTICATION|BODY={
+### Formato del comando:
+#### body: formato json
+
+- Authentication(Sign In): /authentication {body}
+
+- Sign Up: /register {body}
+
+- Get All Events: /all_events {token}
+
+- Get Event By Id: /event_by_id {token} {eventId}
+
+- Register To Event: /register_events {token} {eventId}
+
+- Create New Event: /new_event {token} {body}
+
+- Change Event Status: /change_event_status {token} {eventId} {status}
+
+- Vote Event: /vote_event_option {token} {eventId} {optionId}
+
+- Get Marketing Report: /event_marketing_report {token}
+-
+- Get Options Report: /options_report {token}
+
+### Ejemplos:
+- Authentication(Sign In): /authentication {
   "username": "juan.perez",
   "password": "mksiug_865K"
   }
-- AUTH_REGISTER: TYPE=AUTH_REGISTER|BODY={
+
+- Sign Up: /register {
   "first_name": "Juan",
   "last_name": "Perez",
   "username": "juan.perez",
@@ -47,11 +54,13 @@
   "password_confirmation": "mksiug_865K"
   }
 
-- EVENTS_ALL: TYPE=EVENTS_ALL|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
-- EVENTS_BY_ID: TYPE=EVENTS_BY_ID|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo|EVENT_ID=644f591f2a0a680ea28bd448
-- EVENTS_REGISTER: TYPE=EVENTS_REGISTER|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo|EVENT_ID=644f591f2a0a680ea28bd448
-- EVENTS_CREATE: TYPE=EVENTS_CREATE|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo|BODY=
-  {
+- Get All Events: /all_events eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
+
+- Get Event By Id: /event_by_id eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo 644f591f2a0a680ea28bd448
+
+- Register To Event: /register_events eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo 644f591f2a0a680ea28bd448
+
+- Create New Event: /new_event eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo {
   "name": "TACSSSSSS",
   "description": "TACSSSS",
   "event_options": [
@@ -60,8 +69,11 @@
   }
   ]
   }
-- EVENTS_CHANGE_STATUS: TYPE=EVENTS_CHANGE_STATUS|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo|EVENT_ID=644f591f2a0a680ea28bd448|STATUS=VOTE_PENDING
-- EVENTS_VOTE: TYPE=EVENTS_VOTE|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo|EVENT_ID=644f591f2a0a680ea28bd448|OPTION_ID=644f591f2a0a680ea28bd446
 
-- MONITOR_MARKETING_REPORT: TYPE=MONITOR_MARKETING_REPORT|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
-- MONITOR_OPTIONS_REPORT: TYPE=MONITOR_OPTIONS_REPORT|TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
+- Change Event Status: /change_event_status eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo 644f591f2a0a680ea28bd448 VOTE_PENDING
+
+- Vote Event: /vote_event_option eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo 644f591f2a0a680ea28bd448 644f591f2a0a680ea28bd446
+
+- Get Marketing Report: /event_marketing_report eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
+- 
+- Get Options Report: /options_report eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
