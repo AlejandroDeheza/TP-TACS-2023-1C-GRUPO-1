@@ -17,7 +17,7 @@ import java.util.Date;
 public class EventOptionReportDto {
     @JsonProperty("id")
     @Schema(description = "Event option id", hidden = true)
-    private String id = null;
+    private String id;
     @JsonProperty("date_time")
     @Schema(description = "Event option date time")
     private Date dateTime;

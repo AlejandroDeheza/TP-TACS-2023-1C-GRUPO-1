@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
     @JsonProperty("id")
     @Schema(hidden = true)
-    private String id = null;
+    private String id;
     @JsonProperty("first_name")
     @Schema(hidden = true)
     private String firstName;

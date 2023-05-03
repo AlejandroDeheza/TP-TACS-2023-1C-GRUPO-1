@@ -30,7 +30,7 @@ import java.util.Set;
 public class EventOptionDto {
     @JsonProperty("id")
     @Schema(description = "Event option id", hidden = true)
-    private String id = null;
+    private String id;
     @JsonProperty("date_time")
     @NotBlank(message = "Date time can not be blank")
     @Schema(description = "Event option date time")

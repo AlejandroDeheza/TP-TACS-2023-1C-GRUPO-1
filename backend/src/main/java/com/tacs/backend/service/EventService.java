@@ -86,11 +86,11 @@ public class EventService {
     }
 
     public EventDto voteEventOption(String idEvent, String idEventOption) {
+        Event event = getEvent(idEvent);
         EventOption eventOption = eventOptionRepository.findById(idEventOption).orElseThrow(
                 () -> new EntityNotFoundException("Event option not found")
         );
 
-        Event event = getEvent(idEvent);
         if (Event.Status.VOTE_CLOSED == event.getStatus()) {
             throw new EventStatusException("The event's vote has already closed, not allowed to vote the event");
         }
