@@ -13,7 +13,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.env.Environment;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -28,9 +27,6 @@ public class ApplicationConfig {
     @Value("${backend.baseUrl}")
     private String baseUrl;
 
-    @Value("${bot.token}")
-    private String token;
-    private Environment environment;
     @Bean
     public Retrofit retrofit() {
         return new Retrofit.Builder()
