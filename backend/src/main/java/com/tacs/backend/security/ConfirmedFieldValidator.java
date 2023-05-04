@@ -9,6 +9,7 @@ public class ConfirmedFieldValidator implements ConstraintValidator<ConfirmedFie
     private String confirmationField;
     private String message;
 
+    @Override
     public void initialize(final ConfirmedField constraintAnnotation) {
         this.originalField = constraintAnnotation.originalField();
         this.confirmationField = constraintAnnotation.confirmationField();

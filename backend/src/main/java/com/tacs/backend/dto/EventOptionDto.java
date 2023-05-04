@@ -33,7 +33,7 @@ public class EventOptionDto {
     @JsonProperty("id")
     @Schema(description = "Event option id", hidden = true)
     private String id;
-    @JsonProperty("date_time")
+    @JsonProperty(value = "date_time", required = true)
     @NotBlank(message = "Date time can not be blank")
     @Schema(description = "Event option date time")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")

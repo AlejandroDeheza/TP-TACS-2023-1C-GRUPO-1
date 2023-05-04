@@ -1,6 +1,5 @@
 package com.tacs.backend.config;
 
-import com.tacs.backend.service.RateLimiterService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

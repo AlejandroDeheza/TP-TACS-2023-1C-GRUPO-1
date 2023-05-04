@@ -1,10 +1,7 @@
 package com.tacs.backend.repository.impl;
 
-import com.tacs.backend.model.Event;
 import com.tacs.backend.model.EventOption;
-import com.tacs.backend.repository.EventOptionRepository;
 import com.tacs.backend.repository.EventOptionRepositoryCustom;
-import com.tacs.backend.repository.EventRepositoryCustom;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;

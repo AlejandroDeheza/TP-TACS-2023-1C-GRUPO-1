@@ -1,7 +1,6 @@
 package com.tacs.backend.config;
 
 import com.tacs.backend.exception.RequestNotAllowException;
-import com.tacs.backend.service.RateLimiterService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -18,6 +18,7 @@ public class TelebotService {
     private final ApiFactory apiFactory;
 
     public String getResult(Message message)  {
+
         String finalResult;
         try {
             MessageValidatorChain.validate(message);

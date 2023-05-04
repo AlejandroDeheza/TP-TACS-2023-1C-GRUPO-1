@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const jwt = getCookie('jwt', { req, res })
-  axios.post(`http://${process.env.domain}:8091/v1/auth/refresh-token`, {}, {
+  axios.post(`${process.env.scheme}${process.env.domain}:8091/v1/auth/refresh-token`, {}, {
     headers: {
         'Authorization': `Bearer ${jwt}`,
       }

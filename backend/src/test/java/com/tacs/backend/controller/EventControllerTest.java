@@ -9,7 +9,7 @@ import com.tacs.backend.exception.EventStatusException;
 import com.tacs.backend.exception.UserException;
 import com.tacs.backend.exception.UserIsNotOwnerException;
 import com.tacs.backend.service.EventService;
-import com.tacs.backend.service.RateLimiterService;
+import com.tacs.backend.config.RateLimiterService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

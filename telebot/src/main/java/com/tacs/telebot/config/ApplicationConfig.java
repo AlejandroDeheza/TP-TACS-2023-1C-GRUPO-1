@@ -7,6 +7,7 @@ import com.tacs.telebot.service.ApiFactory;
 import com.tacs.telebot.service.ApiManager;
 import com.tacs.telebot.service.ApiService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -20,10 +21,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class ApplicationConfig {
 
     @Value("${backend.baseUrl}")
     private String baseUrl;
+
     @Bean
     public Retrofit retrofit() {
         return new Retrofit.Builder()

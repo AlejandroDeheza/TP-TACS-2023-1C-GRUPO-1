@@ -1,4 +1,4 @@
-package com.tacs.backend.service;
+package com.tacs.backend.config;
 
 
 import lombok.Getter;

@@ -8,5 +8,7 @@ const isDev = process.env.NODE_ENV === 'development'
 module.exports = {
   env: {
     domain: isDev ? 'localhost':'backend',
+    scheme: isDev ? 'http://' : 'http://',
+    timeRange : 2
   }
 }

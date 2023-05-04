@@ -41,7 +41,7 @@ export default function Login(req: any, res: any) {
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   return (
     <div className='flex flex-col justify-center min-h-screen'>

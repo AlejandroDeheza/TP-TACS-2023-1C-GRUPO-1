@@ -16,6 +16,7 @@ import com.tacs.telebot.dto.Type;
 import com.tacs.telebot.service.TelebotService;
 import com.tacs.telebot.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.validation.constraints.NotBlank;
@@ -26,6 +27,7 @@ import javax.validation.constraints.NotBlank;
  */
 @BotController
 @RequiredArgsConstructor
+@Slf4j
 public class TelebotController implements TelegramMvcController {
     private static final String BEARER = "Bearer ";
     @Value("${bot.token}")
