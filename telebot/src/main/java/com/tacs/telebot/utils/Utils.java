@@ -49,6 +49,7 @@ public class Utils {
 
     public static String helpMessage() {
         return "Commands Help: \n"
+                .concat("******** /${body} in JSON format ***********\n")
                 .concat("- Authentication(Sign In): /authentication/${body}\n")
                 .concat("- Sign Up: /register/${body}\n")
                 .concat("- Get All Events: /all_events/${token}\n")
@@ -57,7 +58,7 @@ public class Utils {
                 .concat("- Change Event Status: /change_event_status/${token}/${eventId}/${status}\n")
                 .concat("- Vote Event: /vote_event_option/${token}/${eventId}/${optionId}\n")
                 .concat("- Get Marketing Report: /event_marketing_report/${token}\n")
-                .concat("- Get Options Report: /options_report/${token}\n")
-                .concat("**********************/${body} in JSON format ***************************\n");
+                .concat("- Get Options Report: /options_report/${token}\n");
+
     }
 }
