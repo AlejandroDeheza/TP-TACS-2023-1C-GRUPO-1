@@ -6,25 +6,30 @@ import com.tacs.telebot.validator.MessageValidatorChain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author tianshuwang
+ */
 @Service
 @RequiredArgsConstructor
 public class TelebotService {
+    private static final String LENGTH_ERROR = "Result is too long";
+    private static final int BYTES = 4096;
     private final ObjectWriter objectWriter;
     private final ApiFactory apiFactory;
 
     public String getResult(Message message)  {
-        String result = null;
+        String finalResult;
         try {
             MessageValidatorChain.validate(message);
             Object response = apiFactory.getApiService(message.getType()).apply(message);
-            result = response.getClass().equals(String.class) ? (String) response : objectWriter.writeValueAsString(response);
-            result = result.getBytes().length > 4096 ? "Message is too long" : result;
+            String result = response.getClass().equals(String.class) ? (String) response : objectWriter.writeValueAsString(response);
+            finalResult = result.getBytes().length > BYTES ? LENGTH_ERROR : result;
         }
         catch(Exception e) {
             return e.getMessage();
         }
 
-        return result;
+        return finalResult;
     }
 
 }

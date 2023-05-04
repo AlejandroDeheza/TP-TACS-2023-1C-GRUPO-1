@@ -14,7 +14,9 @@ import java.util.Optional;
 import java.util.function.Function;
 
 
-@Component
+/**
+ * @author tianshuwang
+ */
 @RequiredArgsConstructor
 public class ApiFactory {
     private final ApiService apiService;

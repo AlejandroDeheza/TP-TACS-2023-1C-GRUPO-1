@@ -14,6 +14,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventOptionReportDto {
     @JsonProperty("id")
     @Schema(description = "Event option id", hidden = true)

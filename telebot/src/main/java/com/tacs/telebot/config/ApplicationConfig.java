@@ -3,14 +3,21 @@ package com.tacs.telebot.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.tacs.telebot.service.ApiFactory;
 import com.tacs.telebot.service.ApiManager;
+import com.tacs.telebot.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * @author tianshuwang
+ */
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
@@ -38,6 +45,12 @@ public class ApplicationConfig {
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
+    }
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public ApiFactory apiFactory(ApiService apiService) {
+        return new ApiFactory(apiService);
     }
 
 }

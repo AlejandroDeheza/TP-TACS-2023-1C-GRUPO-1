@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * @author tianshuwang
+ */
 @Data
 @Builder
 @AllArgsConstructor
@@ -39,10 +42,8 @@ public class Event {
     private Date createDate;
 
     @JsonCreator
-    public Event(@JsonProperty(value = "name", required = true) String name,
-                          @JsonProperty(value = "events_options", required = true) Set<EventOption> eventOptions) {
+    public Event(@JsonProperty(value = "name", required = true) String name) {
         this.name = name;
-        this.eventOptions = eventOptions;
     }
 
 }

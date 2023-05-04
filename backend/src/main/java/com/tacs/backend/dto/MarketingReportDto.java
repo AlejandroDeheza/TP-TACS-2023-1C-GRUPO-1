@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MarketingReportDto {
     @JsonProperty("events_count")
     @Schema(description = "Created events count")

@@ -3,7 +3,6 @@ package com.tacs.telebot.validator;
 import com.tacs.telebot.dto.Message;
 import com.tacs.telebot.dto.Type;
 import com.tacs.telebot.utils.Utils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component

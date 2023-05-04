@@ -2,12 +2,14 @@ package com.tacs.telebot.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+/**
+ * @author tianshuwang
+ */
 @Data
 @Builder
 @NoArgsConstructor

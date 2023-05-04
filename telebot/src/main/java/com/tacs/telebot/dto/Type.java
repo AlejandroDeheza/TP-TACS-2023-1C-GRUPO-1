@@ -1,5 +1,9 @@
 package com.tacs.telebot.dto;
 
+/**
+ * @author tianshuwang
+ */
+
 public enum Type {
     AUTH_AUTHENTICATION,
     AUTH_REGISTER,

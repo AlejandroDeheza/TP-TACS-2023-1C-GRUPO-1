@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventOptionDto {
     @JsonProperty("id")
     @Schema(description = "Event option id", hidden = true)
@@ -34,6 +36,7 @@ public class EventOptionDto {
     @JsonProperty("date_time")
     @NotBlank(message = "Date time can not be blank")
     @Schema(description = "Event option date time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date dateTime;
 
     @JsonProperty("vote_quantity")
@@ -42,7 +45,7 @@ public class EventOptionDto {
 
     @JsonProperty("vote_users")
     @Schema(description = "Event option vote users", hidden = true)
-    private List<UserDto> voteUsers;
+    private List<UserDto> voteUsers = new ArrayList<>();
 
     @JsonProperty("update_time")
     @Schema(description = "Event option update time", hidden = true)

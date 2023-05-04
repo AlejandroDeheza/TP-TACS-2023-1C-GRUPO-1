@@ -1,5 +1,6 @@
 package com.tacs.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tacs.backend.security.ConfirmedField;
 import com.tacs.backend.security.ValidPassword;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @ConfirmedField(originalField = "password", confirmationField = "passwordConfirmation")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegisterRequest {
     @JsonProperty("first_name")
     @NotBlank(message = "First name can not be blank")
