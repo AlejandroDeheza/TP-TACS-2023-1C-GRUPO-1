@@ -102,7 +102,7 @@ const Monitor = () => {
                         <Card.Header><FaCalculator className="inline mb-1" />  New Events Count</Card.Header>
                         <Card.Body>
                             <Card.Title>
-                                In last 2 hours: {reportData?.events_count}
+                                In last {process.env.timeRange} hours: {reportData?.events_count}
                             </Card.Title>
                         </Card.Body>
                     </Card>
@@ -112,7 +112,7 @@ const Monitor = () => {
                         <Card.Header><FaCalculator className="inline mb-1" />  Voted Options Count</Card.Header>
                         <Card.Body>
                             <Card.Title>
-                                In last 2 hours: {reportData?.options_count}
+                                In last {process.env.timeRange} hours: {reportData?.options_count}
                             </Card.Title>
                         </Card.Body>
                     </Card>

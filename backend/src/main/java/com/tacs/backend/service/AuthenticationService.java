@@ -37,14 +37,12 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final RateLimiterService rateLimiterService;
-
 
 
     public AuthenticationResponse register(RegisterRequest request) {
         LOGGER.info("Register request: {}", request);
         if(userRepository.exists(request.getUsername())) {
-            throw new UserException("Username already exists");
+            throw new UserException(String.format("Username: %s already exists", request.getUsername()));
         }
         User user = User.builder()
                 .firstName(request.getFirstName())
@@ -91,6 +89,7 @@ public class AuthenticationService {
         if (authHeader == null || !authHeader.startsWith(BEARER)) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
+        assert authHeader != null;
         refreshToken = authHeader.substring(StringUtils.length(BEARER));
         username = jwtService.extractUsername(refreshToken);
         if (username != null) {

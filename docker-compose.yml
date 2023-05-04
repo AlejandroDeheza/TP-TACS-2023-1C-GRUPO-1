@@ -55,6 +55,22 @@ services:
           - frontend
         ipv4_address: 172.255.254.105
 
+  telebot:
+    <<: *common
+    build: ./telebot
+    image: telebot:latest
+    environment:
+      USERNAME: tacs_telegram_bot
+      TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
+      BASE_URL: http://localhost:8091/
+    ports:
+      - "8080:8080"
+    networks:
+      tp_network:
+        aliases:
+          - telebot
+        ipv4_address: 172.255.254.106
+
 networks:
   tp_network:
     driver: bridge

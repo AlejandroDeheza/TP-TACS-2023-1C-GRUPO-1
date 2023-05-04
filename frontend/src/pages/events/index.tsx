@@ -10,12 +10,13 @@ import Col from 'react-bootstrap/Col';
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import Modal from 'react-bootstrap/Modal';
-import { FaCalendarAlt, FaListAlt, FaWindowClose } from "react-icons/fa";
+import { FaCalendarAlt, FaListAlt, FaWindowClose, FaCheckCircle} from "react-icons/fa";
 
 
 export default function Events() {
     const router = useRouter()
     const [data, setData] = useState<Event[]>([])
+    const [showOpen, setShowOpen] = useState(false)
     const [showClose, setShowClose] = useState(false)
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
@@ -43,8 +44,17 @@ export default function Events() {
         fetchData()
     }
 
-    const handleChangeEventStatus = (eventId: string) => {
-        fetch(`/api/events/${eventId}?status=VOTE_CLOSED`, {
+    const mapEventStatus = (status: string) => {
+        if(status === "VOTE_CLOSED"){
+            return "VOTE CLOSED"
+        }
+        if(status === "VOTE_PENDING"){
+            return "VOTE PENDING"
+        }
+    }
+
+    const handleChangeEventStatus = (eventId: string, status: string) => {
+        fetch(`/api/events/${eventId}?status=${status}`, {
             method: "PATCH",
         }).then((response) => {
             console.log(response)
@@ -69,7 +79,7 @@ export default function Events() {
                         <Card.Header><FaCalendarAlt className="inline mb-1"/>  {event.name}</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Status: {event.status}
+                                Status: {mapEventStatus(event.status)}
                             </Card.Text>
                             <Card.Text>
                                 Owner User: {event?.owner_user.username}
@@ -80,7 +90,10 @@ export default function Events() {
                                 <Button variant="primary"><FaListAlt className="inline mb-1"/> Details</Button>
                             </Link>
                             {showClose !== ((username == event.owner_user.username) && ("VOTE_CLOSED" !== event.status)) && (
-                                <Button variant="danger" className="float-right" onClick={() => handleChangeEventStatus(event.id)}><FaWindowClose className="inline mb-1"/>  Close Vote</Button>
+                                <Button variant="danger" className="float-right" onClick={() => handleChangeEventStatus(event.id, "VOTE_CLOSED")}><FaWindowClose className="inline mb-1"/>  Close Vote</Button>
+                            )}
+                            {showOpen !== ((username == event.owner_user.username) && ("VOTE_PENDING" !== event.status)) && (
+                                <Button variant="primary" className="float-right" onClick={() => handleChangeEventStatus(event.id, "VOTE_PENDING")}><FaCheckCircle className="inline mb-1"/>  Open Vote</Button>
                             )}
                         </Card.Footer>
                     </Card>

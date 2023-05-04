@@ -115,7 +115,7 @@ export default function NewEvent() {
                                 <Row key={i}>
                                     <Col className="mt-3">
                                         <Form.Label><FaClock className="inline mb-1" />  Option Date Time</Form.Label>
-                                        <Form.Control type="datetime-local" name="date_time" placeholder="Date" onChange={e => handleChangeInput(i, e)} />
+                                        <Form.Control type="datetime-local" name="date_time" placeholder="Date" onChange={e => handleChangeInput(i, e)} required/>
                                     </Col>
                                     <Col className="mt-5">
                                         <Button variant="primary" className="mr-3" onClick={() => handleAdd(i)}>

@@ -10,9 +10,18 @@ function Header() {
     const username = getCookie('username')
 
     const handleLogout = () => {
+        logout()
         setCookie('jwt', '', {maxAge: 0});
         setCookie('username', '', {maxAge: 0});
     }
+
+    async function logout() {
+        try {
+            await fetch("/api/auth/logout")
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <Navbar bg="primary" variant="dark" expand="lg" sticky="top" className="mb-3">
@@ -20,7 +29,7 @@ function Header() {
                 <Navbar.Brand href="/events">TACS</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="ml-auto">
+                    <Nav variant="pills" className="ml-auto">
                         <Nav.Link href="/events">Events</Nav.Link>
                         <Nav.Link href="/events/new-event">New Event</Nav.Link>
                         <Nav.Link href="/monitor">Monitor</Nav.Link>
