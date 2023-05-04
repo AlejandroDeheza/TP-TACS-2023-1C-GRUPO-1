@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const jwt = getCookie('jwt', { req, res })
-  const url = `http://${process.env.domain}:8091/v1/events/${req.query.eventId}/user`
+  const url = `${process.env.scheme}${process.env.domain}:8091/v1/events/${req.query.eventId}/user`
   axios.patch(url, {}, {
     headers: {
       'Authorization': `Bearer ${jwt}`,

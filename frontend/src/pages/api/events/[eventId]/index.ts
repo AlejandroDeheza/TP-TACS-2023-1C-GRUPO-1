@@ -6,7 +6,7 @@ import axios from 'axios';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const jwt = getCookie('jwt', { req, res })
     if (req.method == "GET") {
-        const url = `http://${process.env.domain}:8091/v1/events/${req.query.eventId}`
+        const url = `${process.env.scheme}${process.env.domain}:8091/v1/events/${req.query.eventId}`
         axios.get(url, {
             headers: {
                 'Authorization': `Bearer ${jwt}`,

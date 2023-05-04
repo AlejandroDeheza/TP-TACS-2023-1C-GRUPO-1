@@ -1,6 +1,3 @@
-import { type } from "os"
-import { list } from "postcss"
-
 export interface AuthenticationRequest {
     username: string
     password: string

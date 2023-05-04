@@ -42,7 +42,7 @@ export default function SignUp() {
 
         let fields = ""
         if(userData.message.includes("8 or more")){
-          fields = fields.concat(fields, "Length between 8 or more")
+          fields = fields.concat(fields, "Length must between 8 or more")
         } else if(userData.message.includes("uppercase")){
           fields = fields.concat(fields,"At least one upper-case character")
         } else if(userData.message.includes("lowercase")){
@@ -52,11 +52,11 @@ export default function SignUp() {
         } else if(userData.message.includes("special")){
           fields = fields.concat(fields,"At least one special character")
         } else if(userData.message.includes("whitespace")){
-          fields = fields.concat(fields,"Can not contain whitespace")
-        } else if(userData.message.includes(">= 5 characters alphabetical")){
-          fields = fields.concat(fields,"Can not contain a sequence of more than 4 characters alphabetical")
-        } else if(userData.message.includes(">= 5 characters numerical")){
-          fields = fields.concat(fields,"Can not contain a sequence of more than 4 characters numerical")
+          fields = fields.concat(fields,"Can not contains whitespace")
+        } else if(userData.message.includes("alphabetical sequence")){
+          fields = fields.concat(fields,"Can not contains a sequence of more than 4 characters alphabetical")
+        } else if(userData.message.includes("numerical sequence")){
+          fields = fields.concat(fields,"Can not contains a sequence of more than 4 characters numerical")
         } else if(userData.message.includes("match the original")){
           fields = fields.concat(fields,"Password confirmation doesn't match")
         }        

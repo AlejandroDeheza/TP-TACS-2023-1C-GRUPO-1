@@ -19,7 +19,7 @@ public class EventDto {
     @JsonProperty("id")
     @Schema(description = "Event id", hidden = true)
     private String id;
-    @JsonProperty("name")
+    @JsonProperty(value = "name", required = true)
     @NotBlank(message = "Name can not be blank")
     @Schema(description = "Event name", example = "TACS")
     private String name;
@@ -31,7 +31,7 @@ public class EventDto {
     @Schema(description = "Event status", hidden = true)
     private String status;
 
-    @JsonProperty("event_options")
+    @JsonProperty(value = "event_options", required = true)
     @Schema(description = "Event options")
     private Set<EventOptionDto> eventOptions = new HashSet<>();
 

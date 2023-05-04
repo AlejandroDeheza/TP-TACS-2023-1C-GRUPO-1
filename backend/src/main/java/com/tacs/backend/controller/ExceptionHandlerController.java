@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
@@ -78,8 +82,15 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ExceptionResponse exception = new ExceptionResponse();
+        String errors = "";
+        for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors = errors.concat(error.getField() + ": " + error.getDefaultMessage() + ". ");
+        }
+        for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+            errors = errors.concat(error.getObjectName() + ": " + error.getDefaultMessage() + ". ");
+        }
         exception.setTimestamp(new Date());
-        exception.setMessage(ex.getLocalizedMessage());
+        exception.setMessage(errors);
 
         return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
     }

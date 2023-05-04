@@ -18,24 +18,24 @@ import lombok.NoArgsConstructor;
 @ConfirmedField(originalField = "password", confirmationField = "passwordConfirmation")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegisterRequest {
-    @JsonProperty("first_name")
+    @JsonProperty(value = "first_name", required = true)
     @NotBlank(message = "First name can not be blank")
     @Schema(description = "User first name", example = "Juan")
     private String firstName;
-    @JsonProperty("last_name")
+    @JsonProperty(value = "last_name", required = true)
     @NotBlank(message = "Last name can not be blank")
     @Schema(description = "User last name", example = "Perez")
     private String lastName;
-    @JsonProperty("username")
+    @JsonProperty(value = "username", required = true)
     @NotBlank(message = "Username can not be blank")
     @Schema(description = "Username", example = "juan.perez")
     private String username;
-    @JsonProperty("password")
+    @JsonProperty(value = "password", required = true)
     @NotBlank(message = "Password can not be blank")
     @ValidPassword
     @Schema(description = "Password", example = "mksiug_865K")
     private String password;
-    @JsonProperty("password_confirmation")
+    @JsonProperty(value = "password_confirmation", required = true)
     @NotBlank(message = "Password confirmation can not be blank")
     @Schema(description = "Confirmation password", example = "mksiug_865K")
     private String passwordConfirmation;
