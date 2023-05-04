@@ -12,12 +12,11 @@ import com.tacs.backend.repository.EventRepository;
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -32,8 +31,8 @@ public class EventService {
     private final EventOptionMapper eventOptionMapper;
 
     public EventDto createEvent(EventDto request) {
-
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
+        request.getEventOptions().forEach(options -> options.setEventName(request.getName()));
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
 
@@ -49,11 +48,9 @@ public class EventService {
     }
 
     public EventDto getEventById(String id) {
-        LOGGER.info("Role: {}", userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow().getRole());
         Event event = getEvent(id);
         return eventMapper.entityToDto(event);
     }
-
 
     public Set<EventDto> getAllEvents() {
         return eventMapper.entitySetToDtoSet(Set.copyOf(eventRepository.findAll()));
@@ -63,32 +60,37 @@ public class EventService {
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(event.getRegisteredUsers().contains(user)) {
-            throw new UserException("User already registered to the event");
+            throw new UserException(String.format("User: %s already registered to the event", user.getUsername()));
         }
         event.getRegisteredUsers().add(user);
 
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
-    public EventDto closeEventVote(String id) {
+    public EventDto changeEventStatus(String id, String status) {
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
-            throw new UserIsNotOwnerException("Not allowed to close the vote of event");
+            throw new UserIsNotOwnerException(String.format("User: %s is not allowed to close the vote of event", user.getUsername()));
         }
 
-        event.setStatus(Event.Status.VOTE_CLOSED);
+        if (status.equals(event.getStatus().name())) {
+            throw new EventStatusException("The event already has the status : " + status);
+        }
+
+        var state = Event.Status.valueOf(StringUtils.upperCase(status.trim()));
+        event.setStatus(state);
         return eventMapper.entityToDto(eventRepository.save(event));
     }
 
     public EventDto voteEventOption(String idEvent, String idEventOption) {
+        Event event = getEvent(idEvent);
         EventOption eventOption = eventOptionRepository.findById(idEventOption).orElseThrow(
-                () -> new EntityNotFoundException("Event option not found")
+                () -> new EntityNotFoundException("The event option is not found")
         );
 
-        Event event = getEvent(idEvent);
         if (Event.Status.VOTE_CLOSED == event.getStatus()) {
-            throw new EventStatusException("The event's vote has already closed, not allowed to vote the event");
+            throw new EventStatusException("The event's vote has already closed, no more allowed to vote the event");
         }
 
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
@@ -101,7 +103,7 @@ public class EventService {
 
     private Event getEvent(String id) {
         return eventRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Event not found")
+                () -> new EntityNotFoundException("The event is not found")
         );
     }
 

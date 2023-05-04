@@ -186,7 +186,7 @@ public class EventServiceTest {
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     User user1 = User.builder().username("username").build();
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user1));
-    assertThrows(UserIsNotOwnerException.class, () -> eventService.closeEventVote("ididid"));
+    assertThrows(UserIsNotOwnerException.class, () -> eventService.changeEventStatus("ididid", Event.Status.VOTE_CLOSED.name()));
 
     Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());
@@ -200,7 +200,7 @@ public class EventServiceTest {
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
 
     utils.when(Utils::getCurrentUsername).thenReturn("username");
-    assertDoesNotThrow(() -> eventService.closeEventVote("ididid"));
+    assertDoesNotThrow(() -> eventService.changeEventStatus("ididid", Event.Status.VOTE_CLOSED.name()));
 
     Mockito.verify(eventRepository).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());

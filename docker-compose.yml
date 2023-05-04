@@ -20,14 +20,19 @@ services:
 
   backend:
     <<: *common
+    build: ./backend
     image: backend:latest
     environment:
-      - MONGODB_HOST=mongo
-      - MONGODB_PORT=27017
+      MONGODB_HOST: mongo
+      MONGODB_PORT: 27017
+      MONGODB_DATABASE: TP
+      SECRET_KEY: 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
+      MONITOR_TIME_RANGE: 2
     links:
-        - mongo:mongo
+        - mongo
     ports:
       - "8091:8091"
+      - "8092:8092"
     networks:
       tp_network:
         aliases:
@@ -37,8 +42,10 @@ services:
       - mongo
     volumes:
       - $PWD/.data/backend:/data/db:delegated
+
   frontend:
     <<: *common
+    build: ./frontend
     image: frontend:latest
     ports:
       - "3000:3000"
@@ -47,6 +54,23 @@ services:
         aliases:
           - frontend
         ipv4_address: 172.255.254.105
+
+  telebot:
+    <<: *common
+    build: ./telebot
+    image: telebot:latest
+    environment:
+      USERNAME: tacs_telegram_bot
+      TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
+      BASE_URL: http://localhost:8091/
+    ports:
+      - "8080:8080"
+    networks:
+      tp_network:
+        aliases:
+          - telebot
+        ipv4_address: 172.255.254.106
+
 networks:
   tp_network:
     driver: bridge

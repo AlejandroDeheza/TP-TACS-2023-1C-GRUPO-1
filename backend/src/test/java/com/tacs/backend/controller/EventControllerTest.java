@@ -9,7 +9,7 @@ import com.tacs.backend.exception.EventStatusException;
 import com.tacs.backend.exception.UserException;
 import com.tacs.backend.exception.UserIsNotOwnerException;
 import com.tacs.backend.service.EventService;
-import com.tacs.backend.service.RateLimiterService;
+import com.tacs.backend.config.RateLimiterService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -177,7 +177,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString())).willReturn(eventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch("/v1/events/%s/add-user", idEvent)
+        MockHttpServletResponse response = mvc.perform(patch("/v1/events/%s/user", idEvent)
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .accept(MediaType.APPLICATION_JSON))
@@ -194,7 +194,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString())).willThrow(new EntityNotFoundException("Event not found"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch("/v1/events/%s/add-user", "4244c2")
+        MockHttpServletResponse response = mvc.perform(patch("/v1/events/%s/user", "4244c2")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .content(idEvent)
@@ -212,7 +212,7 @@ public class EventControllerTest {
         given(eventService.registerEvent(anyString())).willThrow(new UserException("User already registered to the event"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch("/v1/events/1444c/add-user")
+        MockHttpServletResponse response = mvc.perform(patch("/v1/events/1444c/user")
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
                         .content(idEvent)
@@ -228,12 +228,13 @@ public class EventControllerTest {
     @DisplayName("Should return 200 when close a event vote")
     void itShouldReturnEventWith200StatusCodeWhenCalledCloseEventVote() throws Exception {
         eventDto.setStatus(VOTE_CLOSED.name());
-        given(eventService.closeEventVote(anyString())).willReturn(eventDto);
+        given(eventService.changeEventStatus(anyString(), anyString())).willReturn(eventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s/close", idEvent))
+        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s", idEvent))
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
+                        .queryParam("status", "VOTE_CLOSED")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse();
@@ -245,12 +246,13 @@ public class EventControllerTest {
     @Test
     @DisplayName("Should return 400 when close a event vote not exists")
     void itShouldReturnErrorWith400StatusCodeWhenCalledCloseEventVoteNotExists() throws Exception {
-        given(eventService.closeEventVote(anyString())).willThrow(new EntityNotFoundException("Event not found"));
+        given(eventService.changeEventStatus(anyString(), anyString())).willThrow(new EntityNotFoundException("Event not found"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s/close", idEvent))
+        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s", idEvent))
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
+                        .queryParam("status", "VOTE_CLOSED")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse();
@@ -260,19 +262,20 @@ public class EventControllerTest {
     }
 
     @Test
-    @DisplayName("Should return 406 when a user wants to close a event vote that's not its owner")
+    @DisplayName("Should return 403 when a user wants to close a event vote that's not its owner")
     void itShouldReturnErrorWith406StatusCodeWhenCalledCloseEventVoteNotOwner() throws Exception {
-        given(eventService.closeEventVote(anyString())).willThrow(new UserIsNotOwnerException("Not allowed to close the vote of event"));
+        given(eventService.changeEventStatus(anyString(), anyString())).willThrow(new UserIsNotOwnerException("Not allowed to close the vote of event"));
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s/close", idEvent))
+        MockHttpServletResponse response = mvc.perform(patch(String.format("/v1/events/%s", idEvent))
                         .header("Authorization", "Bearer saraza123")
                         .requestAttr("javax.servlet.http.HttpServletRequest", request)
+                        .queryParam("status", "VOTE_CLOSED")
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse();
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_ACCEPTABLE.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(response.getContentAsString()).contains("Not allowed to close the vote of event");
     }
 

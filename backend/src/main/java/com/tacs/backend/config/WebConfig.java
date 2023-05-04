@@ -1,7 +1,5 @@
 package com.tacs.backend.config;
 
-import com.tacs.backend.service.RateLimiterService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -13,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RateLimiterInterceptor(new RateLimiterService()))
-                .addPathPatterns("/v1/auth/refresh-token")
+                .addPathPatterns("/v1/auth/**")
                 .addPathPatterns("/v1/events/**")
                 .addPathPatterns("/v1/monitor/**");
     }

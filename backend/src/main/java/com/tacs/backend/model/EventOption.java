@@ -1,11 +1,13 @@
 package com.tacs.backend.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -22,6 +24,7 @@ public class EventOption {
     @Id
     private String id;
     private Event event;
+    @Indexed
     @Field("date_time")
     private Date dateTime;
 
@@ -33,5 +36,8 @@ public class EventOption {
 
     @Field("update_time")
     private Date updateDate;
+
+    @Field("event_name")
+    private String eventName;
 
 }

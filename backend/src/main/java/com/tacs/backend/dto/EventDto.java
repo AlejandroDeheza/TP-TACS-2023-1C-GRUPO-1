@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -18,7 +19,7 @@ public class EventDto {
     @JsonProperty("id")
     @Schema(description = "Event id", hidden = true)
     private String id;
-    @JsonProperty("name")
+    @JsonProperty(value = "name", required = true)
     @NotBlank(message = "Name can not be blank")
     @Schema(description = "Event name", example = "TACS")
     private String name;
@@ -30,9 +31,9 @@ public class EventDto {
     @Schema(description = "Event status", hidden = true)
     private String status;
 
-    @JsonProperty("event_options")
+    @JsonProperty(value = "event_options", required = true)
     @Schema(description = "Event options")
-    private Set<EventOptionDto> eventOptions;
+    private Set<EventOptionDto> eventOptions = new HashSet<>();
 
     @JsonProperty("owner_user")
     @Schema(description = "Event owner user", hidden = true)
@@ -40,7 +41,7 @@ public class EventDto {
 
     @JsonProperty("registered_users")
     @Schema(description = "Event registered users", hidden = true)
-    private Set<UserDto> registeredUsers;
+    private Set<UserDto> registeredUsers = new HashSet<>();
 
     @JsonProperty("create_date")
     @Schema(description = "Event create date", hidden = true)

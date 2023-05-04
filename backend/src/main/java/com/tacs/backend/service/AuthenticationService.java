@@ -3,9 +3,6 @@ package com.tacs.backend.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tacs.backend.exception.UserException;
 import com.tacs.backend.model.Role;
-import com.tacs.backend.model.Token;
-import com.tacs.backend.model.TokenType;
-import com.tacs.backend.repository.TokenRepository;
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.dto.AuthenticationRequest;
 import com.tacs.backend.dto.AuthenticationResponse;
@@ -25,7 +22,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 
 import java.io.IOException;
@@ -38,16 +34,15 @@ public class AuthenticationService {
     private static final String BEARER = "Bearer ";
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationService.class);
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final RateLimiterService rateLimiterService;
+
 
     public AuthenticationResponse register(RegisterRequest request) {
         LOGGER.info("Register request: {}", request);
         if(userRepository.exists(request.getUsername())) {
-            throw new UserException("Username already exists");
+            throw new UserException(String.format("Username: %s already exists", request.getUsername()));
         }
         User user = User.builder()
                 .firstName(request.getFirstName())
@@ -56,15 +51,14 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        var savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
-        rateLimiterService.initializeUserRequest(jwtToken);
 
         return AuthenticationResponse.builder()
+                .username(savedUser.getUsername())
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
                 .accessToken(jwtToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -79,14 +73,12 @@ public class AuthenticationService {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
-        rateLimiterService.initializeUserRequest(jwtToken);
 
         return AuthenticationResponse.builder()
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .accessToken(jwtToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
@@ -95,8 +87,9 @@ public class AuthenticationService {
         final String refreshToken;
         final String username;
         if (authHeader == null || !authHeader.startsWith(BEARER)) {
-            return;
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         }
+        assert authHeader != null;
         refreshToken = authHeader.substring(StringUtils.length(BEARER));
         username = jwtService.extractUsername(refreshToken);
         if (username != null) {
@@ -104,38 +97,11 @@ public class AuthenticationService {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken)
                         .build();
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
-    }
-
-    private void saveUserToken(User user, String jwtToken) {
-        var token = Token.builder()
-                .user(user)
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
-                .expired(false)
-                .revoked(false)
-                .build();
-        tokenRepository.save(token);
-    }
-
-    private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUsername(user.getUsername());
-        if (CollectionUtils.isEmpty(validUserTokens)) {
-            LOGGER.info("The user:{} has no valid tokens.", user.getUsername());
-            return;
-        }
-        validUserTokens.forEach(token -> {
-            token.setExpired(true);
-            token.setRevoked(true);
-        });
-        tokenRepository.saveAll(validUserTokens);
     }
 }
