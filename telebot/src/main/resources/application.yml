@@ -3,7 +3,7 @@ bot:
   token: ${TOKEN}
 
 server:
-    port: 8080
+    port: 8443
 
 backend:
   baseUrl: ${BASE_URL}
@@ -12,6 +12,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-USERNAME: tacs_telegram_bot
-TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
-BASE_URL: http://localhost:8091/
+
+#USERNAME: tacs_telegram_bot
+#TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
+#BASE_URL: http://localhost:8091/
