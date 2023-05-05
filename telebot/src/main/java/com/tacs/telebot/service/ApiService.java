@@ -28,7 +28,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object register(Message message) {
@@ -40,7 +40,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object getAllEvents(Message message)  {
@@ -51,7 +51,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object createEvent(Message message) {
@@ -63,7 +63,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object getEventById(Message message) {
@@ -74,7 +74,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object registerEvent(Message message) {
@@ -85,7 +85,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object voteEventOption(Message message) {
@@ -96,7 +96,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object changeEventStatus(Message message)  {
@@ -107,7 +107,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 
      public Object getCounterReport(Message message) {
@@ -118,7 +118,7 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body() : Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body() : Utils.getResponseErrorMessage(response);
      }
 
      public Object getOptionsReport(Message message) {
@@ -129,6 +129,6 @@ public class ApiService {
           } catch (IOException e) {
                throw new RuntimeException(e);
           }
-          return response.isSuccessful() ? response.body(): Utils.getResponseError(response);
+          return response.isSuccessful() ? response.body(): Utils.getResponseErrorMessage(response);
      }
 }

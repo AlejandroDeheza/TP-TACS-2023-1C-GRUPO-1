@@ -23,7 +23,7 @@ public class Utils {
         CLASS_MAP.put(Type.AUTH_REGISTER.name(), Register.class);
     }
     
-    public static String getResponseError(Response<?> response) {
+    public static String getResponseErrorMessage(Response<?> response) {
         final ResponseBody errorBody = response.errorBody();
         final String errorMessage;
         try {
@@ -35,6 +35,16 @@ public class Utils {
             throw new RuntimeException(e);
         }
         return errorMessage;
+    }
+
+    public static boolean isValidJson(String body) {
+        try {
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.readTree(body);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     public static boolean isBodyValid(Message message) {
@@ -50,8 +60,8 @@ public class Utils {
     public static String helpMessage() {
         return "Commands Help: \n"
                 .concat("******** /${body} in JSON format ***********\n")
-                .concat("- Authentication(Sign In): /authentication/${body}\n")
-                .concat("- Sign Up: /register/${body}\n")
+                .concat("- Log In: /login/${password}\n")
+                .concat("- Sign Up: /register/${password}\n")
                 .concat("- Get All Events: /all_events/${token}\n")
                 .concat("- Get Event By Id: /event_by_id/${token}/${eventId}\n")
                 .concat("- Create New Event: /new_event/${token}/${body}\n")

@@ -1,6 +1,5 @@
 package com.tacs.telebot.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -29,7 +28,7 @@ public class EventOption {
     private long voteQuantity;
 
     @JsonProperty("vote_users")
-    private List<User> voteUsers;
+    private List<UserData> voteUserData;
 
     @JsonProperty("update_time")
     private Date updateDate;
