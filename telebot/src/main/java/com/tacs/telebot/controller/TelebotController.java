@@ -1,6 +1,9 @@
 package com.tacs.telebot.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.kshashov.telegram.api.MessageType;
 import com.github.kshashov.telegram.api.TelegramMvcController;
 import com.github.kshashov.telegram.api.bind.annotation.BotController;
@@ -8,18 +11,17 @@ import com.github.kshashov.telegram.api.bind.annotation.BotPathVariable;
 import com.github.kshashov.telegram.api.bind.annotation.BotRequest;
 import com.github.kshashov.telegram.api.bind.annotation.request.MessageRequest;
 import com.pengrad.telegrambot.model.Chat;
+import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.tacs.telebot.dto.Message;
-import com.tacs.telebot.dto.Type;
+import com.tacs.telebot.dto.*;
 import com.tacs.telebot.service.TelebotService;
 import com.tacs.telebot.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.validation.constraints.NotBlank;
 
 
 /**
@@ -33,6 +35,8 @@ public class TelebotController implements TelegramMvcController {
     @Value("${bot.token}")
     private String token;
     private final TelebotService telebotService;
+    private final ObjectWriter objectWriter;
+    private final ObjectMapper objectMapper;
 
     @Override
     public String getToken() {
@@ -41,7 +45,7 @@ public class TelebotController implements TelegramMvcController {
 
 
     @BotRequest(value = "/start", type = {MessageType.CALLBACK_QUERY, MessageType.MESSAGE})
-    public BaseRequest start(User user, Chat chat) {
+    public BaseRequest start(User user, Chat chat, Update update) {
         return new SendMessage(chat.id(), "Hello, " + user.firstName() + "! Send '/help' to get more info.");
     }
 
@@ -50,20 +54,30 @@ public class TelebotController implements TelegramMvcController {
         return Utils.helpMessage();
     }
 
-    @MessageRequest("/authentication/{body}" )
-    public String authentication(@BotPathVariable("body") String body) {
+    @MessageRequest("/login/{password}" )
+    public String authentication(@BotPathVariable("password") String password, User user) throws JsonProcessingException {
+        Authentication authentication = Authentication.builder().username(user.id().toString()).password(password).build();
         Message message = Message.builder()
                         .type(Type.AUTH_AUTHENTICATION.name())
-                        .body(body).build();
-        return telebotService.getResult(message);
+                        .body(objectWriter.writeValueAsString(authentication)).build();
+        String result = telebotService.getResult(message);
+        return Utils.isValidJson(result) ? objectMapper.readValue(telebotService.getResult(message), AuthenticationResponse.class).getAccessToken()
+                :result;
     }
 
-    @MessageRequest("/register/{body}" )
-    public String register(@BotPathVariable("body") String body) {
+    @MessageRequest("/register/{password}" )
+    public String register(@BotPathVariable("password") String password, User user) throws JsonProcessingException {
+        Register register = Register.builder()
+                .firstName(user.firstName())
+                .lastName(user.lastName())
+                .username(user.username()).password(password)
+                .passwordConfirmation(password).build();
         Message message = Message.builder()
                 .type(Type.AUTH_REGISTER.name())
-                .body(body).build();
-        return telebotService.getResult(message);
+                .body(objectWriter.writeValueAsString(register)).build();
+        String result = telebotService.getResult(message);
+        return Utils.isValidJson(result) ? objectMapper.readValue(telebotService.getResult(message), AuthenticationResponse.class).getAccessToken()
+                :result;
     }
 
     @MessageRequest("/new_event/{token}/{body}" )
@@ -121,7 +135,7 @@ public class TelebotController implements TelegramMvcController {
         return telebotService.getResult(message);
     }
 
-    @MessageRequest("/event_marketing_report/{token}")
+    @MessageRequest("/events_marketing_report/{token}")
     public String getCounterReport(@BotPathVariable("token") String token) {
         Message message = Message.builder()
                 .type(Type.MONITOR_MARKETING_REPORT.name())

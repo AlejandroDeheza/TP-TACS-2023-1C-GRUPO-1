@@ -33,10 +33,10 @@ public class Event {
     private Set<EventOption> eventOptions;
 
     @JsonProperty("owner_user")
-    private User ownerUser;
+    private UserData ownerUserData;
 
     @JsonProperty("registered_users")
-    private Set<User> registeredUsers;
+    private Set<UserData> registeredUserData;
 
     @JsonProperty("create_date")
     private Date createDate;

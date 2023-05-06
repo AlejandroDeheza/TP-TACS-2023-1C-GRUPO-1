@@ -62,9 +62,9 @@ services:
     environment:
       USERNAME: tacs_telegram_bot
       TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
-      BASE_URL: http://localhost:8091/
+      BASE_URL: http://backend:8091/
     ports:
-      - "8080:8080"
+      - "8443:8443"
     networks:
       tp_network:
         aliases:
