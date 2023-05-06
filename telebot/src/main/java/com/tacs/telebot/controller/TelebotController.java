@@ -135,7 +135,7 @@ public class TelebotController implements TelegramMvcController {
         return telebotService.getResult(message);
     }
 
-    @MessageRequest("/event_marketing_report/{token}")
+    @MessageRequest("/events_marketing_report/{token}")
     public String getCounterReport(@BotPathVariable("token") String token) {
         Message message = Message.builder()
                 .type(Type.MONITOR_MARKETING_REPORT.name())
