@@ -22,10 +22,10 @@
 ### Ejemplos de comandos:
 
 #### Authentication(Sign In): 
-- /authentication/{"username": "juan.perez", "password": "mksiug_865K"}
+- /login/mksiug_865K
 
 #### Sign Up: 
-- /register/{"first_name": "Juan", "last_name": "Perez", "username": "juan.perez", "password": "mksiug_865K", "password_confirmation": "mksiug_865K"}
+- /register/mksiug_865K
 
 #### Get All Events:
 - /all_events/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
