@@ -22,7 +22,7 @@
 ### Ejemplos de comandos:
 
 #### Authentication(Sign In): 
-- /authentication/mksiug_865K
+- /login/mksiug_865K
 
 #### Sign Up: 
 - /register/mksiug_865K

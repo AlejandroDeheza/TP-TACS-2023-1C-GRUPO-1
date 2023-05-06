@@ -67,6 +67,7 @@ public class Utils {
                 .concat("- Create New Event: /new_event/${token}/${body}\n")
                 .concat("- Change Event Status: /change_event_status/${token}/${eventId}/${status}\n")
                 .concat("- Vote Event: /vote_event_option/${token}/${eventId}/${optionId}\n")
+                .concat("- Register Event: /register/${token}/${eventId}\n")
                 .concat("- Get Marketing Report: /event_marketing_report/${token}\n")
                 .concat("- Get Options Report: /options_report/${token}\n");
 
