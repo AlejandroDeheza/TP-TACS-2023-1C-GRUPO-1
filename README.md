@@ -16,12 +16,11 @@
 
 ## Telegram Bot
 - Bot name: tacs_telegram_bot
-- /start para comenzar
 - /help para consultar las instrucciones de comandos
 
 ### Ejemplos de comandos:
 
-#### Authentication(Sign In): 
+#### Login: 
 - /login/mksiug_865K
 
 #### Sign Up: 
@@ -43,7 +42,7 @@
 - /vote_event_option/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo/644f591f2a0a680ea28bd448/644f591f2a0a680ea28bd446
 
 #### Get Marketing Report: 
-- /event_marketing_report/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
+- /events_marketing_report/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
 
 #### Get Options Report: 
 - /options_report/eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuLnBlcmV6IiwiaWF0IjoxNjgzMDUxNzE0LCJleHAiOjE2ODMxMzgxMTQsInJvbGUiOlt7ImF1dGhvcml0eSI6IlVTRVIifV19.rhoIMOli0ZNhNtDRB6FYm6SVSY7sH3ej1KdC0gZ4rwo
