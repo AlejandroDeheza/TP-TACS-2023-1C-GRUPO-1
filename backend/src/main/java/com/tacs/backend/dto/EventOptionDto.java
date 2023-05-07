@@ -35,10 +35,6 @@ public class EventOptionDto {
     @Schema(description = "Event vote quantity", hidden = true)
     private long voteQuantity;
 
-    @JsonProperty("vote_users")
-    @JsonIgnore
-    @Schema(description = "Event option vote users", hidden = true)
-    private List<UserDto> voteUsers;
 
     @JsonProperty("update_time")
     @Schema(description = "Event option update time", hidden = true)

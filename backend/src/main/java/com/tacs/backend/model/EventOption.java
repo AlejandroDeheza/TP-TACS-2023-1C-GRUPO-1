@@ -28,9 +28,6 @@ public class EventOption {
     @Field("date_time")
     private Date dateTime;
 
-    @Field("vote_users")
-    @DBRef
-    private List<User> voteUsers;
     @Field("vote_quantity")
     private long voteQuantity;
 

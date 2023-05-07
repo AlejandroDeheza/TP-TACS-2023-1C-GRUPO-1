@@ -54,6 +54,6 @@ export interface Report {
 
 export interface EventOptionReport {
     date_time: string,
-    votes_quantity: number,
+    vote_quantity: number,
     event_name: string
 }
