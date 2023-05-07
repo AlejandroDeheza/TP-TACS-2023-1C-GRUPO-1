@@ -27,7 +27,8 @@ public class SecurityConfiguration {
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
     private static final String[] AUTH_WHITELIST = {
-            "/v1/auth/**",
+            "/v1/auth/authentication",
+            "/v1/auth/register",
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",

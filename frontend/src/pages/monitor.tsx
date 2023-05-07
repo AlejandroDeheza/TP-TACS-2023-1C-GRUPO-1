@@ -82,7 +82,7 @@ const Monitor = () => {
                                 Time: {moment(item.date_time).format("kk:mm")}
                             </Card.Text>
                             <Card.Text>
-                                Vote Quantity: {item.votes_quantity}
+                                Vote Quantity: {item.vote_quantity}
                             </Card.Text>
                         </Card.Body>
                     </Card>

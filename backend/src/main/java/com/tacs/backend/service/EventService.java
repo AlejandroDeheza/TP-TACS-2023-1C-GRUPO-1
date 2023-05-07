@@ -37,10 +37,7 @@ public class EventService {
     public EventDto createEvent(EventDto request) {
         log.info(request.toString());
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
-        request.getEventOptions().forEach(options -> {
-            options.setEventName(request.getName());
-            options.setVoteUsers(new ArrayList<>());
-        });
+        request.getEventOptions().forEach(options -> options.setEventName(request.getName()));
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
 
@@ -102,9 +99,7 @@ public class EventService {
             throw new EventStatusException("The event's vote has already closed, no more allowed to vote the event");
         }
 
-        User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         eventOption.setVoteQuantity(eventOption.getVoteQuantity() + 1);
-        eventOption.getVoteUsers().add(user);
         eventOption.setUpdateDate(new Date());
         eventOptionRepository.save(eventOption);
         return eventMapper.entityToDto(eventRepository.findById(idEvent).orElseThrow());

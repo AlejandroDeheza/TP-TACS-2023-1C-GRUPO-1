@@ -76,7 +76,7 @@ public class MonitorControllerTest {
     @DisplayName("Should return 200 when get last voted options")
     void itShouldReturnListOfLAstVotedOptionsWith200StatusCodeWhenCalledGetLastVotedEventOptions() throws Exception {
         EventOptionReportDto eventOptionReportDto = new EventOptionReportDto();
-        eventOptionReportDto.setVotesQuantity(5);
+        eventOptionReportDto.setVoteQuantity(5);
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(2023, 02, 25, 15, 30);

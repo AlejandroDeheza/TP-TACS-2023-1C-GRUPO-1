@@ -76,7 +76,7 @@ public class MonitorService {
         List<EventOptionDto> eventOptionDtos = eventOptionMapper.entityListToDtoList(eventOptions);
         eventOptionDtos.forEach(e -> report.add(EventOptionReportDto.builder()
                 .dateTime(e.getDateTime())
-                .votesQuantity(e.getVoteQuantity())
+                .voteQuantity(e.getVoteQuantity())
                 .eventName(e.getEventName())
                 .build()));
         return report;

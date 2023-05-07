@@ -1,5 +1,6 @@
 package com.tacs.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,11 +26,12 @@ public class EventOptionReportDto {
 
     @JsonProperty("last_update_time")
     @Schema(description = "Event option last update time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date lastUpdateDate;
 
-    @JsonProperty("votes_quantity")
+    @JsonProperty("vote_quantity")
     @Schema(description = "Quantity of votes")
-    private long votesQuantity;
+    private long voteQuantity;
 
     @JsonProperty("event_name")
     private String eventName;
