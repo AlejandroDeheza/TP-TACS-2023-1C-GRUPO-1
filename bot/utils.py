@@ -78,7 +78,9 @@ def format_options_report(options_dict: dict):
         print(options_dict)
         options = ''
         for op in options_dict['options_report']:
-            options += f'📅  Option date time: {op.date_time} | Vote counts: {op.vote_quantity}\n'
+            date_time = op['date_time']
+            vote_quantity = op['vote_quantity']
+            options += f'📅  Option date time: {date_time} | Vote counts: {vote_quantity}\n'
         return options if options else "🙅 There's no options voted."
     return options_dict
 
