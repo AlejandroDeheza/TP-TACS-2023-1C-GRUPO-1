@@ -1,10 +1,12 @@
+import os
+
 import requests
 
 import user
-
+from env import SCHEME_DOMAIN
 
 def get_events_marketing_report() -> dict:
-    url = "http://localhost:8091/v1/monitor/ratios"
+    url = f'{SCHEME_DOMAIN}/v1/monitor/ratios'
     headers = {"Authorization": f'Bearer {user.User.token}'}
     response = requests.get(url, headers=headers)
     json = response.json()
@@ -13,7 +15,7 @@ def get_events_marketing_report() -> dict:
 
 
 def get_options_report() -> dict:
-    url = "http://localhost:8091/v1/monitor/options"
+    url = f'{SCHEME_DOMAIN}/v1/monitor/options'
     headers = {"Authorization": f'Bearer {user.User.token}'}
     response = requests.get(url, headers=headers)
     json = response.json()
@@ -23,5 +25,5 @@ def get_options_report() -> dict:
         else:
             result = json
     else:
-        resul = json['message']
+        result = json['message']
     return result

@@ -1,10 +1,13 @@
+import os
+
 import requests
 
 import user
+from env import SCHEME_DOMAIN
 
 
 def get_all_events() -> dict:
-    url = "http://localhost:8091/v1/events"
+    url = f'{SCHEME_DOMAIN}/v1/events'
     headers = {"Authorization": f'Bearer {user.User.token}'}
     response = requests.get(url, headers=headers)
     json = response.json()
@@ -13,7 +16,7 @@ def get_all_events() -> dict:
 
 
 def get_event_by_id(event_id: str) -> dict:
-    url = f'http://localhost:8091/v1/events/{event_id}'
+    url = f'{SCHEME_DOMAIN}/v1/events/{event_id}'
     headers = {"Authorization": f'Bearer {user.User.token}'}
     response = requests.get(url, headers=headers)
     json = response.json()
@@ -22,7 +25,7 @@ def get_event_by_id(event_id: str) -> dict:
 
 
 def register_event(event_id: str) -> dict:
-    url = f'http://localhost:8091/v1/events/{event_id}/user'
+    url = f'{SCHEME_DOMAIN}/v1/events/{event_id}/user'
     headers = {"Authorization": f'Bearer {user.User.token}'}
     response = requests.patch(url, headers=headers)
     json = response.json()
@@ -31,7 +34,7 @@ def register_event(event_id: str) -> dict:
 
 
 def vote_event_option(event_id: str, option_id: str) -> dict:
-    url = f'http://localhost:8091/v1/events/{event_id}/options/{option_id}/vote'
+    url = f'{SCHEME_DOMAIN}/v1/events/{event_id}/options/{option_id}/vote'
     headers = {"Authorization": f'Bearer {user.User.token}'}
     response = requests.patch(url, headers=headers)
     json = response.json()
@@ -40,7 +43,7 @@ def vote_event_option(event_id: str, option_id: str) -> dict:
 
 
 def change_event_status(event_id: str, status: str) -> dict:
-    url = f'http://localhost:8091/v1/events/{event_id}'
+    url = f'{SCHEME_DOMAIN}/v1/events/{event_id}'
     params = {"status": status}
     headers = {"Authorization": f'Bearer {user.User.token}'}
     response = requests.patch(url, params=params, headers=headers)
@@ -50,7 +53,7 @@ def change_event_status(event_id: str, status: str) -> dict:
 
 
 def create_event(new_event) -> dict:
-    url = f'http://localhost:8091/v1/events'
+    url = f'{SCHEME_DOMAIN}/v1/events'
     headers = {"Authorization": f'Bearer {user.User.token}'}
     body = {"name": new_event.name, "description": new_event.description, "event_options": new_event.event_options}
     print(body)

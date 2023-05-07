@@ -11,9 +11,8 @@ import api.events
 import api.monitor
 import event
 import user
+from env import BOT_TOKEN
 
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
-print(BOT_TOKEN)
 bot = telebot.TeleBot(BOT_TOKEN)
 
 
