@@ -13,8 +13,8 @@ import event
 import user
 
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
-
-bot = telebot.TeleBot('5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI')
+print(BOT_TOKEN)
+bot = telebot.TeleBot(BOT_TOKEN)
 
 
 @bot.message_handler(commands=['start'])
