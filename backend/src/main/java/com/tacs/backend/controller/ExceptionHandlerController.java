@@ -3,10 +3,8 @@ package com.tacs.backend.controller;
 import com.mongodb.MongoException;
 import com.tacs.backend.dto.ExceptionResponse;
 import com.tacs.backend.exception.*;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -95,6 +93,15 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
     }
 
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ExceptionResponse exception = new ExceptionResponse();
+        exception.setTimestamp(new Date());
+        exception.setMessage(ex.getMessage());
+
+        return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({Exception.class})
     public final ResponseEntity<Object> handleOtherException(Exception ex, WebRequest request){
         ExceptionResponse exception = new ExceptionResponse();
@@ -103,4 +110,5 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(exception, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }

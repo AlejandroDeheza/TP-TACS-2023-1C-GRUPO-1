@@ -34,7 +34,7 @@ export default function Events() {
                     return
                 }
                 else {
-                    setData(reply)
+                    setData(reply.events)
                 }
             })
     }

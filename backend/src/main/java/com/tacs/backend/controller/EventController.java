@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @CrossOrigin(maxAge = 3600)
@@ -47,8 +49,10 @@ public class EventController {
             @ApiResponse(responseCode = "429", description = "Too many requests"),
             @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    public ResponseEntity<Set<EventDto>> getAllEvents() {
-        return ResponseEntity.ok(this.eventService.getAllEvents());
+    public ResponseEntity<Map<String, Set<EventDto>>> getAllEvents() {
+        Map<String, Set<EventDto>> response = new HashMap<>(1);
+        response.put("events", this.eventService.getAllEvents());
+        return ResponseEntity.ok(response);
 
     }
 

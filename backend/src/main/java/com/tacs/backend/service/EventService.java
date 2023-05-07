@@ -12,18 +12,22 @@ import com.tacs.backend.repository.EventRepository;
 import com.tacs.backend.repository.UserRepository;
 import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventService.class);
     private final EventRepository eventRepository;
     private final EventOptionRepository eventOptionRepository;
     private final UserRepository userRepository;
@@ -31,8 +35,12 @@ public class EventService {
     private final EventOptionMapper eventOptionMapper;
 
     public EventDto createEvent(EventDto request) {
+        log.info(request.toString());
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
-        request.getEventOptions().forEach(options -> options.setEventName(request.getName()));
+        request.getEventOptions().forEach(options -> {
+            options.setEventName(request.getName());
+            options.setVoteUsers(new ArrayList<>());
+        });
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
         Set<EventOption> savedEventOptionSet = Set.copyOf(eventOptionRepository.saveAll(eventOptionSet));
 
@@ -41,6 +49,7 @@ public class EventService {
                 .description(request.getDescription())
                 .status(Event.Status.VOTE_PENDING)
                 .ownerUser(currentUser)
+                .registeredUsers(new HashSet<>())
                 .createDate(new Date())
                 .eventOptions(savedEventOptionSet).build();
 

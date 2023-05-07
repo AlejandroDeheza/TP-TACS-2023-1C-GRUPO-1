@@ -1,5 +1,6 @@
 package com.tacs.backend.controller;
 
+import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.EventOptionReportDto;
 import com.tacs.backend.dto.MarketingReportDto;
 import com.tacs.backend.dto.ExceptionResponse;
@@ -17,7 +18,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -44,8 +48,10 @@ public class MonitorController {
             @ApiResponse(responseCode = "400", description = "Report querying failed", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
             @ApiResponse(responseCode = "504", description = "Timeout", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
-    public ResponseEntity<List<EventOptionReportDto>> getOptionsReport() {
-        return ResponseEntity.ok(this.monitorService.getLastVotedEventOptions());
+    public ResponseEntity<Map<String, List<EventOptionReportDto>>> getOptionsReport() {
+        Map<String, List<EventOptionReportDto>> response = new HashMap<>(1);
+        response.put("options_report", this.monitorService.getLastVotedEventOptions());
+        return ResponseEntity.ok(response);
     }
 
 }

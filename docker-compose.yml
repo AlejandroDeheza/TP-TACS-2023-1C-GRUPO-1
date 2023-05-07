@@ -55,10 +55,10 @@ services:
           - frontend
         ipv4_address: 172.255.254.105
 
-  telebot:
+  bot:
     <<: *common
-    build: ./telebot
-    image: telebot:latest
+    build: ./bot
+    image: bot:latest
     environment:
       USERNAME: tacs_telegram_bot
       TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
@@ -68,7 +68,7 @@ services:
     networks:
       tp_network:
         aliases:
-          - telebot
+          - bot
         ipv4_address: 172.255.254.106
 
 networks:
