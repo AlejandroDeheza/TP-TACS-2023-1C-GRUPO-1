@@ -45,7 +45,7 @@ const Monitor = () => {
                     return
                 }
                 else {
-                    setOptionsReportData(reply)
+                    setOptionsReportData(reply.options_report)
                 }
             })
     }

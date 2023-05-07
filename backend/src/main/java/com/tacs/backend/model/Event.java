@@ -33,11 +33,11 @@ public class Event {
 
     @Field("event_options")
     @DBRef
-    private Set<EventOption> eventOptions = new HashSet<>();
+    private Set<EventOption> eventOptions;
 
     @Field("registered_users")
     @DBRef
-    private Set<User> registeredUsers = new HashSet<>();
+    private Set<User> registeredUsers;
 
     @Field("create_date")
     private Date createDate;

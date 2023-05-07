@@ -33,7 +33,7 @@ public class EventDto {
 
     @JsonProperty(value = "event_options", required = true)
     @Schema(description = "Event options")
-    private Set<EventOptionDto> eventOptions = new HashSet<>();
+    private Set<EventOptionDto> eventOptions;
 
     @JsonProperty("owner_user")
     @Schema(description = "Event owner user", hidden = true)
@@ -41,7 +41,7 @@ public class EventDto {
 
     @JsonProperty("registered_users")
     @Schema(description = "Event registered users", hidden = true)
-    private Set<UserDto> registeredUsers = new HashSet<>();
+    private Set<UserDto> registeredUsers;
 
     @JsonProperty("create_date")
     @Schema(description = "Event create date", hidden = true)

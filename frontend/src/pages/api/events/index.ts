@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
   }
   else {
+    console.log(req.body)
     axios.post(url, req.body, {
       headers: {
         'Authorization': `Bearer ${jwt}`,

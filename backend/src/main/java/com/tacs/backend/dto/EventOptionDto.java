@@ -35,7 +35,7 @@ public class EventOptionDto {
     private String id;
     @JsonProperty(value = "date_time", required = true)
     @NotBlank(message = "Date time can not be blank")
-    @Schema(description = "Event option date time")
+    @Schema(description = "Event option date time", example = "2023-05-06T00:52")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date dateTime;
 
@@ -45,13 +45,14 @@ public class EventOptionDto {
 
     @JsonProperty("vote_users")
     @Schema(description = "Event option vote users", hidden = true)
-    private List<UserDto> voteUsers = new ArrayList<>();
+    private List<UserDto> voteUsers;
 
     @JsonProperty("update_time")
     @Schema(description = "Event option update time", hidden = true)
     private Date updateDate;
 
     @JsonProperty("event_name")
+    @Schema(description = "Event name", hidden = true)
     private String eventName;
 
 }
