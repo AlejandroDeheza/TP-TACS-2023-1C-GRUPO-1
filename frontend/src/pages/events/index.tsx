@@ -34,8 +34,9 @@ export default function Events() {
                     return
                 }
                 else {
-                    console.log(reply.events.sort())
-                    setData(reply.events.sort())
+                    setData(reply.events.sort((a: any, b:any) => {
+                        return a.id > b.id ? 1 : -1
+                    }))
                 }
             })
     }

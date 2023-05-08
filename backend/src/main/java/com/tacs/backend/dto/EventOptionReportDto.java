@@ -21,12 +21,12 @@ public class EventOptionReportDto {
     @Schema(description = "Event option id", hidden = true)
     private String id;
     @JsonProperty("date_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     @Schema(description = "Event option date time")
     private Date dateTime;
 
     @JsonProperty("last_update_time")
     @Schema(description = "Event option last update time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private Date lastUpdateDate;
 
     @JsonProperty("vote_quantity")

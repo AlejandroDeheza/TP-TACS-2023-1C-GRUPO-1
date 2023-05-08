@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends MongoRepository<Event, String>, EventRepositoryCustom {
-
 }
