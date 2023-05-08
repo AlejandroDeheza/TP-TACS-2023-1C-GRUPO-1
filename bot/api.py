@@ -4,7 +4,7 @@ import model
 from config import SCHEME_DOMAIN
 
 
-def authenticate(message: types.Message, username: str, password: str, user: model.User) -> dict:
+def authenticate(username: str, password: str, user: model.User) -> dict:
     url = f'{SCHEME_DOMAIN}/v1/auth/authentication'
     body = {"username": username, "password": password}
     response = requests.post(url, json=body)
@@ -110,11 +110,5 @@ def get_options_report(user: model.User) -> dict:
     headers = {"Authorization": f'Bearer {user.token}'}
     response = requests.get(url, headers=headers)
     json = response.json()
-    if response.status_code == 200:
-        if not json:
-            result = "😢 There's no options voted"
-        else:
-            result = json
-    else:
-        result = '😢 ' + json['message']
+    result = json if response.status_code == 200 else '😢 ' + json['message']
     return result
