@@ -19,10 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +58,8 @@ public class EventService {
     }
 
     public Set<EventDto> getAllEvents() {
-        return eventMapper.entitySetToDtoSet(Set.copyOf(eventRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+        List<Event> events = eventRepository.findAll().stream().sorted(Comparator.comparing(Event::getCreateDate)).toList();
+        return eventMapper.entitySetToDtoSet(Set.copyOf(events));
     }
 
     public EventDto registerEvent(String id) {
