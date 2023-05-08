@@ -4,14 +4,17 @@ import model
 from config import SCHEME_DOMAIN
 
 
-def authenticate(message: types.Message, password: str, user: model.User) -> dict:
+def authenticate(message: types.Message, username: str, password: str, user: model.User) -> dict:
     url = f'{SCHEME_DOMAIN}/v1/auth/authentication'
-    body = {"username": message.from_user.id, "password": password}
+    body = {"username": username, "password": password}
     response = requests.post(url, json=body)
     json = response.json()
     if response.status_code == 200:
+        user.username = json['username']
+        user.first_name = json['first_name']
+        user.last_name = json['last_name']
         user.token = json['access_token']
-    result = f'🎉 Login successfully with username: {message.from_user.id}' \
+    result = f'🎉 Login successfully with username: {user.username}' \
         if response.status_code == 200 else '😢 ' + json['message']
     return result
 
@@ -25,8 +28,8 @@ def logout(user: model.User) -> str:
 
 def register(message: types.Message, password: str, user: model.User) -> dict:
     url = f'{SCHEME_DOMAIN}/v1/auth/register'
-    body = {"first_name": message.from_user.first_name, "last_name": message.from_user.last_name,
-            "username": message.from_user.id, "password": password, "password_confirmation": password}
+    body = {"first_name": user.first_name, "last_name": user.last_name,
+            "username": user.username, "password": password, "password_confirmation": password}
     response = requests.post(url, json=body)
     json = response.json()
     if response.status_code == 200:

@@ -13,7 +13,7 @@ users = dict()
 @bot.message_handler(commands=['start'])
 def start(message):
     print(f'User: {message.from_user.id} /start')
-    text = f'😊 Hello {message.from_user.first_name}!\n' \
+    text = f'😊 Hello {message.from_user.first_name} !\n' \
            + 'If this is your first time using the bot, please /sign_up\n' \
            + "If not, please /login\n"
     bot.send_message(message.chat.id, text=text, parse_mode="HTML")
@@ -23,12 +23,11 @@ def command_list(message):
     text = f'{message.from_user.first_name}!\n' + 'Please select a command:\n' \
            + "/all_events\n" + "/event_by_id\n" \
            + "/vote_event_option\n" + "/register_event\n" + "/change_event_status\n" + "/new_event\n" \
-           + "/events_marketing_report\n" + "/options_report\n"
-    username = f'{message.from_user.id}'
+           + "/monitoring_report\n"
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
-            text += "Or 🛑 /logout\n"
+            text += "🛑 /logout\n"
         bot.send_message(message.chat.id, text=text, parse_mode="HTML")
     except KeyError:
         bot.send_message(message.chat.id, text, parse_mode="HTML")
@@ -37,20 +36,40 @@ def command_list(message):
 @bot.message_handler(commands=['login'])
 def login_handler(message):
     print(f'User: {message.from_user.id} /login')
+    text = "😆 Please input your username:"
+    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    bot.register_next_step_handler(sent_msg, ask_password)
+
+
+def ask_password(message):
+    username = message.text
     text = "😶 Please input your password:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, fetch_login)
+    bot.register_next_step_handler(sent_msg, fetch_login, username)
+
+
+def fetch_login(message, username):
+    password = message.text
+    bot.delete_message(message.chat.id, message.id)
+    user = model.User()
+    result = utils.convert_result(api.authenticate(message, username, password, user))
+    if "Login successfully" not in result:
+        bot.send_message(message.chat.id, text=result + ". Please /login again", parse_mode="HTML")
+    else:
+        users[message.from_user.id] = user
+        bot.send_message(message.chat.id, text=result, parse_mode="HTML")
+        command_list(message)
 
 
 @bot.message_handler(commands=['logout'])
 def logout_handler(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /logout')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             result = api.logout(user)
             if "Logout successfully" in result:
-                users.pop(user.username)
+                users.pop(message.from_user.id)
                 bot.send_message(message.chat.id, result, parse_mode="HTML")
                 start(message)
             else:
@@ -62,48 +81,59 @@ def logout_handler(message):
         bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
 
 
-def fetch_login(message):
-    password = message.text
-    bot.delete_message(message.chat.id, message.id)
-    user = get_user(message)
-    result = utils.convert_result(api.authenticate(message, password, user))
-    if "Login successfully" not in result:
-        bot.send_message(message.chat.id, text=result + ". Please /login again", parse_mode="HTML")
-    else:
-        users[user.username] = user
-        bot.send_message(message.chat.id, text=result, parse_mode="HTML")
-        command_list(message)
-
-
 @bot.message_handler(commands=['sign_up'])
 def sign_up_handler(message):
     print(f'User: {message.from_user.id} /sign_up')
-    text = "😶 Please input your password:"
+    text = "😆 Please input your username:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, process_password_confirmation)
+    user = model.User()
+    bot.register_next_step_handler(sent_msg, ask_first_name, user)
 
 
-def process_password_confirmation(message):
+def ask_first_name(message, user):
+    username = message.text
+    user.username = username
+    text = "😆 Please input you first name:"
+    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    bot.register_next_step_handler(sent_msg, ask_last_name, user)
+
+
+def ask_last_name(message, user):
+    first_name = message.text
+    user.first_name = first_name
+    text = "😆 Please input you last name:"
+    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    bot.register_next_step_handler(sent_msg, ask_for_password, user)
+
+
+def ask_for_password(message, user):
+    last_name = message.text
+    user.last_name = last_name
+    text = "😶 Please input you password:"
+    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    bot.register_next_step_handler(sent_msg, ask_for_password_confirmation, user)
+
+
+def ask_for_password_confirmation(message, user):
     password = message.text
     bot.delete_message(message.chat.id, message.id)
     text = "😶 Please repeat you password:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, fetch_sign_up, password)
+    bot.register_next_step_handler(sent_msg, fetch_sign_up, user, password, )
 
 
-def fetch_sign_up(message, password):
+def fetch_sign_up(message, user, password):
     password_confirmation = message.text
     bot.delete_message(message.chat.id, message.id)
     if password != password_confirmation:
         bot.send_message(message.chat.id, "😢 Passwords are not match. Please /sign_up again", parse_mode="HTML")
     else:
-        user = get_user(message)
         result = utils.convert_result(api.register(message, password, user))
         if "already exists" in result:
             bot.send_message(message.chat.id, text=result + ". Please /login", parse_mode="HTML")
         else:
             if "Sign up successfully" in result:
-                users[user.username] = user
+                users[message.from_user.id] = user
                 bot.send_message(message.chat.id, text=result, parse_mode="HTML")
                 command_list(message)
             else:
@@ -112,9 +142,9 @@ def fetch_sign_up(message, password):
 
 @bot.message_handler(commands=['all_events'])
 def all_events_handler(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /all_events')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             result = utils.format_events(api.get_all_events(user))
             bot.send_message(message.chat.id, result, parse_mode="HTML")
@@ -127,9 +157,9 @@ def all_events_handler(message):
 
 @bot.message_handler(commands=['event_by_id'])
 def event_by_id_handler(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /event_by_id')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             text = "🆔 Please input the event id:"
             sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
@@ -149,9 +179,9 @@ def fetch_event(message, user):
 
 @bot.message_handler(commands=['register_event'])
 def register_event_handler(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /register_event')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             text = "🆔 Please input the event id:"
             sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
@@ -171,9 +201,9 @@ def fetch_register_event(message, user):
 
 @bot.message_handler(commands=['change_event_status'])
 def change_event_status_handler(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /change_event_status')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             text = "Please input the event id:"
             sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
@@ -199,8 +229,7 @@ def process_status(message):
 
 @bot.callback_query_handler(lambda call: 'status' in call.data)
 def fetch_change_event_status(call):
-    username = f'{call.from_user.id}'
-    user = users[username]
+    user = users[call.from_user.id]
     status = json.loads(call.data)['status']
     result = api.change_event_status(user, json.loads(call.data)['id'], status)
     bot.send_message(call.message.chat.id, utils.format_event(result), parse_mode="HTML")
@@ -209,9 +238,9 @@ def fetch_change_event_status(call):
 
 @bot.message_handler(commands=['vote_event_option'])
 def vote_event_option_handler(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /vote_event_option')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             text = "🆔 Please input the event id:"
             sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
@@ -230,22 +259,23 @@ def process_option_id(message):
 
 
 def fetch_vote_event_option(message, event_id):
-    username = f'{message.from_user.id}'
-    user = users[username]
+    user = users[message.from_user.id]
     option_id = message.text
     result = api.vote_event_option(user, event_id, option_id)
     bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
     command_list(message)
 
 
-@bot.message_handler(commands=['events_marketing_report'])
+@bot.message_handler(commands=['monitoring_report'])
 def events_marketing_report(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /monitoring_report')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
-            result = api.get_events_marketing_report(user)
-            bot.send_message(message.chat.id, utils.format_events_marketing_report(result), parse_mode="HTML")
+            marketing_report = api.get_events_marketing_report(user)
+            options_report = api.get_options_report(user)
+            bot.send_message(message.chat.id, utils.format_monitoring_report(marketing_report, options_report),
+                             parse_mode="HTML")
             command_list(message)
         else:
             bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
@@ -254,10 +284,10 @@ def events_marketing_report(message):
 
 
 @bot.message_handler(commands=['options_report'])
-def options_report(message):
-    username = f'{message.from_user.id}'
+def options_report_handler(message):
+    print(f'User: {message.from_user.id} /options_report')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             result = api.get_options_report(user)
             bot.send_message(message.chat.id, utils.format_options_report(result), parse_mode="HTML")
@@ -270,9 +300,9 @@ def options_report(message):
 
 @bot.message_handler(commands=['new_event'])
 def new_event_handler(message):
-    username = f'{message.from_user.id}'
+    print(f'User: {message.from_user.id} /new_events')
     try:
-        user = users[username]
+        user = users[message.from_user.id]
         if user.token:
             model.Event.event_options = list()
             text = "📝 Please input the event name:"
@@ -332,17 +362,10 @@ def process_option(message, event):
 
 def fetch_create_event(message, event):
     print(event.name)
-    username = f'{message.from_user.id}'
-    user = users[username]
+    user = users[message.from_user.id]
     result = api.create_event(user, event)
     bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
     command_list(message)
-
-
-def get_user(message):
-    username = f'{message.from_user.id}'
-    return utils.get_user(model.User(), {"username": username, "first_name": message.from_user.first_name,
-                                         "last_name": message.from_user.last_name})
 
 
 def main():

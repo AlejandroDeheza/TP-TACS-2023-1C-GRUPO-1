@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class RateLimiterService {
-    private static final Integer DEFAULT_API_RPM = 5;
+    private static final Integer DEFAULT_API_RPM = 10;
 
-    private static final Integer DEFAULT_USER_RPM = 5;
+    private static final Integer DEFAULT_USER_RPM = 10;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiterService.class);
 
