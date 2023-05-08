@@ -3,6 +3,7 @@ import telebot
 from telebot import types
 import api
 import model
+import information
 import utils
 from config import BOT_TOKEN
 
@@ -36,12 +37,11 @@ def command_list(message):
 @bot.message_handler(commands=['login'])
 def login_handler(message):
     print(f'User: {message.from_user.id} /login')
-    text = "😆 Please input your username:"
-    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, ask_password)
+    sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_USERNAME, parse_mode="Markdown")
+    bot.register_next_step_handler(sent_msg, ask_for_password)
 
 
-def ask_password(message):
+def ask_for_password(message):
     username = message.text
     text = "😶 Please input your password:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
@@ -52,7 +52,7 @@ def fetch_login(message, username):
     password = message.text
     bot.delete_message(message.chat.id, message.id)
     user = model.User()
-    result = utils.convert_result(api.authenticate(message, username, password, user))
+    result = utils.convert_result(api.authenticate(username, password, user))
     if "Login successfully" not in result:
         bot.send_message(message.chat.id, text=result + ". Please /login again", parse_mode="HTML")
     else:
@@ -76,41 +76,39 @@ def logout_handler(message):
                 result += ' Please /logout again'
                 bot.send_message(message.chat.id, result, parse_mode="HTML")
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
 @bot.message_handler(commands=['sign_up'])
 def sign_up_handler(message):
     print(f'User: {message.from_user.id} /sign_up')
-    text = "😆 Please input your username:"
-    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_USERNAME, parse_mode="Markdown")
     user = model.User()
-    bot.register_next_step_handler(sent_msg, ask_first_name, user)
+    bot.register_next_step_handler(sent_msg, ask_for_first_name, user)
 
 
-def ask_first_name(message, user):
+def ask_for_first_name(message, user):
     username = message.text
     user.username = username
     text = "😆 Please input you first name:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, ask_last_name, user)
+    bot.register_next_step_handler(sent_msg, ask_for_last_name, user)
 
 
-def ask_last_name(message, user):
+def ask_for_last_name(message, user):
     first_name = message.text
     user.first_name = first_name
     text = "😆 Please input you last name:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, ask_for_password, user)
+    bot.register_next_step_handler(sent_msg, ask_for_password_sign_up, user)
 
 
-def ask_for_password(message, user):
+def ask_for_password_sign_up(message, user):
     last_name = message.text
     user.last_name = last_name
-    text = "😶 Please input you password:"
-    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_PASSWORD, parse_mode="Markdown")
     bot.register_next_step_handler(sent_msg, ask_for_password_confirmation, user)
 
 
@@ -137,7 +135,7 @@ def fetch_sign_up(message, user, password):
                 bot.send_message(message.chat.id, text=result, parse_mode="HTML")
                 command_list(message)
             else:
-                bot.send_message(message.chat.id, text=result + " Please /sign_up again", parse_mode="HTML")
+                bot.send_message(message.chat.id, text=result + "\n" + "Please /sign_up again", parse_mode="HTML")
 
 
 @bot.message_handler(commands=['all_events'])
@@ -150,9 +148,9 @@ def all_events_handler(message):
             bot.send_message(message.chat.id, result, parse_mode="HTML")
             command_list(message)
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
 @bot.message_handler(commands=['event_by_id'])
@@ -161,13 +159,12 @@ def event_by_id_handler(message):
     try:
         user = users[message.from_user.id]
         if user.token:
-            text = "🆔 Please input the event id:"
-            sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+            sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
             bot.register_next_step_handler(sent_msg, fetch_event, user)
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
 def fetch_event(message, user):
@@ -183,13 +180,12 @@ def register_event_handler(message):
     try:
         user = users[message.from_user.id]
         if user.token:
-            text = "🆔 Please input the event id:"
-            sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+            sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
             bot.register_next_step_handler(sent_msg, fetch_register_event, user)
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
 def fetch_register_event(message, user):
@@ -205,16 +201,15 @@ def change_event_status_handler(message):
     try:
         user = users[message.from_user.id]
         if user.token:
-            text = "Please input the event id:"
-            sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-            bot.register_next_step_handler(sent_msg, process_status)
+            sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
+            bot.register_next_step_handler(sent_msg, ask_for_status)
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
-def process_status(message):
+def ask_for_status(message):
     event_id = message.text
     text = "Please select the status."
     vote_closed = {"status": "VOTE_CLOSED", "id": event_id}
@@ -242,19 +237,17 @@ def vote_event_option_handler(message):
     try:
         user = users[message.from_user.id]
         if user.token:
-            text = "🆔 Please input the event id:"
-            sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-            bot.register_next_step_handler(sent_msg, process_option_id)
+            sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
+            bot.register_next_step_handler(sent_msg, ask_for_option_id)
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
-def process_option_id(message):
+def ask_for_option_id(message):
     event_id = message.text
-    text = "🆔 Please input the option id:"
-    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_OPTION_ID, parse_mode="Markdown")
     bot.register_next_step_handler(sent_msg, fetch_vote_event_option, event_id)
 
 
@@ -278,24 +271,9 @@ def events_marketing_report(message):
                              parse_mode="HTML")
             command_list(message)
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
-
-
-@bot.message_handler(commands=['options_report'])
-def options_report_handler(message):
-    print(f'User: {message.from_user.id} /options_report')
-    try:
-        user = users[message.from_user.id]
-        if user.token:
-            result = api.get_options_report(user)
-            bot.send_message(message.chat.id, utils.format_options_report(result), parse_mode="HTML")
-            command_list(message)
-        else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
-    except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
 @bot.message_handler(commands=['new_event'])
@@ -307,29 +285,28 @@ def new_event_handler(message):
             model.Event.event_options = list()
             text = "📝 Please input the event name:"
             sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-            bot.register_next_step_handler(sent_msg, process_event_name)
+            bot.register_next_step_handler(sent_msg, ask_for_event_description)
         else:
-            bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+            bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
-        bot.send_message(message.chat.id, "😢 Please /login first", parse_mode="Markdown")
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
-def process_event_name(message):
+def ask_for_event_description(message):
     event = model.Event()
     event.name = message.text
     text = "📄 Please input the event description:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, process_event_description, event)
+    bot.register_next_step_handler(sent_msg, ask_for_first_date_time, event)
 
 
-def process_event_description(message, event):
+def ask_for_first_date_time(message, event):
     event.description = message.text
     ask_date_time(message, event)
 
 
 def ask_date_time(message, event):
-    text = "📅 Please input the date time of the option (Example: 2023-05-06T23:58):"
-    sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
+    sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_DATE_TIME, parse_mode="Markdown")
     bot.register_next_step_handler(sent_msg, option_handler, event)
 
 
@@ -337,15 +314,15 @@ def option_handler(message, event):
     date_time = message.text
     if utils.is_valid_date(date_time):
         event.event_options.append({"date_time": date_time})
-        ask_more_option(message, event)
+        ask_for_more_option(message, event)
     else:
         bot.send_message(message.chat.id, "😢 Date time invalid.", parse_mode="Markdown")
         ask_date_time(message, event)
 
 
-def ask_more_option(message, event):
+def ask_for_more_option(message, event):
     reply = types.ForceReply()
-    text = "You need to add more event option ❓" + '✅ Y' + '❌ N'
+    text = "You need to add more event option❓ ✅ ❌. Please input: " + 'Y' + 'or  ❌N'
     sent_msg = bot.send_message(message.chat.id, text, reply_markup=reply)
     bot.register_next_step_handler(sent_msg, process_option, event)
 
@@ -357,7 +334,7 @@ def process_option(message, event):
         fetch_create_event(message, event)
     else:
         bot.send_message(message.chat.id, "😢 Answer invalid.", parse_mode="Markdown")
-        ask_more_option(message, event)
+        ask_for_more_option(message, event)
 
 
 def fetch_create_event(message, event):

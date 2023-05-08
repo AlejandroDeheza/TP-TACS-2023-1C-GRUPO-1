@@ -1,8 +1,5 @@
 import json
 from datetime import datetime
-
-from dateutil.parser import parse
-
 import model
 
 
@@ -53,7 +50,7 @@ def format_event(event_dict: dict):
 
 def format_events(events_dict: dict):
     if type(events_dict) is dict:
-        events = ''
+        events = 'Events:\n'
         for e in events_dict['events']:
             event = format_event(e)
             events += f'{event}\n'
@@ -63,7 +60,7 @@ def format_events(events_dict: dict):
 
 
 def format_monitoring_report(marketing_report: dict, options_report: dict):
-    result = ''
+    result = 'Monitoring report:\n'
     if type(marketing_report) is dict:
         events_count = marketing_report['events_count']
         options_count = marketing_report['options_count']
@@ -86,15 +83,3 @@ def get_event(event: model.Event, my_dict: dict):
     for key in my_dict:
         setattr(event, key, my_dict[key])
     return event
-
-
-def get_user(user: model.User, my_dict: dict):
-    for key in my_dict:
-        setattr(user, key, my_dict[key])
-    return user
-
-
-def get_event_option(event_option: model.EventOption, my_dict: dict):
-    for key in my_dict:
-        setattr(event_option, key, my_dict[key])
-    return event_option
