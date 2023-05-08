@@ -34,7 +34,8 @@ export default function Events() {
                     return
                 }
                 else {
-                    setData(reply.events)
+                    console.log(reply.events.sort())
+                    setData(reply.events.sort())
                 }
             })
     }
@@ -57,7 +58,6 @@ export default function Events() {
         fetch(`/api/events/${eventId}?status=${status}`, {
             method: "PATCH",
         }).then((response) => {
-            console.log(response)
             return response.json()
         }).then((reply) => {
             if (reply.message) {

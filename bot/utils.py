@@ -24,7 +24,6 @@ def is_valid_date(date):
 
 def format_event(event_dict: dict):
     if type(event_dict) is dict and event_dict:
-        print(event_dict)
         event = get_event(model.Event(), event_dict)
         username = event.owner_user['username'] if event.owner_user else ''
 
@@ -54,7 +53,6 @@ def format_event(event_dict: dict):
 
 def format_events(events_dict: dict):
     if type(events_dict) is dict:
-        print(events_dict)
         events = ''
         for e in events_dict['events']:
             event = format_event(e)
@@ -64,25 +62,24 @@ def format_events(events_dict: dict):
     return events_dict
 
 
-def format_events_marketing_report(marketing_report: dict):
+def format_monitoring_report(marketing_report: dict, options_report: dict):
+    result = ''
     if type(marketing_report) is dict:
         events_count = marketing_report['events_count']
         options_count = marketing_report['options_count']
-        return f'New events created count: {events_count}\n' \
-            + f'Options voted count: {options_count}\n'
-    return marketing_report
+        result += f'New events created count: {events_count}\n' \
+                  + f'Options voted count: {options_count}\n'
 
-
-def format_options_report(options_dict: dict):
-    if type(options_dict) is dict:
-        print(options_dict)
+    if type(options_report) is dict:
+        result += "Options voted:\n"
         options = ''
-        for op in options_dict['options_report']:
+        for op in options_report['options_report']:
             date_time = op['date_time']
             vote_quantity = op['vote_quantity']
-            options += f'📅  Option date time: {date_time} | Vote counts: {vote_quantity}\n'
-        return options if options else "🙅 There's no options voted."
-    return options_dict
+            options += f'       📅  Date time: {date_time} | Vote counts: {vote_quantity}\n'
+        result += options
+
+    return result
 
 
 def get_event(event: model.Event, my_dict: dict):

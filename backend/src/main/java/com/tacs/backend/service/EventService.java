@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class EventService {
     }
 
     public Set<EventDto> getAllEvents() {
-        return eventMapper.entitySetToDtoSet(Set.copyOf(eventRepository.findAll()));
+        return eventMapper.entitySetToDtoSet(Set.copyOf(eventRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
     }
 
     public EventDto registerEvent(String id) {
@@ -77,7 +78,7 @@ public class EventService {
         Event event = getEvent(id);
         User user = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         if(!event.getOwnerUser().getUsername().equals(user.getUsername())) {
-            throw new UserIsNotOwnerException(String.format("User: %s is not allowed to close the vote of event", user.getUsername()));
+            throw new UserIsNotOwnerException(String.format("User: %s is not allowed to change the status of event", user.getUsername()));
         }
 
         if (status.equals(event.getStatus().name())) {

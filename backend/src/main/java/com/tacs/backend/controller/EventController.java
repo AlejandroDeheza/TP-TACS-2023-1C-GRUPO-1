@@ -53,7 +53,6 @@ public class EventController {
         Map<String, Set<EventDto>> response = new HashMap<>(1);
         response.put("events", this.eventService.getAllEvents());
         return ResponseEntity.ok(response);
-
     }
 
     @GetMapping("/{id}")

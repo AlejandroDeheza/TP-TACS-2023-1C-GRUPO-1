@@ -39,6 +39,6 @@ class Event:
         self.name = ''
         self.description = ''
         self.status = ''
-        self.event_options = list[EventOption]()
-        self.registered_users = list[User]()
+        self.event_options = []
+        self.registered_users = []
 
