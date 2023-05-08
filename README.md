@@ -16,4 +16,4 @@
 
 ## Telegram Bot
 - Bot name: tacs_telegram_bot
-- /start para arrancar
+- para arrancar -> /start
