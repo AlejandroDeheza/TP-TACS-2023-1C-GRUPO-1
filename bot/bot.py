@@ -322,7 +322,7 @@ def option_handler(message, event):
 
 def ask_for_more_option(message, event):
     reply = types.ForceReply()
-    text = "You need to add more event option❓ ✅ ❌. Please input: " + 'Y' + 'or  ❌N'
+    text = "You need to add more event option❓ ✅ ❌. Please input: " + '✅Y' + ' or  ❌N'
     sent_msg = bot.send_message(message.chat.id, text, reply_markup=reply)
     bot.register_next_step_handler(sent_msg, process_option, event)
 
