@@ -22,7 +22,7 @@
 - /all_event: Obtener informaciones de todos los eventos
 - /event_by_id: Obtener informaciones de un evento con su id
 - /vote_event_option: Votar a una opción de un evento
-- /register_event: Registrarse a un evento
+- /register_to_event: Registrarse a un evento
 - /change_event_status: Cambiar estado actual de un evento
 - /new_event: Crear un evento nuevo
 - /monitoring_report: Obtener reporte de monitoreo

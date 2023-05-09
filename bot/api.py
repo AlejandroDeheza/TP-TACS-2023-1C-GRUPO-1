@@ -57,7 +57,7 @@ def get_event_by_id(user: model.User, event_id: str) -> dict:
     return result
 
 
-def register_event(user: model.User, event_id: str) -> dict:
+def register_to_event(user: model.User, event_id: str) -> dict:
     url = f'{SCHEME_DOMAIN}/v1/events/{event_id}/user'
     headers = {"Authorization": f'Bearer {user.token}'}
     response = requests.patch(url, headers=headers)

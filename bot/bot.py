@@ -23,7 +23,7 @@ def start(message):
 def command_list(message):
     text = f'{message.from_user.first_name}!\n' + 'Please select a command:\n' \
            + "/all_events\n" + "/event_by_id\n" \
-           + "/vote_event_option\n" + "/register_event\n" + "/change_event_status\n" + "/new_event\n" \
+           + "/vote_event_option\n" + "/register_to_event\n" + "/change_event_status\n" + "/new_event\n" \
            + "/monitoring_report\n"
     try:
         user = users[message.from_user.id]
@@ -174,23 +174,23 @@ def fetch_event(message, user):
     command_list(message)
 
 
-@bot.message_handler(commands=['register_event'])
-def register_event_handler(message):
-    print(f'User: {message.from_user.id} /register_event')
+@bot.message_handler(commands=['register_to_event'])
+def register_to_event_handler(message):
+    print(f'User: {message.from_user.id} /register_to_event')
     try:
         user = users[message.from_user.id]
         if user.token:
             sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
-            bot.register_next_step_handler(sent_msg, fetch_register_event, user)
+            bot.register_next_step_handler(sent_msg, fetch_register_to_event, user)
         else:
             bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
         bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
-def fetch_register_event(message, user):
+def fetch_register_to_event(message, user):
     event_id = message.text
-    result = api.register_event(user, event_id)
+    result = api.register_to_event(user, event_id)
     bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
     command_list(message)
 
