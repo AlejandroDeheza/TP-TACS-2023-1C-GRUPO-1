@@ -20,18 +20,18 @@ def start(message):
     bot.send_message(message.chat.id, text=text, parse_mode="HTML")
 
 
-def command_list(message):
-    text = f'{message.from_user.first_name}!\n' + 'Please select a command:\n' \
+def command_list(from_user, chat_id):
+    text = f'{from_user.first_name}!\n' + 'Please select a command:\n' \
            + "/all_events\n" + "/event_by_id\n" \
-           + "/vote_event_option\n" + "/register_event\n" + "/change_event_status\n" + "/new_event\n" \
+           + "/vote_event_option\n" + "/register_to_event\n" + "/change_event_status\n" + "/new_event\n" \
            + "/monitoring_report\n"
     try:
-        user = users[message.from_user.id]
+        user = users[from_user.id]
         if user.token:
             text += "🛑 /logout\n"
-        bot.send_message(message.chat.id, text=text, parse_mode="HTML")
+        bot.send_message(chat_id, text=text, parse_mode="HTML")
     except KeyError:
-        bot.send_message(message.chat.id, text, parse_mode="HTML")
+        bot.send_message(chat_id, text, parse_mode="HTML")
 
 
 @bot.message_handler(commands=['login'])
@@ -58,7 +58,7 @@ def fetch_login(message, username):
     else:
         users[message.from_user.id] = user
         bot.send_message(message.chat.id, text=result, parse_mode="HTML")
-        command_list(message)
+        command_list(message.from_user, message.chat.id)
 
 
 @bot.message_handler(commands=['logout'])
@@ -133,7 +133,7 @@ def fetch_sign_up(message, user, password):
             if "Sign up successfully" in result:
                 users[message.from_user.id] = user
                 bot.send_message(message.chat.id, text=result, parse_mode="HTML")
-                command_list(message)
+                command_list(message.from_user, message.chat.id)
             else:
                 bot.send_message(message.chat.id, text=result + "\n" + "Please /sign_up again", parse_mode="HTML")
 
@@ -146,7 +146,7 @@ def all_events_handler(message):
         if user.token:
             result = utils.format_events(api.get_all_events(user))
             bot.send_message(message.chat.id, result, parse_mode="HTML")
-            command_list(message)
+            command_list(message.from_user, message.chat.id)
         else:
             bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
@@ -171,28 +171,28 @@ def fetch_event(message, user):
     event_id = message.text
     result = api.get_event_by_id(user, event_id)
     bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
-    command_list(message)
+    command_list(message.from_user, message.chat.id)
 
 
-@bot.message_handler(commands=['register_event'])
-def register_event_handler(message):
-    print(f'User: {message.from_user.id} /register_event')
+@bot.message_handler(commands=['register_to_event'])
+def register_to_event_handler(message):
+    print(f'User: {message.from_user.id} /register_to_event')
     try:
         user = users[message.from_user.id]
         if user.token:
             sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
-            bot.register_next_step_handler(sent_msg, fetch_register_event, user)
+            bot.register_next_step_handler(sent_msg, fetch_register_to_event, user)
         else:
             bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
         bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
-def fetch_register_event(message, user):
+def fetch_register_to_event(message, user):
     event_id = message.text
-    result = api.register_event(user, event_id)
+    result = api.register_to_event(user, event_id)
     bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
-    command_list(message)
+    command_list(message.from_user, message.chat.id)
 
 
 @bot.message_handler(commands=['change_event_status'])
@@ -228,7 +228,7 @@ def fetch_change_event_status(call):
     status = json.loads(call.data)['status']
     result = api.change_event_status(user, json.loads(call.data)['id'], status)
     bot.send_message(call.message.chat.id, utils.format_event(result), parse_mode="HTML")
-    command_list(call.message)
+    command_list(call.from_user, call.message.chat.id)
 
 
 @bot.message_handler(commands=['vote_event_option'])
@@ -256,7 +256,7 @@ def fetch_vote_event_option(message, event_id):
     option_id = message.text
     result = api.vote_event_option(user, event_id, option_id)
     bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
-    command_list(message)
+    command_list(message.from_user, message.chat.id)
 
 
 @bot.message_handler(commands=['monitoring_report'])
@@ -269,7 +269,7 @@ def events_marketing_report(message):
             options_report = api.get_options_report(user)
             bot.send_message(message.chat.id, utils.format_monitoring_report(marketing_report, options_report),
                              parse_mode="HTML")
-            command_list(message)
+            command_list(message.from_user, message.chat.id)
         else:
             bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
@@ -322,7 +322,7 @@ def option_handler(message, event):
 
 def ask_for_more_option(message, event):
     reply = types.ForceReply()
-    text = "You need to add more event option❓ ✅ ❌. Please input: " + 'Y' + 'or  ❌N'
+    text = "You need to add more event option❓ ✅ ❌. Please input: " + '✅Y' + ' or  ❌N'
     sent_msg = bot.send_message(message.chat.id, text, reply_markup=reply)
     bot.register_next_step_handler(sent_msg, process_option, event)
 
@@ -342,7 +342,7 @@ def fetch_create_event(message, event):
     user = users[message.from_user.id]
     result = api.create_event(user, event)
     bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
-    command_list(message)
+    command_list(message.from_user, message.chat.id)
 
 
 def main():

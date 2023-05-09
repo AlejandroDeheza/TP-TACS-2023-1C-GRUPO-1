@@ -49,14 +49,16 @@ def format_event(event_dict: dict):
 
 
 def format_events(events_dict: dict):
-    if type(events_dict) is dict:
+    if type(events_dict) is dict and len(events_dict['events']) == 0:
+        return "🙅 There's no events."
+    elif type(events_dict) is dict:
         events = 'Events:\n'
         for e in events_dict['events']:
             event = format_event(e)
             events += f'{event}\n'
-
-        return events if events else "🙅 There's no events."
-    return events_dict
+        return events
+    else:
+        return events_dict
 
 
 def format_monitoring_report(marketing_report: dict, options_report: dict):
@@ -66,15 +68,16 @@ def format_monitoring_report(marketing_report: dict, options_report: dict):
         options_count = marketing_report['options_count']
         result += f'New events created count: {events_count}\n' \
                   + f'Options voted count: {options_count}\n'
-
-    if type(options_report) is dict:
-        result += "Options voted:\n"
-        options = ''
-        for op in options_report['options_report']:
-            date_time = op['date_time']
-            vote_quantity = op['vote_quantity']
-            options += f'       📅  Date time: {date_time} | Vote counts: {vote_quantity}\n'
-        result += options
+        if marketing_report['options_count'] > 0 and type(options_report) is dict:
+            result += "Options voted:\n"
+            options = ''
+            for op in options_report['options_report']:
+                date_time = op['date_time']
+                vote_quantity = op['vote_quantity']
+                options += f'       📅  Date time: {date_time} | Vote counts: {vote_quantity}\n'
+            result += options
+    else:
+        return marketing_report
 
     return result
 
