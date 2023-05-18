@@ -3,29 +3,33 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCookie } from 'cookies-next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const jwt = getCookie('jwt', { req, res })
-  const url = `${process.env.scheme}${process.env.domain}:8091/v1/events`
-  if (req.method == "GET") {
-    axios.get(url, {
-      headers: {
-        'Authorization': `Bearer ${jwt}`,
-      }
-    }).then((response) => {
-      res.status(response.status).json(response.data)
-    }).catch((error) => {
-      res.status(error.response.status).json(error.response.data)
-    })
-  }
-  else {
-    console.log(req.body)
-    axios.post(url, req.body, {
-      headers: {
-        'Authorization': `Bearer ${jwt}`,
-      }
-    }).then((response) => {
-      res.status(response.status).json(response.data)
-    }).catch((error) => {
-      res.status(error.response.status).json(error.response.data)
-    })
+  try {
+    const jwt = getCookie('jwt', { req, res });
+    const url = `${process.env.path}/v1/events`;
+
+    if (req.method === "GET") {
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${jwt}`,
+        },
+      });
+
+      res.status(response.status).json(response.data);
+    } else {
+      console.log(req.body);
+      const response = await axios.post(url, req.body, {
+        headers: {
+          'Authorization': `Bearer ${jwt}`,
+        },
+      });
+
+      res.status(response.status).json(response.data);
+    }
+  } catch (error: any) {
+    if (error.response) {
+      res.status(error.response.status).json(error.response.data);
+    } else {
+      res.status(500).json({ message: 'Internal server error' });
+    }
   }
 }
