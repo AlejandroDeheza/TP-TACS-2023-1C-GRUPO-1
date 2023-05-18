@@ -1,10 +1,9 @@
-import React, { useState, FormEvent, useRef } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { AuthenticationRequest } from '../types/app'
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import { FaUserAlt, FaLockOpen, FaSignInAlt } from "react-icons/fa";
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+
 
 export default function Login(req: any, res: any) {
   const router = useRouter()
@@ -29,19 +28,18 @@ export default function Login(req: any, res: any) {
         method: "POST",
         body: JSON.stringify(authenticationData),
       });
-      const userData = await response.json()
-      console.log(userData)
-      if (response.status == 200) {
-        router.push("/events")
+      const userData = await response.json();
+      console.log(userData);
+      if (response.status === 200) {
+        router.push("/events");
+      } else {
+        setErrorMessage(userData.message);
       }
-      else {
-        setErrorMessage(userData.message)
-      }
-
     } catch (error) {
       console.log(error);
     }
   }
+
 
   return (
     <div className='flex flex-col justify-center min-h-screen'>
@@ -83,6 +81,6 @@ export default function Login(req: any, res: any) {
       </main>
 
     </div>
-    
+
   );
 };

@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 import { RegisterRequest } from "@/types/app"
 import { FormEvent, useState } from "react"
 import Link from "next/link";
-import { FaUserAlt, FaLockOpen, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 
 export default function SignUp() {
   const router = useRouter()
@@ -31,44 +31,55 @@ export default function SignUp() {
         method: "POST",
         body: JSON.stringify(registerData),
       });
-      const userData = await response.json()
-      if (response.status == 200) {
-        router.push("/events")
-      }
-      else {
-        if(userData.message.includes("exists")){
-          setUsernameErrorMessage(userData.message)
+      const userData = await response.json();
+      if (response.status === 200) {
+        router.push("/events");
+      } else {
+        if (userData.message.includes("exists")) {
+          setUsernameErrorMessage(userData.message);
         }
 
-        let fields = ""
-        if(userData.message.includes("8 or more")){
-          fields = fields.concat(fields, "Length must between 8 or more")
-        } else if(userData.message.includes("uppercase")){
-          fields = fields.concat(fields,"At least one upper-case character")
-        } else if(userData.message.includes("lowercase")){
-          fields = fields.concat(fields,"At least one lower-case character")
-        } else if(userData.message.includes("digit")){
-          fields = fields.concat(fields,"At least one digit character")
-        } else if(userData.message.includes("special")){
-          fields = fields.concat(fields,"At least one special character")
-        } else if(userData.message.includes("whitespace")){
-          fields = fields.concat(fields,"Can not contains whitespace")
-        } else if(userData.message.includes("alphabetical sequence")){
-          fields = fields.concat(fields,"Can not contains a sequence of more than 4 characters alphabetical")
-        } else if(userData.message.includes("numerical sequence")){
-          fields = fields.concat(fields,"Can not contains a sequence of more than 4 characters numerical")
-        } else if(userData.message.includes("match the original")){
-          fields = fields.concat(fields,"Password confirmation doesn't match")
-        }        
-        if(fields !== ""){
-          setErrorMessage(fields)
-        }        
+        let fields = "";
+        if (userData.message.includes("8 or more")) {
+          fields = fields.concat("Length must be 8 or more. ");
+        }
+        if (userData.message.includes("uppercase")) {
+          fields = fields.concat("At least one upper-case character. ");
+        }
+        if (userData.message.includes("lowercase")) {
+          fields = fields.concat("At least one lower-case character. ");
+        }
+        if (userData.message.includes("digit")) {
+          fields = fields.concat("At least one digit character. ");
+        }
+        if (userData.message.includes("special")) {
+          fields = fields.concat("At least one special character. ");
+        }
+        if (userData.message.includes("whitespace")) {
+          fields = fields.concat("Cannot contain whitespace. ");
+        }
+        if (userData.message.includes("alphabetical sequence")) {
+          fields = fields.concat(
+            "Cannot contain a sequence of more than 4 alphabetical characters. "
+          );
+        }
+        if (userData.message.includes("numerical sequence")) {
+          fields = fields.concat(
+            "Cannot contain a sequence of more than 4 numerical characters. "
+          );
+        }
+        if (userData.message.includes("match the original")) {
+          fields = fields.concat("Password confirmation doesn't match. ");
+        }
+        if (fields !== "") {
+          setErrorMessage(fields);
+        }
       }
-
     } catch (error) {
       console.log(error);
     }
-  };
+  }
+
 
   return (
     <div className='flex flex-col justify-center min-h-screen'>
@@ -99,7 +110,7 @@ export default function SignUp() {
               </label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3"
                 type="text" name="username" placeholder="Username" value={registerData.username} onChange={handleChange} required />
-                {usernameErrorMessage && (<p className="error text-red-500 text-xs italic mb-2"> {usernameErrorMessage} </p>)}
+              {usernameErrorMessage && (<p className="error text-red-500 text-xs italic mb-2"> {usernameErrorMessage} </p>)}
               <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="password">
                 Password
               </label>
@@ -115,7 +126,7 @@ export default function SignUp() {
             </div>
             <div className="flex items-center justify-between">
               <button className="bg-blue-700 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-              <FaUserPlus className="inline mb-1" />  Sign Up
+                <FaUserPlus className="inline mb-1" />  Sign Up
               </button>
               <Link className="inline-block align-baseline font-bold text-md text-blue-500 hover:text-blue-800" href="/">
                 Sign In?

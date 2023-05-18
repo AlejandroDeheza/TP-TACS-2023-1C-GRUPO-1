@@ -19,36 +19,30 @@ const Monitor = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
 
-    const fetchReportData = () => {
-        fetch("/api/monitor/ratios")
-            .then((response) => {
-                return response.json()
-            })
-            .then((reply) => {
-                if (reply.message) {
-                    setAlertMessage(reply.message)
-                    setShowAlert(true)
-                    return
-                }
-                else {
-                    setReportData(reply)
-                }
-            })
-        fetch("/api/monitor/options")
-            .then((response) => {
-                return response.json()
-            })
-            .then((reply) => {
-                if (reply.message) {
-                    setAlertMessage(reply.message)
-                    setShowAlert(true)
-                    return
-                }
-                else {
-                    setOptionsReportData(reply.options_report)
-                }
-            })
-    }
+    const fetchReportData = async () => {
+        try {
+            const ratioResponse = await fetch("/api/monitor/ratios");
+            const ratioData = await ratioResponse.json();
+            if (ratioData.message) {
+                setAlertMessage(ratioData.message);
+                setShowAlert(true);
+            } else {
+                setReportData(ratioData);
+            }
+
+            const optionsResponse = await fetch("/api/monitor/options");
+            const optionsData = await optionsResponse.json();
+            if (optionsData.message) {
+                setAlertMessage(optionsData.message);
+                setShowAlert(true);
+            } else {
+                setOptionsReportData(optionsData.options_report);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
 
     const handleCloseAlert = () => {
         setShowAlert(false)
@@ -65,7 +59,7 @@ const Monitor = () => {
     }, [])
 
     const getColumnsForRow = () => {
-        let items = optionsReportData.map((item) => {
+        return optionsReportData.map((item) => {
             console.log(item.date_time);
             return (
                 <Col md={"auto"} key={item.date_time}>
@@ -89,9 +83,7 @@ const Monitor = () => {
                 </Col>
             );
         });
-        return items;
     };
-
 
     return (
         <main>

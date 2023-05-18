@@ -11,7 +11,7 @@ import { getCookie } from "cookies-next";
 import moment from 'moment'
 import Modal from 'react-bootstrap/Modal';
 import { FaCalendarAlt, FaUserAlt, FaCalendarCheck, FaUserPlus } from "react-icons/fa";
-import { AiFillLike} from "react-icons/ai";
+import { AiFillLike } from "react-icons/ai";
 
 export default function Event() {
     const router = useRouter()
@@ -24,66 +24,72 @@ export default function Event() {
     const username = getCookie('username')
 
     const fetchData = async () => {
-        fetch(`/api/events/${eventId}`)
-            .then((response) => {
-                return response.json()
-            })
-            .then((reply) => {
-                if (reply.message) {
-                    setAlertMessage(reply.message)
-                    setShowAlert(true)
-                    return
-                }
-                else {
-                    setEvent(reply)
-                }
-            })
-    }
+        try {
+            const response = await fetch(`/api/events/${eventId}`);
+            const reply = await response.json();
+
+            if (reply.message) {
+                setAlertMessage(reply.message);
+                setShowAlert(true);
+                return;
+            }
+
+            setEvent(reply);
+        } catch (error) {
+            // Handle error
+            console.error(error);
+        }
+    };
+
 
     const handleCloseAlert = () => {
         setShowAlert(false)
         fetchData()
     }
 
-    const handleVoteOption = (optionId: string) => {
-        fetch(`/api/events/${router.query.eventId}/options/${optionId}/vote`)
-            .then((response) => {
-                return response.json()
-            })
-            .then((reply) => {
-                if (reply.message) {
-                    setAlertMessage(reply.message)
-                    setShowAlert(true)
-                    return
-                }
-                else {
-                    fetchData()
-                }
-            })
-    }
+    const handleVoteOption = async (optionId: string) => {
+        try {
+            const response = await fetch(`/api/events/${router.query.eventId}/options/${optionId}/vote`);
+            const reply = await response.json();
 
-    const handleRegisterUser = () => {
-        fetch(`/api/events/${router.query.eventId}/user`)
-            .then((response) => {
-                return response.json()
-            })
-            .then((reply) => {
-                if (reply.message) {
-                    setAlertMessage(reply.message)
-                    setShowAlert(true)
-                    return
-                }
-                else {
-                    fetchData()
-                }
-            })
-    }
+            if (reply.message) {
+                setAlertMessage(reply.message);
+                setShowAlert(true);
+                return;
+            }
+
+            fetchData();
+        } catch (error) {
+            // Handle error
+            console.error(error);
+        }
+    };
+
+
+    const handleRegisterUser = async () => {
+        try {
+            const response = await fetch(`/api/events/${router.query.eventId}/user`);
+            const reply = await response.json();
+
+            if (reply.message) {
+                setAlertMessage(reply.message);
+                setShowAlert(true);
+                return;
+            }
+
+            fetchData();
+        } catch (error) {
+            // Handle error
+            console.error(error);
+        }
+    };
+
 
     const mapEventStatus = (status: string | undefined) => {
-        if(status === "VOTE_CLOSED"){
+        if (status === "VOTE_CLOSED") {
             return "VOTE CLOSED"
         }
-        if(status === "VOTE_PENDING"){
+        if (status === "VOTE_PENDING") {
             return "VOTE PENDING"
         }
     }
@@ -95,7 +101,7 @@ export default function Event() {
                     <Card bg="light" key={user.username} style={{ width: '15rem' }} className="mb-1">
                         <Card.Body>
                             <Card.Text>
-                            <FaUserAlt className="inline mb-1"/> Username: {user.username}
+                                <FaUserAlt className="inline mb-1" /> Username: {user.username}
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -110,7 +116,7 @@ export default function Event() {
             return (
                 <Col sm={"auto"} key={option.id}>
                     <Card bg="light" key={option.id} style={{ width: '15rem' }} className="mb-4">
-                        <Card.Header><FaCalendarCheck className="inline mb-1"/>  Option</Card.Header>
+                        <Card.Header><FaCalendarCheck className="inline mb-1" />  Option</Card.Header>
                         <Card.Body>
                             <Card.Text>
                                 Date: {moment(option.date_time).format("YYYY/MM/DD")}
@@ -124,10 +130,10 @@ export default function Event() {
                         </Card.Body>
                         <Card.Footer>
                             {showVote !== ("VOTE_CLOSED" !== event.status) && (
-                                <Button variant="primary" onClick={() => handleVoteOption(option.id)}><AiFillLike className="inline mb-1"/>  Vote</Button>
+                                <Button variant="primary" onClick={() => handleVoteOption(option.id)}><AiFillLike className="inline mb-1" />  Vote</Button>
                             )}
                             {showRegister === (event.registered_users.map(u => u.username).includes(username as string)) && (
-                                <Button variant="primary" className="float-right" onClick={handleRegisterUser}><FaUserPlus className="inline"/>  Register</Button>
+                                <Button variant="primary" className="float-right" onClick={handleRegisterUser}><FaUserPlus className="inline" />  Register</Button>
                             )}
                         </Card.Footer>
                     </Card>
@@ -156,10 +162,10 @@ export default function Event() {
                 <div>
                     <span >
                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                        <FaCalendarAlt className="inline mb-1"/>  {event?.name}
+                            <FaCalendarAlt className="inline mb-1" />  {event?.name}
                         </h5>
                     </span>
-                    
+
                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Description: {event?.description}</p>
                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Status: {mapEventStatus(event?.status)}</p>
                 </div>
@@ -171,7 +177,7 @@ export default function Event() {
                 </div>
                 <div className="mb-3">
                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Options: </p>
-                    <Row  md={"auto"}>
+                    <Row md={"auto"}>
                         {getOptionsColumnsForRow()}
                     </Row>
                 </div>

@@ -77,20 +77,21 @@ export default function NewEvent() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-
-        for (let i = 0; i < fields.length; i++) {
-            if (fields[i].date_time != "") {
-                myEvent.event_options.push({ date_time: fields[i].date_time })
-            }
-        }
-        await createNewEvent()
-    }
+        e.preventDefault();
+      
+        const eventOptions = fields
+          .filter((field) => field.date_time !== "")
+          .map((field) => ({ date_time: field.date_time }));
+      
+        myEvent.event_options = eventOptions;
+      
+        await createNewEvent();
+      };
+      
 
     useEffect(() => {
         if (!getCookie('username')) {
             router.push("/")
-            return
         }
     }, [])
 
