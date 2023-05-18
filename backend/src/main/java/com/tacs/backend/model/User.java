@@ -25,11 +25,12 @@ public class User implements UserDetails {
 
     @Id
     private String id;
-    @Indexed
+
     @Field("first_name")
     private String firstName;
     @Field("last_name")
     private String lastName;
+    @Indexed
     private String username;
     private String password;
     private Role role;

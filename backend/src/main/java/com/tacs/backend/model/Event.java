@@ -23,7 +23,6 @@ public class Event {
     @Id
     private String id;
 
-    @Indexed
     private String name;
     private String description;
 
@@ -40,6 +39,7 @@ public class Event {
     private Set<User> registeredUsers;
 
     @Field("create_date")
+    @Indexed
     private Date createDate;
 
 

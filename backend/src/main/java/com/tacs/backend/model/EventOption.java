@@ -24,7 +24,7 @@ public class EventOption {
     @Id
     private String id;
     private Event event;
-    @Indexed
+
     @Field("date_time")
     private Date dateTime;
 
@@ -32,6 +32,7 @@ public class EventOption {
     private long voteQuantity;
 
     @Field("update_time")
+    @Indexed
     private Date updateDate;
 
     @Field("event_name")

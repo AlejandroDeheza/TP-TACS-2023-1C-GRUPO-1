@@ -5,7 +5,7 @@ x-common: &common
 services:
   mongo:
     <<: *common
-    image: mongo:5.0-focal
+    image: mongo
     environment:
       MONGO_INITDB_DATABASE: TP
     ports:
@@ -23,9 +23,7 @@ services:
     build: ./backend
     image: backend:latest
     environment:
-      MONGODB_HOST: mongo
-      MONGODB_PORT: 27017
-      MONGODB_DATABASE: TP
+      MONGODB_URI: mongodb://mongo:27017/TP?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000
       SECRET_KEY: 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
       MONITOR_TIME_RANGE: 2
     links:
@@ -54,22 +52,22 @@ services:
         aliases:
           - frontend
         ipv4_address: 172.255.254.105
-
-  bot:
-    <<: *common
-    build: ./bot
-    image: bot:latest
-    environment:
-      USERNAME: tacs_telegram_bot
-      BOT_TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
-      SCHEME_DOMAIN: http://backend:8091
-    ports:
-      - "8443:8443"
-    networks:
-      tp_network:
-        aliases:
-          - bot
-        ipv4_address: 172.255.254.106
+#
+#  bot:
+#    <<: *common
+#    build: ./bot
+#    image: bot:latest
+#    environment:
+#      USERNAME: tacs_telegram_bot
+#      BOT_TOKEN: 5803459495:AAECMPcsjkrwLWSCbVFFw9umglY3WWbBmGI
+#      SCHEME_DOMAIN: http://backend:8091
+#    ports:
+#      - "8443:8443"
+#    networks:
+#      tp_network:
+#        aliases:
+#          - bot
+#        ipv4_address: 172.255.254.106
 
 networks:
   tp_network:
