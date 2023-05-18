@@ -4,7 +4,7 @@ import model
 
 
 def convert_result(result):
-    if type(result) is dict:
+    if isinstance(result, dict):
         return json.dumps(result, indent=1)
     return result
 
@@ -15,66 +15,54 @@ def is_valid_date(date):
             datetime.fromisoformat(date)
             return True
         except ValueError:
-            return False
+            pass
     return False
 
 
 def format_event(event_dict: dict):
-    if type(event_dict) is dict and event_dict:
+    if isinstance(event_dict, dict) and event_dict:
         event = get_event(model.Event(), event_dict)
         username = event.owner_user['username'] if event.owner_user else ''
 
-        registered_users = ''
-        for u in event.registered_users:
-            name = u['username']
-            registered_users += f'      😁 {name}\n'
+        registered_users = '\n'.join([f'      😁 {u["username"]}' for u in event.registered_users])
 
-        options = ''
-        for op in event.event_options:
-            op_id = op['id']
-            date_time = op['date_time']
-            vote_quantity = op['vote_quantity']
-            options += f'      📅 Option id: {op_id} | Date time: {date_time} | Vote counts: {vote_quantity}\n'
+        options = '\n'.join([f'      📅 Option id: {op["id"]} | Date time: {op["date_time"]} '
+                             f'| Vote counts: {op["vote_quantity"]}' for op in event.event_options])
 
         return f'🆔 Event id: {event.id}\n' \
-            + f'Event name: {event.name}\n' \
-            + f'Event description: {event.description}\n' \
-            + f'Event status: {event.status}\n' \
-            + f'Owner user: 😎 {username}\n' \
-            + 'Registered users:\n' \
-            + registered_users \
-            + 'Event options:\n' \
-            + options
+               f'Event name: {event.name}\n' \
+               f'Event description: {event.description}\n' \
+               f'Event status: {event.status}\n' \
+               f'Owner user: 😎 {username}\n' \
+               f'Registered users:\n' \
+               f'{registered_users}\n' \
+               f'Event options:\n' \
+               f'{options}'
+
     return event_dict
 
 
 def format_events(events_dict: dict):
-    if type(events_dict) is dict and len(events_dict['events']) == 0:
+    if isinstance(events_dict, dict) and len(events_dict.get('events', [])) == 0:
         return "🙅 There's no events."
-    elif type(events_dict) is dict:
-        events = 'Events:\n'
-        for e in events_dict['events']:
-            event = format_event(e)
-            events += f'{event}\n'
-        return events
+    elif isinstance(events_dict, dict):
+        events = '\n'.join([format_event(e) for e in events_dict['events']])
+        return f'Events:\n{events}'
     else:
         return events_dict
 
 
 def format_monitoring_report(marketing_report: dict, options_report: dict):
     result = 'Monitoring report:\n'
-    if type(marketing_report) is dict:
-        events_count = marketing_report['events_count']
-        options_count = marketing_report['options_count']
+    if isinstance(marketing_report, dict):
+        events_count = marketing_report.get('events_count', 0)
+        options_count = marketing_report.get('options_count', 0)
         result += f'New events created count: {events_count}\n' \
                   + f'Options voted count: {options_count}\n'
-        if marketing_report['options_count'] > 0 and type(options_report) is dict:
+        if options_count > 0 and isinstance(options_report, dict):
             result += "Options voted:\n"
-            options = ''
-            for op in options_report['options_report']:
-                date_time = op['date_time']
-                vote_quantity = op['vote_quantity']
-                options += f'       📅  Date time: {date_time} | Vote counts: {vote_quantity}\n'
+            options = '\n'.join([f"       📅  Date time: {op['date_time']} | Vote counts: {op['vote_quantity']}"
+                                 for op in options_report.get('options_report', [])])
             result += options
     else:
         return marketing_report
@@ -83,6 +71,6 @@ def format_monitoring_report(marketing_report: dict, options_report: dict):
 
 
 def get_event(event: model.Event, my_dict: dict):
-    for key in my_dict:
-        setattr(event, key, my_dict[key])
+    for key, value in my_dict.items():
+        setattr(event, key, value)
     return event
