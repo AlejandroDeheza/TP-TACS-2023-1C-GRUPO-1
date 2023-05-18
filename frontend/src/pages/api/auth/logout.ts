@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const response = await axios.post(`${process.env.scheme}${process.env.domain}:8091/v1/auth/logout`);
+    const response = await axios.post(`${process.env.path}/v1/auth/logout`);
 
     res.status(response.status).json(response.data);
   } catch (error: any) {

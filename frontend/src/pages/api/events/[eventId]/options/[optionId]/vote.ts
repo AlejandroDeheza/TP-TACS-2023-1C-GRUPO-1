@@ -5,7 +5,7 @@ import { getCookie } from 'cookies-next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const jwt = getCookie('jwt', { req, res });
-    const url = `${process.env.url}/v1/events/${req.query.eventId}/options/${req.query.optionId}/vote`;
+    const url = `${process.env.path}/v1/events/${req.query.eventId}/options/${req.query.optionId}/vote`;
 
     const response = await axios.patch(url, {}, {
       headers: {
