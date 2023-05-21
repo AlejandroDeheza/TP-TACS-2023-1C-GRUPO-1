@@ -6,25 +6,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const jwt = getCookie('jwt', { req, res });
     const url = `${process.env.path}/v1/events`;
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${jwt}`,
+      }
+    }
+
+    let response;
 
     if (req.method === "GET") {
-      const response = await axios.get(url, {
-        headers: {
-          'Authorization': `Bearer ${jwt}`,
-        },
-      });
-
-      res.status(response.status).json(response.data);
+      response = await axios.get(url, config);
     } else {
-      console.log(req.body);
-      const response = await axios.post(url, req.body, {
-        headers: {
-          'Authorization': `Bearer ${jwt}`,
-        },
-      });
-
-      res.status(response.status).json(response.data);
+      response = await axios.post(url, req.body, config);
     }
+
+    res.status(response.status).json(response.data);
   } catch (error: any) {
     if (error.response) {
       res.status(error.response.status).json(error.response.data);

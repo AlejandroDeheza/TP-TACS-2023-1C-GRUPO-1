@@ -29,7 +29,6 @@ export default function Login(req: any, res: any) {
         body: JSON.stringify(authenticationData),
       });
       const userData = await response.json();
-      console.log(userData);
       if (response.status === 200) {
         router.push("/events");
       } else {
@@ -79,8 +78,6 @@ export default function Login(req: any, res: any) {
           </form>
         </div>
       </main>
-
     </div>
-
   );
 };

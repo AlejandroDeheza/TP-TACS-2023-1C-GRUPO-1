@@ -49,18 +49,16 @@ const Monitor = () => {
         fetchReportData()
     }
 
-
     useEffect(() => {
         if (!getCookie('username')) {
             router.push("/")
             return
         }
         fetchReportData()
-    }, [])
+    }, [router])
 
     const getColumnsForRow = () => {
         return optionsReportData.map((item) => {
-            console.log(item.date_time);
             return (
                 <Col md={"auto"} key={item.date_time}>
                     <Card bg="light" key={item.date_time} style={{ width: '13rem' }} className="mb-4">

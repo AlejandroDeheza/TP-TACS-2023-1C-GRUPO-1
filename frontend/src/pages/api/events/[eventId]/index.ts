@@ -4,23 +4,20 @@ import axios from 'axios';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const jwt = getCookie('jwt', { req, res });
+    const config = {
+        headers: {
+            'Authorization': `Bearer ${jwt}`,
+        },
+    };
 
     try {
         let response;
         if (req.method === 'GET') {
             const url = `${process.env.path}/v1/events/${req.query.eventId}`;
-            response = await axios.get(url, {
-                headers: {
-                    'Authorization': `Bearer ${jwt}`,
-                },
-            });
+            response = await axios.get(url, config);
         } else {
             const url = `${process.env.path}/v1/events/${req.query.eventId}?status=${req.query.status}`;
-            response = await axios.patch(url, {}, {
-                headers: {
-                    'Authorization': `Bearer ${jwt}`,
-                },
-            });
+            response = await axios.patch(url, {}, config);
         }
 
         res.status(response.status).json(response.data);

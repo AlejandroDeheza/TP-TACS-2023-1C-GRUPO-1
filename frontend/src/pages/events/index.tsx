@@ -12,17 +12,16 @@ import { useRouter } from "next/router";
 import Modal from 'react-bootstrap/Modal';
 import { FaCalendarAlt, FaListAlt, FaWindowClose, FaCheckCircle } from "react-icons/fa";
 
-
 export default function Events() {
     const router = useRouter()
-    const [data, setData] = useState<Event[]>([])
-    const [showOpen, setShowOpen] = useState(false)
-    const [showClose, setShowClose] = useState(false)
+    const [events, setEvents] = useState<Event[]>([])
+    const [showOpen] = useState(false)
+    const [showClose] = useState(false)
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
     const username = getCookie('username')
 
-    const fetchData = async () => {
+    const fetchEvents = async () => {
         try {
             const response = await fetch("/api/events");
             const reply = await response.json();
@@ -33,28 +32,28 @@ export default function Events() {
                 return;
             }
 
-            setData(reply.events.sort((a: any, b: any) => a.id > b.id ? 1 : -1));
+            setEvents(reply.events.sort((a: any, b: any) => a.id > b.id ? 1 : -1));
         } catch (error) {
-            // Handle error
             console.error(error);
         }
     };
 
-
-
     const handleCloseAlert = () => {
         setShowAlert(false)
-        fetchData()
+        fetchEvents()
     }
 
     const mapEventStatus = (status: string) => {
-        if (status === "VOTE_CLOSED") {
-            return "VOTE CLOSED"
+        switch (status) {
+            case 'VOTE_CLOSED':
+                return 'VOTE CLOSED';
+            case 'VOTE_PENDING':
+                return 'VOTE PENDING';
+            default:
+                return '';
         }
-        if (status === "VOTE_PENDING") {
-            return "VOTE PENDING"
-        }
-    }
+    };
+
 
     const handleChangeEventStatus = async (eventId: string, status: string) => {
         try {
@@ -69,16 +68,15 @@ export default function Events() {
                 return;
             }
 
-            fetchData();
+            fetchEvents();
         } catch (error) {
-            // Handle error
             console.error(error);
         }
     };
 
 
-    const getColumnsForRow = () => {
-        return data.map((event) => {
+    const getEventsColumnsForRow = () => {
+        return events.map((event) => {
             const isOwner = username === event?.owner_user?.username;
             const isVoteClosed = event.status === "VOTE_CLOSED";
             const isVotePending = event.status === "VOTE_PENDING";
@@ -131,15 +129,15 @@ export default function Events() {
             router.push("/")
             return
         }
-        fetchData()
-    }, [])
+        fetchEvents()
+    }, [username, router])
 
     return (
         <main >
             <Header />
             <Container fluid="lg">
                 <Row md={"auto"} >
-                    {getColumnsForRow()}
+                    {getEventsColumnsForRow()}
                 </Row>
             </Container>
             <Modal show={showAlert}>
