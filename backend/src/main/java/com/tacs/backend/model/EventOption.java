@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -29,7 +30,7 @@ public class EventOption {
     private long voteQuantity;
 
     @Field("update_time")
-    @Indexed
+    @Indexed(direction = IndexDirection.DESCENDING)
     private Date updateDate;
 
     @Field("event_name")
