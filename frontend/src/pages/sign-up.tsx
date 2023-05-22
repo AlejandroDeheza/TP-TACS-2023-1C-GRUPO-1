@@ -3,6 +3,7 @@ import { RegisterRequest } from "@/types/app"
 import { FormEvent, useState } from "react"
 import Link from "next/link";
 import { FaUserPlus } from "react-icons/fa";
+import pino from "pino";
 
 export default function SignUp() {
   const router = useRouter()
@@ -26,10 +27,12 @@ export default function SignUp() {
   };
 
   async function register() {
+    const logger = pino()
     try {
+      const json = JSON.stringify(registerData)
       const response = await fetch("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify(registerData),
+        body: json,
       });
       const userData = await response.json();
       if (response.status === 200) {
@@ -76,7 +79,7 @@ export default function SignUp() {
         }
       }
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 

@@ -9,8 +9,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router"
 import { FaCalendarAlt, FaListAlt, FaClock, FaPlus, FaMinus, FaFileUpload } from "react-icons/fa";
 import Modal from 'react-bootstrap/Modal';
+import pino from "pino";
 
 export default function NewEvent() {
+    const logger = pino()
     const router = useRouter()
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
@@ -64,7 +66,7 @@ export default function NewEvent() {
                 return
             }
         } catch (error) {
-            console.log(error);
+            logger.error(error);
         }
     };
 

@@ -1,10 +1,14 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCookie } from 'cookies-next';
+import pino from "pino";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const logger = pino()
+  logger.info("Get all events")
+  const jwt = getCookie('jwt', { req, res });
+  logger.info(`jwt: ${jwt}`)
   try {
-    const jwt = getCookie('jwt', { req, res });
     const url = `${process.env.path}/v1/events`;
     const config = {
       headers: {

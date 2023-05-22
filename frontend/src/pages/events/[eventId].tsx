@@ -12,8 +12,10 @@ import moment from 'moment'
 import Modal from 'react-bootstrap/Modal';
 import { FaCalendarAlt, FaUserAlt, FaCalendarCheck, FaUserPlus } from "react-icons/fa";
 import { AiFillLike } from "react-icons/ai";
+import pino from "pino";
 
 export default function EventById() {
+    const logger = pino()
     const router = useRouter()
     const eventId = router.query.eventId
     const [event, setEvent] = useState<Event>()
@@ -34,7 +36,7 @@ export default function EventById() {
 
             setEvent(reply);
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     };
 
@@ -57,7 +59,7 @@ export default function EventById() {
 
             fetchEvent();
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     };
 
@@ -75,7 +77,7 @@ export default function EventById() {
 
             fetchEvent();
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     };
 
@@ -112,7 +114,7 @@ export default function EventById() {
 
 
     const getOptionsColumnsForRow = () => {
-        if (!event || !event.registered_users) {
+        if (!event || !event.event_options) {
             return null;
         }
         return event.event_options.map((option) => (

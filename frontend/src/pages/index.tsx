@@ -3,9 +3,10 @@ import { AuthenticationRequest } from '../types/app'
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import { FaUserAlt, FaLockOpen, FaSignInAlt } from "react-icons/fa";
-
+import pino from "pino";
 
 export default function Login(req: any, res: any) {
+  const logger = pino()
   const router = useRouter()
   const [errorMessage, setErrorMessage] = useState();
   const [authenticationData, setAuthenticationData] = useState<AuthenticationRequest>({
@@ -24,9 +25,10 @@ export default function Login(req: any, res: any) {
 
   async function authenticate() {
     try {
+      const json = JSON.stringify(authenticationData)
       const response = await fetch("/api/auth/authentication", {
         method: "POST",
-        body: JSON.stringify(authenticationData),
+        body: json,
       });
       const userData = await response.json();
       if (response.status === 200) {
@@ -35,7 +37,7 @@ export default function Login(req: any, res: any) {
         setErrorMessage(userData.message);
       }
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 

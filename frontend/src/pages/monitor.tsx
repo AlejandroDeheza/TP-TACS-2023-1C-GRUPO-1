@@ -11,8 +11,10 @@ import moment from 'moment'
 import { FaCalculator, FaCalendarCheck } from "react-icons/fa";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import pino from "pino";
 
 const Monitor = () => {
+    const logger = pino()
     const [reportData, setReportData] = useState<Report>()
     const [optionsReportData, setOptionsReportData] = useState<EventOptionReport[]>([])
     const router = useRouter()
@@ -39,7 +41,7 @@ const Monitor = () => {
                 setOptionsReportData(optionsData.options_report);
             }
         } catch (error) {
-            console.log(error);
+            logger.error(error);
         }
     };
 

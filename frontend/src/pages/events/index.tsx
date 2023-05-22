@@ -11,8 +11,10 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import Modal from 'react-bootstrap/Modal';
 import { FaCalendarAlt, FaListAlt, FaWindowClose, FaCheckCircle } from "react-icons/fa";
+import pino from "pino";
 
 export default function Events() {
+    const logger = pino()
     const router = useRouter()
     const [events, setEvents] = useState<Event[]>([])
     const [showOpen] = useState(false)
@@ -34,7 +36,7 @@ export default function Events() {
 
             setEvents(reply.events.sort((a: any, b: any) => a.id > b.id ? 1 : -1));
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     };
 
@@ -70,7 +72,7 @@ export default function Events() {
 
             fetchEvents();
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         }
     };
 
