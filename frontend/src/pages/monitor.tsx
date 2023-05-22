@@ -11,50 +11,45 @@ import moment from 'moment'
 import { FaCalculator, FaCalendarCheck } from "react-icons/fa";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import pino from "pino";
 
 const Monitor = () => {
+    const logger = pino()
     const [reportData, setReportData] = useState<Report>()
     const [optionsReportData, setOptionsReportData] = useState<EventOptionReport[]>([])
     const router = useRouter()
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
 
-    const fetchReportData = () => {
-        fetch("/api/monitor/ratios")
-            .then((response) => {
-                return response.json()
-            })
-            .then((reply) => {
-                if (reply.message) {
-                    setAlertMessage(reply.message)
-                    setShowAlert(true)
-                    return
-                }
-                else {
-                    setReportData(reply)
-                }
-            })
-        fetch("/api/monitor/options")
-            .then((response) => {
-                return response.json()
-            })
-            .then((reply) => {
-                if (reply.message) {
-                    setAlertMessage(reply.message)
-                    setShowAlert(true)
-                    return
-                }
-                else {
-                    setOptionsReportData(reply.options_report)
-                }
-            })
-    }
+    const fetchReportData = async () => {
+        try {
+            const ratioResponse = await fetch("/api/monitor/ratios");
+            const ratioData = await ratioResponse.json();
+            if (ratioData.message) {
+                setAlertMessage(ratioData.message);
+                setShowAlert(true);
+            } else {
+                setReportData(ratioData);
+            }
+
+            const optionsResponse = await fetch("/api/monitor/options");
+            const optionsData = await optionsResponse.json();
+            if (optionsData.message) {
+                setAlertMessage(optionsData.message);
+                setShowAlert(true);
+            } else {
+                setOptionsReportData(optionsData.options_report);
+            }
+        } catch (error) {
+            logger.error(error);
+        }
+    };
+
 
     const handleCloseAlert = () => {
         setShowAlert(false)
         fetchReportData()
     }
-
 
     useEffect(() => {
         if (!getCookie('username')) {
@@ -62,11 +57,10 @@ const Monitor = () => {
             return
         }
         fetchReportData()
-    }, [])
+    }, [router])
 
     const getColumnsForRow = () => {
-        let items = optionsReportData.map((item) => {
-            console.log(item.date_time);
+        return optionsReportData.map((item) => {
             return (
                 <Col md={"auto"} key={item.date_time}>
                     <Card bg="light" key={item.date_time} style={{ width: '13rem' }} className="mb-4">
@@ -89,9 +83,7 @@ const Monitor = () => {
                 </Col>
             );
         });
-        return items;
     };
-
 
     return (
         <main>

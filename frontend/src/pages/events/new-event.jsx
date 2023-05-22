@@ -9,13 +9,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router"
 import { FaCalendarAlt, FaListAlt, FaClock, FaPlus, FaMinus, FaFileUpload } from "react-icons/fa";
 import Modal from 'react-bootstrap/Modal';
+import pino from "pino";
 
 export default function NewEvent() {
+    const logger = pino()
     const router = useRouter()
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
 
-    const [myEvent, setMyEvent] = useState({
+    const [newEvent, setNewEvent] = useState({
         name: "",
         description: "",
         event_options: []
@@ -26,7 +28,7 @@ export default function NewEvent() {
     }])
 
     const handleChangeEvent = (event) => {
-        setMyEvent({ ...myEvent, [event.target.name]: event.target.value });
+        setNewEvent({ ...newEvent, [event.target.name]: event.target.value });
     };
 
     const handleChangeInput = (i, e) => {
@@ -35,9 +37,7 @@ export default function NewEvent() {
         setFields(values)
     }
 
-
     const handleAdd = (id) => {
-        console.log(fields)
         setFields([...fields, { id: id + 2, date_time: '' }])
     }
 
@@ -51,7 +51,7 @@ export default function NewEvent() {
         try {
             const response = await fetch("/api/events", {
                 method: "POST",
-                body: JSON.stringify(myEvent),
+                body: JSON.stringify(newEvent),
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -65,34 +65,33 @@ export default function NewEvent() {
                 setShowAlert(true)
                 return
             }
-
         } catch (error) {
-            console.log(error);
+            logger.error(error);
         }
     };
 
     const handleCloseAlert = () => {
         setShowAlert(false)
-        fetchData()
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-
-        for (let i = 0; i < fields.length; i++) {
-            if (fields[i].date_time != "") {
-                myEvent.event_options.push({ date_time: fields[i].date_time })
-            }
-        }
-        await createNewEvent()
-    }
+        e.preventDefault();
+      
+        const eventOptions = fields
+          .filter((field) => field.date_time !== "")
+          .map((field) => ({ date_time: field.date_time }));
+      
+        newEvent.event_options = eventOptions;
+      
+        await createNewEvent();
+      };
+      
 
     useEffect(() => {
         if (!getCookie('username')) {
             router.push("/")
-            return
         }
-    }, [])
+    }, [router])
 
     return (
         <main>

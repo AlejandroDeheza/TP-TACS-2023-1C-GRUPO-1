@@ -86,14 +86,12 @@ public class EventServiceTest {
         .id("idididididid2")
         .dateTime(Date.valueOf(LocalDate.now().plusDays(3)))
         .voteQuantity(0)
-        .voteUsers(List.of())
         .build();
     eventOptionDtoSet = Set.of(eventOptionDto);
     eventOption = EventOption.builder()
         .id("idididididid2")
         .event(null)
         .dateTime(Date.valueOf(LocalDate.now().plusDays(3)))
-        .voteUsers(new ArrayList<>())
         .voteQuantity(0)
         .updateDate(Date.valueOf(LocalDate.now()))
         .build();
@@ -245,13 +243,11 @@ public class EventServiceTest {
     Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
     assertEquals(0, eventOption.getVoteQuantity());
-    assertEquals(0, eventOption.getVoteUsers().size());
 
     utils.when(Utils::getCurrentUsername).thenReturn("username");
     assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2"));
 
     assertEquals(1, eventOption.getVoteQuantity());
-    assertEquals(1, eventOption.getVoteUsers().size());
     Mockito.verify(eventOptionRepository).findById("ididid2");
     Mockito.verify(eventRepository, Mockito.times(2)).findById("ididid");
     Mockito.verify(userRepository).findByUsername(Mockito.any());

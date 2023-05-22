@@ -60,7 +60,6 @@ public class EventControllerTest {
         EventOptionDto eventOptionDto = EventOptionDto.builder()
                 .dateTime(new Date())
                 .voteQuantity(0)
-                .voteUsers(new ArrayList<>())
                 .build();
         Set<EventOptionDto> eventOptionDtoSet = new HashSet<>();
         eventOptionDtoSet.add(eventOptionDto);
@@ -284,7 +283,6 @@ public class EventControllerTest {
     void itShouldReturnEventWith200StatusCodeWhenCalledCVoteEventOption() throws Exception {
         UserDto useDto = UserDto.builder().firstName("Juan").lastName("Perez").build();
         eventDto.getEventOptions().stream().findFirst().orElseThrow().setVoteQuantity(1);
-        eventDto.getEventOptions().stream().findFirst().orElseThrow().getVoteUsers().add(useDto);
         given(eventService.voteEventOption(anyString(), anyString())).willReturn(eventDto);
         HttpServletRequest request = mock(HttpServletRequest.class);
 

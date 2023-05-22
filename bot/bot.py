@@ -21,13 +21,14 @@ def start(message):
 
 
 def command_list(from_user, chat_id):
-    text = f'{from_user.first_name}!\n' + 'Please select a command:\n' \
-           + "/all_events\n" + "/event_by_id\n" \
-           + "/vote_event_option\n" + "/register_to_event\n" + "/change_event_status\n" + "/new_event\n" \
-           + "/monitoring_report\n"
+    text = f'{from_user.first_name}!\nPlease select a command:\n' \
+           "/all_events\n/event_by_id\n" \
+           "/vote_event_option\n/register_to_event\n/change_event_status\n/new_event\n" \
+           "/monitoring_report\n"
+
     try:
-        user = users[from_user.id]
-        if user.token:
+        user = users.get(from_user.id)
+        if user and user.token:
             text += "🛑 /logout\n"
         bot.send_message(chat_id, text=text, parse_mode="HTML")
     except KeyError:
@@ -45,7 +46,7 @@ def ask_for_password(message):
     username = message.text
     text = "😶 Please input your password:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, fetch_login, username)
+    bot.register_next_step_handler(sent_msg, lambda msg: fetch_login(msg, username))
 
 
 def fetch_login(message, username):
@@ -65,8 +66,8 @@ def fetch_login(message, username):
 def logout_handler(message):
     print(f'User: {message.from_user.id} /logout')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             result = api.logout(user)
             if "Logout successfully" in result:
                 users.pop(message.from_user.id)
@@ -86,7 +87,7 @@ def sign_up_handler(message):
     print(f'User: {message.from_user.id} /sign_up')
     sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_USERNAME, parse_mode="Markdown")
     user = model.User()
-    bot.register_next_step_handler(sent_msg, ask_for_first_name, user)
+    bot.register_next_step_handler(sent_msg, lambda msg: ask_for_first_name(msg, user))
 
 
 def ask_for_first_name(message, user):
@@ -94,7 +95,7 @@ def ask_for_first_name(message, user):
     user.username = username
     text = "😆 Please input you first name:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, ask_for_last_name, user)
+    bot.register_next_step_handler(sent_msg, lambda msg: ask_for_last_name(msg, user))
 
 
 def ask_for_last_name(message, user):
@@ -102,14 +103,14 @@ def ask_for_last_name(message, user):
     user.first_name = first_name
     text = "😆 Please input you last name:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, ask_for_password_sign_up, user)
+    bot.register_next_step_handler(sent_msg, lambda msg: ask_for_password_sign_up(msg, user))
 
 
 def ask_for_password_sign_up(message, user):
     last_name = message.text
     user.last_name = last_name
     sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_PASSWORD, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, ask_for_password_confirmation, user)
+    bot.register_next_step_handler(sent_msg, lambda msg: ask_for_password_confirmation(msg, user))
 
 
 def ask_for_password_confirmation(message, user):
@@ -117,14 +118,14 @@ def ask_for_password_confirmation(message, user):
     bot.delete_message(message.chat.id, message.id)
     text = "😶 Please repeat you password:"
     sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, fetch_sign_up, user, password, )
+    bot.register_next_step_handler(sent_msg, lambda msg: fetch_sign_up(msg, user, password))
 
 
 def fetch_sign_up(message, user, password):
     password_confirmation = message.text
     bot.delete_message(message.chat.id, message.id)
     if password != password_confirmation:
-        bot.send_message(message.chat.id, "😢 Passwords are not match. Please /sign_up again", parse_mode="HTML")
+        bot.send_message(message.chat.id, "😢 Passwords do not match. Please /sign_up again", parse_mode="HTML")
     else:
         result = utils.convert_result(api.register(message, password, user))
         if "already exists" in result:
@@ -142,8 +143,8 @@ def fetch_sign_up(message, user, password):
 def all_events_handler(message):
     print(f'User: {message.from_user.id} /all_events')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             result = utils.format_events(api.get_all_events(user))
             bot.send_message(message.chat.id, result, parse_mode="HTML")
             command_list(message.from_user, message.chat.id)
@@ -157,10 +158,10 @@ def all_events_handler(message):
 def event_by_id_handler(message):
     print(f'User: {message.from_user.id} /event_by_id')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
-            bot.register_next_step_handler(sent_msg, fetch_event, user)
+            bot.register_next_step_handler(sent_msg, lambda msg: fetch_event(msg, user))
         else:
             bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
@@ -178,10 +179,10 @@ def fetch_event(message, user):
 def register_to_event_handler(message):
     print(f'User: {message.from_user.id} /register_to_event')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
-            bot.register_next_step_handler(sent_msg, fetch_register_to_event, user)
+            bot.register_next_step_handler(sent_msg, lambda msg: fetch_register_to_event(msg, user))
         else:
             bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
     except KeyError:
@@ -199,8 +200,8 @@ def fetch_register_to_event(message, user):
 def change_event_status_handler(message):
     print(f'User: {message.from_user.id} /change_event_status')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
             bot.register_next_step_handler(sent_msg, ask_for_status)
         else:
@@ -224,19 +225,22 @@ def ask_for_status(message):
 
 @bot.callback_query_handler(lambda call: 'status' in call.data)
 def fetch_change_event_status(call):
-    user = users[call.from_user.id]
-    status = json.loads(call.data)['status']
-    result = api.change_event_status(user, json.loads(call.data)['id'], status)
-    bot.send_message(call.message.chat.id, utils.format_event(result), parse_mode="HTML")
-    command_list(call.from_user, call.message.chat.id)
+    user = users.get(call.from_user.id)
+    if user and user.token:
+        status = json.loads(call.data)['status']
+        result = api.change_event_status(user, json.loads(call.data)['id'], status)
+        bot.send_message(call.message.chat.id, utils.format_event(result), parse_mode="HTML")
+        command_list(call.from_user, call.message.chat.id)
+    else:
+        bot.send_message(call.message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
 @bot.message_handler(commands=['vote_event_option'])
 def vote_event_option_handler(message):
     print(f'User: {message.from_user.id} /vote_event_option')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_EVENT_ID, parse_mode="Markdown")
             bot.register_next_step_handler(sent_msg, ask_for_option_id)
         else:
@@ -248,23 +252,26 @@ def vote_event_option_handler(message):
 def ask_for_option_id(message):
     event_id = message.text
     sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_OPTION_ID, parse_mode="Markdown")
-    bot.register_next_step_handler(sent_msg, fetch_vote_event_option, event_id)
+    bot.register_next_step_handler(sent_msg, lambda msg: fetch_vote_event_option(msg, event_id))
 
 
 def fetch_vote_event_option(message, event_id):
-    user = users[message.from_user.id]
-    option_id = message.text
-    result = api.vote_event_option(user, event_id, option_id)
-    bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
-    command_list(message.from_user, message.chat.id)
+    user = users.get(message.from_user.id)
+    if user and user.token:
+        option_id = message.text
+        result = api.vote_event_option(user, event_id, option_id)
+        bot.send_message(message.chat.id, utils.format_event(result), parse_mode="HTML")
+        command_list(message.from_user, message.chat.id)
+    else:
+        bot.send_message(message.chat.id, information.Message.LOGIN_FIRST, parse_mode="Markdown")
 
 
 @bot.message_handler(commands=['monitoring_report'])
 def events_marketing_report(message):
     print(f'User: {message.from_user.id} /monitoring_report')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             marketing_report = api.get_events_marketing_report(user)
             options_report = api.get_options_report(user)
             bot.send_message(message.chat.id, utils.format_monitoring_report(marketing_report, options_report),
@@ -280,8 +287,8 @@ def events_marketing_report(message):
 def new_event_handler(message):
     print(f'User: {message.from_user.id} /new_events')
     try:
-        user = users[message.from_user.id]
-        if user.token:
+        user = users.get(message.from_user.id)
+        if user and user.token:
             model.Event.event_options = list()
             text = "📝 Please input the event name:"
             sent_msg = bot.send_message(message.chat.id, text, parse_mode="Markdown")
@@ -302,10 +309,10 @@ def ask_for_event_description(message):
 
 def ask_for_first_date_time(message, event):
     event.description = message.text
-    ask_date_time(message, event)
+    ask_for_date_time(message, event)
 
 
-def ask_date_time(message, event):
+def ask_for_date_time(message, event):
     sent_msg = bot.send_message(message.chat.id, information.Message.INPUT_DATE_TIME, parse_mode="Markdown")
     bot.register_next_step_handler(sent_msg, option_handler, event)
 
@@ -317,7 +324,7 @@ def option_handler(message, event):
         ask_for_more_option(message, event)
     else:
         bot.send_message(message.chat.id, "😢 Date time invalid.", parse_mode="Markdown")
-        ask_date_time(message, event)
+        ask_for_date_time(message, event)
 
 
 def ask_for_more_option(message, event):
@@ -329,7 +336,7 @@ def ask_for_more_option(message, event):
 
 def process_option(message, event):
     if 'Y' in message.text or 'y' in message.text:
-        ask_date_time(message, event)
+        ask_for_date_time(message, event)
     elif 'N' in message.text or 'n' in message.text:
         fetch_create_event(message, event)
     else:
