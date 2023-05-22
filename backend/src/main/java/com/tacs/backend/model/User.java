@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,7 +28,7 @@ public class User implements UserDetails {
     private String firstName;
     @Field("last_name")
     private String lastName;
-    @Indexed(name = "username_index", direction = IndexDirection.ASCENDING, unique = true)
+    @Indexed
     private String username;
     private String password;
     private Role role;

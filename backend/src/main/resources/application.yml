@@ -10,7 +10,7 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DATABASE}?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000
+      uri: ${MONGODB_URI}
       auto-index-creation: true
 monitor:
   time-range: ${MONITOR_TIME_RANGE}

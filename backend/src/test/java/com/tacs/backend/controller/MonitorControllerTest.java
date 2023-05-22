@@ -40,7 +40,6 @@ public class MonitorControllerTest {
         EventOptionDto eventOptionDto = EventOptionDto.builder()
                 .dateTime(new Date())
                 .voteQuantity(0)
-                .voteUsers(new ArrayList<>())
                 .build();
         Set<EventOptionDto> eventOptionDtoSet = new HashSet<>();
         eventOptionDtoSet.add(eventOptionDto);
