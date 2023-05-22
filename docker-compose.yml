@@ -5,7 +5,9 @@ x-common: &common
 services:
   mongo:
     <<: *common
+    container_name: mongodb
     image: mongo
+    command: [--auth]
     environment:
       MONGO_INITDB_DATABASE: TP
       MONGO_INITDB_ROOT_USERNAME: root
@@ -18,7 +20,7 @@ services:
           - mongo
         ipv4_address: 172.255.254.103
     volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
       - $PWD/.data/mongodb:/data/db:delegated
 
   backend:
