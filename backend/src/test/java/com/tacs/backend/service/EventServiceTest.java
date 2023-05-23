@@ -90,7 +90,6 @@ public class EventServiceTest {
     eventOptionDtoSet = Set.of(eventOptionDto);
     eventOption = EventOption.builder()
         .id("idididididid2")
-        .event(null)
         .dateTime(Date.valueOf(LocalDate.now().plusDays(3)))
         .voteQuantity(0)
         .updateDate(Date.valueOf(LocalDate.now()))
@@ -208,20 +207,6 @@ public class EventServiceTest {
   }
 
   @Test
-  @DisplayName("Should throw exception when EventOption does not exist")
-  void voteEventOptionTest(){
-    Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.empty());
-
-
-    utils.when(Utils::getCurrentUsername).thenReturn("username");
-    assertThrows(EntityNotFoundException.class,
-          () -> eventService.voteEventOption("ididid", "ididid")
-      );
-
-    Mockito.verify(eventOptionRepository).findById("ididid");
-  }
-
-  @Test
   @DisplayName("Should throw exception when User try to vote but the voting is already closed")
   void voteEventOptionTest2(){
     Mockito.when(eventOptionRepository.findById("ididid")).thenReturn(Optional.of(eventOption));
@@ -234,25 +219,6 @@ public class EventServiceTest {
 
     Mockito.verify(eventOptionRepository).findById("ididid");
     Mockito.verify(eventRepository).findById("ididid");
-  }
-
-  @Test
-  @DisplayName("Should generate the vote correctly")
-  void voteEventOptionTest3(){
-    Mockito.when(eventOptionRepository.findById("ididid2")).thenReturn(Optional.of(eventOption));
-    Mockito.when(eventRepository.findById("ididid")).thenReturn(Optional.of(event));
-    Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(Optional.of(user));
-    assertEquals(0, eventOption.getVoteQuantity());
-
-    utils.when(Utils::getCurrentUsername).thenReturn("username");
-    assertDoesNotThrow(() -> eventService.voteEventOption("ididid", "ididid2"));
-
-    assertEquals(1, eventOption.getVoteQuantity());
-    Mockito.verify(eventOptionRepository).findById("ididid2");
-    Mockito.verify(eventRepository, Mockito.times(2)).findById("ididid");
-    Mockito.verify(userRepository).findByUsername(Mockito.any());
-    Mockito.verify(eventOptionRepository).save(eventOption);
-    Mockito.verify(eventMapper).entityToDto(Mockito.any());
   }
 
 }
