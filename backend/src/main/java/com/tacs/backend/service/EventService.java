@@ -14,13 +14,9 @@ import com.tacs.backend.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +30,6 @@ public class EventService {
     private final EventOptionMapper eventOptionMapper;
 
     public EventDto createEvent(EventDto request) {
-        log.info(request.toString());
         User currentUser = userRepository.findByUsername(Utils.getCurrentUsername()).orElseThrow();
         request.getEventOptions().forEach(options -> options.setEventName(request.getName()));
         Set<EventOption> eventOptionSet = eventOptionMapper.dtoSetToEntitySet(request.getEventOptions());
@@ -58,7 +53,8 @@ public class EventService {
     }
 
     public Set<EventDto> getAllEvents() {
-        List<Event> events = eventRepository.findAll().stream().sorted(Comparator.comparing(Event::getCreateDate)).toList();
+        List<Event> events = eventRepository.findAll().stream()
+                .sorted(Comparator.comparing(Event::getCreateDate)).toList();
         return eventMapper.entitySetToDtoSet(Set.copyOf(events));
     }
 
@@ -110,5 +106,4 @@ public class EventService {
                 () -> new EntityNotFoundException("The event is not found")
         );
     }
-
 }

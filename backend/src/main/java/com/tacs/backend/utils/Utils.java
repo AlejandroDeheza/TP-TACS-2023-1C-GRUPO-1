@@ -17,10 +17,8 @@ public class Utils {
     }
 
     public static Date getBeforeDate(int timeRange) {
-        Date now = new Date();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
-        calendar.add(Calendar.HOUR, -timeRange);
+        calendar.add(Calendar.HOUR_OF_DAY, -timeRange);
         return calendar.getTime();
     }
 }

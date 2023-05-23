@@ -1,6 +1,5 @@
 package com.tacs.backend.controller;
 
-import com.tacs.backend.dto.EventDto;
 import com.tacs.backend.dto.EventOptionReportDto;
 import com.tacs.backend.dto.MarketingReportDto;
 import com.tacs.backend.dto.ExceptionResponse;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
