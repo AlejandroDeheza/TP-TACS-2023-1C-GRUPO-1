@@ -4,8 +4,6 @@ package com.tacs.backend.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +17,6 @@ public class RateLimiterService {
 
     private static final Integer DEFAULT_USER_RPM = 10;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiterService.class);
 
     private static final ConcurrentHashMap<String, UserRequest> USERS_REQUESTS = new ConcurrentHashMap<>();
 
@@ -39,9 +36,7 @@ public class RateLimiterService {
     }
 
     public void initializeUserRequest(String token) {
-        if (!USERS_REQUESTS.containsKey(token)){
-            USERS_REQUESTS.put(token, new UserRequest(System.currentTimeMillis()));
-        }
+        USERS_REQUESTS.computeIfAbsent(token, t -> new UserRequest(System.currentTimeMillis()));
     }
 
     public boolean reachedMaxRequestAllowed(String token)  {

@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @RestControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
@@ -75,7 +72,6 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(exception, HttpStatus.TOO_MANY_REQUESTS);
     }
-
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {

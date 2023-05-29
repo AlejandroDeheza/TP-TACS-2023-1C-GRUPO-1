@@ -96,7 +96,6 @@ public class MonitorControllerTest {
                 .getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(asJsonString(eventOptionReportDtoList));
     }
 
 

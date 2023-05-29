@@ -24,10 +24,12 @@ public class Event {
     private String id;
 
     private String name;
+
     private String description;
 
     @Field("owner_user")
     private User ownerUser;
+
     private Status status;
 
     @Field("event_options")

@@ -16,7 +16,6 @@ import java.util.List;
 public class EventOptionRepositoryImpl implements EventOptionRepositoryCustom {
 
     private final MongoTemplate mongoTemplate;
-
     @Override
     public long getLastVotedEventOptionsCount(int timeRange) {
         Query query = new Query();

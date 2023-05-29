@@ -21,7 +21,6 @@ import java.util.Date;
 public class EventOption {
     @Id
     private String id;
-    private Event event;
 
     @Field("date_time")
     private Date dateTime;
