@@ -16,7 +16,7 @@
 - http://localhost:3000
 
 ## Telegram Bot
-- Bot: <a href="https://t.me/TacsGrupo1Bot">tacs_telegram_bot</a>
+- Bot: <a href="https://t.me/TacsGrupo1Bot">TacsGrupo1Bot</a>
 - /start: Para empezar
 #### Comandos
 - /all_event: Obtener informaciones de todos los eventos
