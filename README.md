@@ -26,3 +26,8 @@
 - /change_event_status: Cambiar estado actual de un evento
 - /new_event: Crear un evento nuevo
 - /monitoring_report: Obtener reporte de monitoreo
+
+## AWS
+- Swagger: http://ec2-54-162-114-46.compute-1.amazonaws.com:8091/swagger-ui/index.html#/
+- Frontend: http://ec2-54-162-114-46.compute-1.amazonaws.com:3000
+- Telegram bot: https://t.me/tacs_telegram_bot
