@@ -16,7 +16,7 @@
 - http://localhost:3000
 
 ## Telegram Bot
-- Bot: <a href="https://t.me/tacs_telegram_bot">tacs_telegram_bot</a>
+- Bot: <a href="https://t.me/TacsGrupo1Bot">TacsGrupo1Bot</a>
 - /start: Para empezar
 #### Comandos
 - /all_event: Obtener informaciones de todos los eventos
@@ -26,3 +26,8 @@
 - /change_event_status: Cambiar estado actual de un evento
 - /new_event: Crear un evento nuevo
 - /monitoring_report: Obtener reporte de monitoreo
+
+## AWS
+- Swagger: http://ec2-184-72-188-41.compute-1.amazonaws.com:8091/swagger-ui/index.html#/
+- Frontend: http://ec2-184-72-188-41.compute-1.amazonaws.com:3000
+- Telegram bot: https://t.me/TacsGrupo1Bot
