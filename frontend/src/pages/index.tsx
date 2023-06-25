@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import Link from 'next/link';
 import { FaUserAlt, FaLockOpen, FaSignInAlt } from "react-icons/fa";
 import pino from "pino";
-import { useRouter } from "next/router";
 import { getCookie } from 'cookies-next';
 
 export default function Login(req: any, res: any) {
@@ -26,8 +25,8 @@ export default function Login(req: any, res: any) {
   };
 
   useEffect(() => {
-    if (!getCookie('username')) {
-      router.push("/")
+    if (getCookie('username')) {
+      router.push("/events")
       return
     }
   }, [router])
