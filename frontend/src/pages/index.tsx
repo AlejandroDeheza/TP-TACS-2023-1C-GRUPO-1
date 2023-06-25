@@ -1,9 +1,11 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { AuthenticationRequest } from '../types/app'
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import { FaUserAlt, FaLockOpen, FaSignInAlt } from "react-icons/fa";
 import pino from "pino";
+import { useRouter } from "next/router";
+import { getCookie } from 'cookies-next';
 
 export default function Login(req: any, res: any) {
   const logger = pino()
@@ -22,6 +24,13 @@ export default function Login(req: any, res: any) {
   const handleChange = (event: any) => {
     setAuthenticationData({ ...authenticationData, [event.target.name]: event.target.value });
   };
+
+  useEffect(() => {
+    if (!getCookie('username')) {
+      router.push("/")
+      return
+    }
+  }, [router])
 
   async function authenticate() {
     try {
