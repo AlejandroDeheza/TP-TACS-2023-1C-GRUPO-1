@@ -27,7 +27,7 @@
 - /new_event: Crear un evento nuevo
 - /monitoring_report: Obtener reporte de monitoreo
 
-## AWS
-- Swagger: http://ec2-184-72-188-41.compute-1.amazonaws.com:8091/swagger-ui/index.html#/
-- Frontend: http://ec2-184-72-188-41.compute-1.amazonaws.com:3000
+## AWS(Instancia de EC2 bajada)
+- Swagger: http://xxxxxx:8091/swagger-ui/index.html#/
+- Frontend: http://xxxxxx:3000
 - Telegram bot: https://t.me/TacsGrupo1Bot
