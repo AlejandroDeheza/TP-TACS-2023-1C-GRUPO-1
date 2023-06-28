@@ -9,9 +9,9 @@ services:
     image: mongo
     command: [--auth]
     environment:
-      MONGO_INITDB_DATABASE: TP
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - "27017:27017"
     networks:
@@ -28,8 +28,8 @@ services:
     build: ./backend
     image: backend:latest
     environment:
-      MONGODB_URI: mongodb://tacs:tacs@mongo:27017/TP?serverSelectionTimeoutMS=5000&connectTimeoutMS=5000
-      SECRET_KEY: 404E635266556A586E3153257538782F413F4426572B4B6250645368970B5970
+      MONGODB_URI: ${MONGODB_URI}
+      SECRET_KEY: ${MONGO_SECRET_KEY}
       MONITOR_TIME_RANGE: 2
     links:
         - mongo
@@ -63,8 +63,8 @@ services:
    build: ./bot
    image: bot:latest
    environment:
-     USERNAME: TacsGrupo1Bot
-     BOT_TOKEN: 6140245411:AAFQxFxXt1DZdFdTzCK5tB794imIiElBg6E
+     USERNAME: ${BOT_USERNAME}
+     BOT_TOKEN: ${BOT_TOKEN}
      SCHEME_DOMAIN: http://backend:8091
    ports:
      - "8443:8443"
