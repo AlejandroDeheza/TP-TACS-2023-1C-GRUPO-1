@@ -10,8 +10,8 @@ services:
     command: [--auth]
     environment:
       MONGO_INITDB_DATABASE: TP
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_ROOT_USERNAME: tacs
+      MONGO_INITDB_ROOT_PASSWORD: tacs
     ports:
       - "27017:27017"
     networks:
@@ -22,7 +22,19 @@ services:
     volumes:
       - ./docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
       - $PWD/.data/mongodb:/data/db:delegated
-
+  redis:
+    container_name: redis
+    image: 'redis:6.0.12-buster'
+    command: redis-server --appendonly yes
+    restart: always
+    networks:
+      tp_network:
+        aliases:
+          - redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - $PWD/.data/redis:/data:delegated
   backend:
     <<: *common
     build: ./backend
