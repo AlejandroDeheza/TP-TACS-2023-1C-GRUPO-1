@@ -12,6 +12,9 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_BACKEND_USER: ${MONGO_BACKEND_USER}
+      MONGO_BACKEND_PWD: ${MONGO_BACKEND_PWD}
+      MONGO_BACKEND_DB: ${MONGO_BACKEND_DB}
     ports:
       - "27017:27017"
     networks:
@@ -20,7 +23,7 @@ services:
           - mongo
         ipv4_address: 172.255.254.103
     volumes:
-      - ./docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - $PWD/.data/mongodb:/data/db:delegated
 
   backend:

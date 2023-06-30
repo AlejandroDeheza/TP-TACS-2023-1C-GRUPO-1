@@ -1,13 +1,14 @@
 db = db.getSiblingDB('TP');
+
 db.createUser(
     {
-        user: "tacs",
-        pwd: "tacs",
+        user: process.env.MONGO_BACKEND_USER,
+        pwd: process.env.MONGO_BACKEND_PWD,
         roles: [
             {
                 role: "readWrite",
-                db: "TP"
+                db: process.env.MONGO_BACKEND_DB
             }
-        ]
+        ],
     }
 );
