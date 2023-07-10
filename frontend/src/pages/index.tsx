@@ -14,6 +14,8 @@ export default function Login(req: any, res: any) {
     password: ""
   })
 
+  console.log("pages/index.tsx");
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     await authenticate()
@@ -32,6 +34,7 @@ export default function Login(req: any, res: any) {
       });
       const userData = await response.json();
       if (response.status === 200) {
+        console.log('Login OK - Llama a /events');
         router.push("/events");
       } else {
         setErrorMessage(userData.message);

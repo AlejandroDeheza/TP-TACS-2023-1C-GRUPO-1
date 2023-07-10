@@ -12,6 +12,7 @@ import { FaCalculator, FaCalendarCheck } from "react-icons/fa";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import pino from "pino";
+import { useSessionCache } from './api/core/session-cache'
 
 const Monitor = () => {
     const logger = pino()
@@ -20,25 +21,49 @@ const Monitor = () => {
     const router = useRouter()
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
+    const [getCache, putCache, clearCache, removeCache] = useSessionCache();
+    const jwt = getCookie('jwt');
+    const cacheTime = 15;
 
     const fetchReportData = async () => {
         try {
-            const ratioResponse = await fetch("/api/monitor/ratios");
-            const ratioData = await ratioResponse.json();
-            if (ratioData.message) {
-                setAlertMessage(ratioData.message);
-                setShowAlert(true);
-            } else {
-                setReportData(ratioData);
+            const urlRatios = "/api/monitor/ratios";
+            const keyRatios = jwt + ":" + urlRatios;
+            const cachedRatios = getCache(keyRatios);
+
+            if (cachedRatios) {
+                setReportData(JSON.parse(cachedRatios));
+            }
+            else {
+                const ratioResponse = await fetch(urlRatios);
+                const ratioData = await ratioResponse.json();
+
+                if (ratioData.message) {
+                    setAlertMessage(ratioData.message);
+                    setShowAlert(true);
+                } else {
+                    putCache(keyRatios, JSON.stringify(ratioData), 15);
+                    setReportData(ratioData);
+                }
             }
 
-            const optionsResponse = await fetch("/api/monitor/options");
-            const optionsData = await optionsResponse.json();
-            if (optionsData.message) {
-                setAlertMessage(optionsData.message);
-                setShowAlert(true);
-            } else {
-                setOptionsReportData(optionsData.options_report);
+            const urlOptions = "/api/monitor/options";
+            const keyOptions = jwt + ":" + urlOptions;
+            const cachedOptions = getCache(keyOptions);
+
+            if (cachedOptions) {
+                setReportData(JSON.parse(cachedOptions));
+            }
+            else {
+                const optionsResponse = await fetch(urlOptions);
+                const optionsData = await optionsResponse.json();
+                if (optionsData.message) {
+                    setAlertMessage(optionsData.message);
+                    setShowAlert(true);
+                } else {
+                    putCache(keyOptions, JSON.stringify(optionsData.options_report), cacheTime);
+                    setOptionsReportData(optionsData.options_report);
+                }
             }
         } catch (error) {
             logger.error(error);

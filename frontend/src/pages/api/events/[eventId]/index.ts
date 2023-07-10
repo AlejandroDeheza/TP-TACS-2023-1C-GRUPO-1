@@ -3,6 +3,7 @@ import { getCookie } from 'cookies-next';
 import axios from 'axios';
 import pino from "pino";
 
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const logger = pino()
     logger.info(`Get event ${req.query.eventId}`)
@@ -16,7 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         let response;
-        if (req.method === 'GET') {
+        if (req.method === 'GET') {            
+
             const url = `${process.env.path}/v1/events/${req.query.eventId}`;
             response = await axios.get(url, config);
         } else {

@@ -10,12 +10,14 @@ import { useRouter } from "next/router"
 import { FaCalendarAlt, FaListAlt, FaClock, FaPlus, FaMinus, FaFileUpload } from "react-icons/fa";
 import Modal from 'react-bootstrap/Modal';
 import pino from "pino";
+import { useSessionCache } from '../api/core/session-cache'
 
 export default function NewEvent() {
     const logger = pino()
     const router = useRouter()
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
+    const [getCache, putCache, clearCache, removeCache] = useSessionCache();
 
     const [newEvent, setNewEvent] = useState({
         name: "",
@@ -58,7 +60,12 @@ export default function NewEvent() {
             });
             const userData = await response.json()
             if (response.status == 201) {
-                router.push("/events")
+                const url = "/api/events";
+                const jwt = getCookie('jwt');
+                const key = jwt + ":" + url;
+                
+                removeCache(key);
+                router.push("/events");
             }
             else {
                 setAlertMessage(userData.message)

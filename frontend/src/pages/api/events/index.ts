@@ -8,6 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   logger.info("Get all events")
   const jwt = getCookie('jwt', { req, res });
   logger.info(`jwt: ${jwt}`)
+  
   try {
     const url = `${process.env.path}/v1/events`;
     const config = {
@@ -18,7 +19,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let response;
 
-    if (req.method === "GET") {
+    console.log("estoy en async function handler");
+
+    if (req.method === "GET") { 
       response = await axios.get(url, config);
     } else {
       response = await axios.post(url, req.body, config);

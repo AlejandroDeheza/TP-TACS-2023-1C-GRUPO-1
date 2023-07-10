@@ -12,6 +12,8 @@ import { useRouter } from "next/router";
 import Modal from 'react-bootstrap/Modal';
 import { FaCalendarAlt, FaListAlt, FaWindowClose, FaCheckCircle } from "react-icons/fa";
 import pino from "pino";
+import { useSessionCache } from '../api/core/session-cache'
+
 
 export default function Events() {
     const logger = pino()
@@ -22,16 +24,31 @@ export default function Events() {
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState(false)
     const username = getCookie('username')
+    const jwt = getCookie('jwt');
+    const [getCache, putCache, clearCache, removeCache] = useSessionCache();
+    const apiEventsUrl = "/api/events";
+    const apiEventsKey = jwt + ":" + apiEventsUrl;
+    const cacheTime = 30;
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch("/api/events");
-            const reply = await response.json();
+            const cachedResponse = getCache(apiEventsKey);
+            var reply = null;                        
 
-            if (reply.message) {
-                setAlertMessage(reply.message);
-                setShowAlert(true);
-                return;
+            if (cachedResponse) {
+                reply = JSON.parse(cachedResponse);
+            } else {
+                const response = await fetch(apiEventsUrl);
+                reply = await response.json();
+
+                if (reply.message) {
+                    setAlertMessage(reply.message);
+                    setShowAlert(true);
+                    return;
+                }
+                else {                    
+                    putCache(apiEventsKey, JSON.stringify(reply), cacheTime);
+                }
             }
 
             setEvents(reply.events.sort((a: any, b: any) => a.id > b.id ? 1 : -1));
@@ -42,7 +59,7 @@ export default function Events() {
 
     const handleCloseAlert = () => {
         setShowAlert(false)
-        fetchEvents()
+        fetchEvents();
     }
 
     const mapEventStatus = (status: string) => {
@@ -59,7 +76,7 @@ export default function Events() {
 
     const handleChangeEventStatus = async (eventId: string, status: string) => {
         try {
-            const response = await fetch(`/api/events/${eventId}?status=${status}`, {
+                const response = await fetch(`/api/events/${eventId}?status=${status}`, {
                 method: "PATCH",
             });
             const reply = await response.json();
@@ -70,6 +87,8 @@ export default function Events() {
                 return;
             }
 
+            // reinicia la sesion
+            removeCache(apiEventsKey);
             fetchEvents();
         } catch (error) {
             logger.error(error);
@@ -131,6 +150,7 @@ export default function Events() {
             router.push("/")
             return
         }
+        
         fetchEvents()
     }, [username, router])
 

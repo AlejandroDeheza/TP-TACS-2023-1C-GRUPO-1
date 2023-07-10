@@ -18,6 +18,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/events.js", "src/pages/events/new-event.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/events.js", "src/pages/events/new-event.jsx", "src/pages/api/core/session-cache.js"],
   "exclude": ["node_modules"]
 }
